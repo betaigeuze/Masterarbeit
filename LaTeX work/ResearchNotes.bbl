@@ -1,0 +1,199 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Kuznetsova%
+, Westenberg%
+, Buchin%
+, Dinkla%
+\BCBL {}\ \BBA {} van~den Elzen%
+}{%
+Kuznetsova%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+kuznetsova2014random}
+\APACinsertmetastar {%
+kuznetsova2014random}%
+\begin{APACrefauthors}%
+Kuznetsova, N.%
+, Westenberg, M.%
+, Buchin, K.%
+, Dinkla, K.%
+\BCBL {}\ \BBA {} van~den Elzen, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Random Forest Visualization} {Random forest
+  visualization}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Eindhoven University of Technology}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Livingston%
+}{%
+Livingston%
+}{%
+{\protect \APACyear {2005}}%
+}]{%
+livingston2005implementation}
+\APACinsertmetastar {%
+livingston2005implementation}%
+\begin{APACrefauthors}%
+Livingston, F.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2005}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Implementation of Breiman’s random forest machine
+  learning algorithm} {Implementation of breiman’s random forest machine
+  learning algorithm}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{ECE591Q Machine Learning Journal Paper}{}{}{1--13}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ming%
+, Qu%
+\BCBL {}\ \BBA {} Bertini%
+}{%
+Ming%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+ming2018rulematrix}
+\APACinsertmetastar {%
+ming2018rulematrix}%
+\begin{APACrefauthors}%
+Ming, Y.%
+, Qu, H.%
+\BCBL {}\ \BBA {} Bertini, E.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Rulematrix: Visualizing and understanding classifiers
+  with rules} {Rulematrix: Visualizing and understanding classifiers with
+  rules}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE transactions on visualization and computer
+  graphics}{25}{1}{342--352}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Neto%
+\ \BBA {} Paulovich%
+}{%
+Neto%
+\ \BBA {} Paulovich%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+neto2020explainable}
+\APACinsertmetastar {%
+neto2020explainable}%
+\begin{APACrefauthors}%
+Neto, M\BPBI P.%
+\BCBT {}\ \BBA {} Paulovich, F\BPBI V.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Explainable matrix-visualization for global and local
+  interpretability of random forest classification ensembles} {Explainable
+  matrix-visualization for global and local interpretability of random forest
+  classification ensembles}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Visualization and Computer
+  Graphics}{27}{2}{1427--1437}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Tufte%
+}{%
+Tufte%
+}{%
+{\protect \APACyear {1985}}%
+}]{%
+tufte1985visual}
+\APACinsertmetastar {%
+tufte1985visual}%
+\begin{APACrefauthors}%
+Tufte, E\BPBI R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1985}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The visual display of quantitative information} {The
+  visual display of quantitative information}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{The Journal for Healthcare Quality (JHQ)}{7}{3}{15}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Van Den~Elzen%
+\ \BBA {} Van~Wijk%
+}{%
+Van Den~Elzen%
+\ \BBA {} Van~Wijk%
+}{%
+{\protect \APACyear {2011}}%
+}]{%
+van2011baobabview}
+\APACinsertmetastar {%
+van2011baobabview}%
+\begin{APACrefauthors}%
+Van Den~Elzen, S.%
+\BCBT {}\ \BBA {} Van~Wijk, J\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2011}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Baobabview: Interactive construction and analysis of
+  decision trees} {Baobabview: Interactive construction and analysis of
+  decision trees}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {2011 IEEE conference on visual analytics science and
+  technology (VAST)} {2011 ieee conference on visual analytics science and
+  technology (vast)}\ (\BPGS\ 151--160).
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Zhao%
+, Wu%
+, Lee%
+\BCBL {}\ \BBA {} Cui%
+}{%
+Zhao%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+zhao2018iforest}
+\APACinsertmetastar {%
+zhao2018iforest}%
+\begin{APACrefauthors}%
+Zhao, X.%
+, Wu, Y.%
+, Lee, D\BPBI L.%
+\BCBL {}\ \BBA {} Cui, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {iforest: Interpreting random forests via visual
+  analytics} {iforest: Interpreting random forests via visual
+  analytics}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE transactions on visualization and computer
+  graphics}{25}{1}{407--416}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}

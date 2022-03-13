@@ -1,0 +1,25 @@
+\contentsline {section}{\numberline {1}Master thesis from Eindhoven}{2}{}%
+\contentsline {subsection}{\numberline {1.1}Remarks}{2}{}%
+\contentsline {subsection}{\numberline {1.2}Points to note}{2}{}%
+\contentsline {subsection}{\numberline {1.3}Summary}{2}{}%
+\contentsline {section}{\numberline {2}Breimann Implementation Paper}{3}{}%
+\contentsline {subsection}{\numberline {2.1}Remarks}{3}{}%
+\contentsline {subsection}{\numberline {2.2}Points to note}{3}{}%
+\contentsline {subsection}{\numberline {2.3}Summary}{3}{}%
+\contentsline {section}{\numberline {3}Explainable Matrix paper}{3}{}%
+\contentsline {subsection}{\numberline {3.1}Remarks}{3}{}%
+\contentsline {subsection}{\numberline {3.2}Points to note}{4}{}%
+\contentsline {subsection}{\numberline {3.3}Summary}{5}{}%
+\contentsline {section}{\numberline {4}BaobabView}{5}{}%
+\contentsline {subsection}{\numberline {4.1}Remarks}{5}{}%
+\contentsline {subsection}{\numberline {4.2}Points to note}{5}{}%
+\contentsline {subsection}{\numberline {4.3}Summary}{5}{}%
+\contentsline {section}{\numberline {5}Matrix Visualization}{5}{}%
+\contentsline {subsection}{\numberline {5.1}Remarks}{5}{}%
+\contentsline {subsection}{\numberline {5.2}Points to note}{5}{}%
+\contentsline {subsection}{\numberline {5.3}Summary}{5}{}%
+\contentsline {section}{\numberline {6}iForest}{5}{}%
+\contentsline {subsection}{\numberline {6.1}Remarks}{6}{}%
+\contentsline {subsection}{\numberline {6.2}Points to note}{6}{}%
+\contentsline {subsection}{\numberline {6.3}Summary}{6}{}%
+\contentsline {section}{References}{7}{}%

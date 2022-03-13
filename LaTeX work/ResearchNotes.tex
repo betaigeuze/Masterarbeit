@@ -1,0 +1,138 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{apacite}
+\usepackage{enumitem}
+
+
+\title{RF Research}
+\author{Fabio Rougier}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Master thesis from Eindhoven}
+This \shortcite{kuznetsova2014random} is a master's thesis
+
+\subsection{Remarks}
+The author uses an entire chapter to describe in detail how a random forest works. 
+It's definitely not a good thesis, judging by the wording. However, it might hold some value from its content\dots
+
+\subsection{Points to note}
+\begin{description}[font=$\bullet$~\normalfont]
+    \item [Prototypes:]On p 11 the author mentions the idea of prototypes for every class and attribute
+    \item [Different consumers: ]On p 14 the author emphasizes the different approach to ML, data and its 
+        different consumers.
+        While the ML expert is more focused on improving his model performance (and it's indicating variables.),
+        the Analyst/Domain Expert is more concerned about the insights that the model yields (attributes, instances,
+        noise,).
+    \item [RAFT:]Random Forest Tool by Breimann is introduced as an existing tool for RF visualisation, authors
+            conclusion is that tool is best with small amount and exclusively numerical attributes 
+    \item [Small multiples:]Mentioned in her source n16 \cite{tufte1985visual}
+    \item [Visualization considerations:] p20/21 lists concise considerations for the Visualization of the RF
+            following the principle of small multiples
+    \item [ReFINE:]Tool developed by the author, looks promising
+\end{description}
+
+\subsection{Summary}
+Overall, a mediocre thesis, but all the more interesting and extensive software and approach. Note that it is from
+2014 which is likely why the author uses java.
+
+\section{Breimann Implementation Paper}
+This \cite{livingston2005implementation} is a paper on a particular implementation on the RAFT software of Breimann.
+\subsection{Remarks}
+The paper seems to be concerned about the specifics of how a RF is created. Using RFs for problems where a very
+rare occasion has to be trained often results in bad models, because the training set is already heavily scewed
+towards the "regular" case and so the detection of edge cases seems to be a problem for such models.
+They do use the RAFT software but the paper is likely not focusing on the specifics of RF Visualization.
+Additionally the paper is from 2005, so it is quite outdated. They use Fortran and Java \dots
+
+\subsection{Points to note}
+\begin{description}[font=$\bullet$~\normalfont]
+    \item[Weka:] Some kind of java program
+    \item[Variable Importance:] The authors implemented variable importance into Weka
+\end{description}
+
+\subsection{Summary}
+Very old paper and the specifics will unlikely be relevant today, however it might contain very important
+references that I can use!
+
+\section{Explainable Matrix paper}
+This \cite{neto2020explainable} is a journal article presenting ExMatrix - a visualization method trying to convey
+the configuration of a model in a matrix structure.
+
+\subsection{Remarks}
+This paper is from 2021 and therefore far more relevant than the others. It also specifically focuses on the
+problematics of RFs.
+
+\subsection{Points to note}
+\begin{description}
+    \item[Model interpretability:]The main problem statement is the lack of interpretability of models and their
+            decisions despite being accurate. A 99\% accuracy does not convince anyone, if there is no
+            explanation for the decision.
+    \item [Global/Local approaches:]Global explains the entire model, trying to improve the trust in the models'
+            decision making. Local explains the decision behind a single instance.
+    \item[pre-/in-/post-model strategies:]For which stage of the ML process is the visualization helpful?
+    \item[BaobabView:]This is a node-link explanation technique \cite{van2011baobabview}, down below. But node-link
+            visualization has scalability issues.
+    \item [RuleMatrix:]The technique has been used before \cite{ming2018rulematrix}.
+    \item [Decision Paths:]Focus of the visualization is on decision paths, rather than nodes.
+    \item [Surrogates:]Sometimes RFs are used as a \textit{surrogate} for a less interpretable model.
+    \item [iForest:]Also closely related to ExMatrix \cite{zhao2018iforest}, summarizes decision paths.
+\end{description}
+Trying to explain the visualization specifics, because I think, this is an incredibly valuable paper for me:
+Every path is translated into a rule vector, consisting of as many coordinates, as there are features along the 
+path. Each rule consists of \textit{predicates} which represent single decisions on attribute values. 
+For each rule vector there is a rule certainty (for each class, adding up to 100\%), which represents how
+accurately the respective path classifies the instances that came along its path. The rule vector class is the
+class that has the highest value in the rule certainty. Rule coverage is the percentage of instances of the
+training data of class c for which the rule \textit{works}.
+The 2nd graphic is the LE (Local Explanation) / UR (Used Rules) visualization and focuses on a single instance.
+Each features decision boundaries are layed out, with a pointed line, representing the given instance.
+There is an additional column \textit{cumulative voting} next to the rule certainty, which sums the certainties
+up to the respective row, starting from the top.
+The 3rd graphic is the LE / SC (smallest changes) visualization. It visualizes the smallest necessary rule change
+to change the classification of the displayed sample.
+
+\subsection{Summary}
+Extremely relevant paper with lots of potential references and ideas. This could even be a visualization to build
+my own visualization upon. The authors noted in their own conclusion, that especially the LE/SC visualization
+leaves quite some room for improvement. The general idea of breaking down the RF into single rules is also
+interesting. The code is on github and a forked version would be an option. However, the github was not updated
+since last year April. I could consider contacting the authors if I pursue any further ideas along their approach.
+
+\section{BaobabView}
+%NEXT ONE:
+\cite{van2011baobabview}
+\subsection{Remarks}
+\subsection{Points to note}
+\subsection{Summary}
+
+\section{Matrix Visualization}
+%AND THEN THIS:
+\cite{ming2018rulematrix}
+
+\subsection{Remarks}
+\subsection{Points to note}
+\subsection{Summary}
+
+\section{iForest}
+%AND THIS:
+\cite{zhao2018iforest}
+
+\subsection{Remarks}
+\subsection{Points to note}
+\subsection{Summary}
+
+% This is where the references are created
+% They "speak" with NotesReferences.bib
+\clearpage
+\bibliographystyle{apacite}
+\bibliography{NotesReferences}
+
+\end{document}
