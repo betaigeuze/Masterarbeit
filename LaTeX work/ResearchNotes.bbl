@@ -1,6 +1,105 @@
 \begin{thebibliography}{}
 
 \bibitem [\protect \citeauthoryear {%
+Bostock%
+}{%
+Bostock%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+d3js}
+\APACinsertmetastar {%
+d3js}%
+\begin{APACrefauthors}%
+Bostock, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+\APACrefbtitle {D3.js - Data-Driven Documents.} {D3.js - data-driven
+  documents.}
+\newblock
+\begin{APACrefURL} \url{http://d3js.org/} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Friedman%
+}{%
+Friedman%
+}{%
+{\protect \APACyear {2001}}%
+}]{%
+friedman2001greedy}
+\APACinsertmetastar {%
+friedman2001greedy}%
+\begin{APACrefauthors}%
+Friedman, J\BPBI H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2001}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Greedy function approximation: a gradient boosting
+  machine} {Greedy function approximation: a gradient boosting machine}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Annals of statistics}{}{}{1189--1232}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Grinberg%
+}{%
+Grinberg%
+}{%
+{\protect \APACyear {2018}}%
+}]{%
+grinberg2018flask}
+\APACinsertmetastar {%
+grinberg2018flask}%
+\begin{APACrefauthors}%
+Grinberg, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2018}.
+\newblock
+\APACrefbtitle {Flask web development: developing web applications with python}
+  {Flask web development: developing web applications with python}.
+\newblock
+\APACaddressPublisher{}{" O'Reilly Media, Inc."}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Hastie%
+, Tibshirani%
+, Friedman%
+\BCBL {}\ \BBA {} Friedman%
+}{%
+Hastie%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2009}}%
+}]{%
+hastie2009elements}
+\APACinsertmetastar {%
+hastie2009elements}%
+\begin{APACrefauthors}%
+Hastie, T.%
+, Tibshirani, R.%
+, Friedman, J\BPBI H.%
+\BCBL {}\ \BBA {} Friedman, J\BPBI H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2009}.
+\newblock
+\APACrefbtitle {The elements of statistical learning: data mining, inference,
+  and prediction} {The elements of statistical learning: data mining,
+  inference, and prediction}\ (\BVOL~2).
+\newblock
+\APACaddressPublisher{}{Springer}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Kuznetsova%
 , Westenberg%
 , Buchin%

@@ -116,9 +116,9 @@ Since this is mostly about decision trees, it might not be very applicable to RF
 \begin{description}[font=$\bullet$~\normalfont]
         \item[User requirements]Users of the visualization usually only want 3 different things: EDIT the tree (grow,
         prune or optimize) USE it (classification) or ANALYSE it (data exploration)
-        \item [Node-Link diagram] Visualization uses a Node-Link diagram
-        \item [Streamgraphs]Figure 4, might be interesting for Node visualization
-        \item [Confusion Matrix]Should be considered to inspect misclassifications
+        \item [Node-Link diagram:] Visualization uses a Node-Link diagram
+        \item [Streamgraphs:]Figure 4, might be interesting for Node visualization
+        \item [Confusion Matrix:]Should be considered to inspect misclassifications
 \end{description}
 \subsection{Summary}
 "Different activities require different visualizations"(in 6, Conclusion) is a simple, but important lesson from
@@ -133,24 +133,92 @@ valuable source for citation of basic concepts if I do go further down along the
 Since the paper was written in 2019 it is also one of the newer concepts.
 \subsection{Points to note}
 \begin{description}[font=$\bullet$~\normalfont]
-        \item[Not specific to RFs]The concept of turning a ML model into a rule matrix works with all kinds of ML
+        \item[Not specific to RFs:]The concept of turning a ML model into a rule matrix works with all kinds of ML
         models, not just RFs
-        \item[] 
 \end{description}
 \subsection{Summary}
+Mostly included this paper for completeness. It will only become relevant if I dive deeper into the ExMatrix topic.
 
 \section{iForest}
-%AND THIS:
-\cite{zhao2018iforest}
+This \cite{zhao2018iforest} is a visualization approach mostly aiming for the interpretability of RFs.
 
 \subsection{Remarks}
+The version that I have seems to be the "unreleased" version, so be careful when citing this paper and look up the
+links at the footer.
 \subsection{Points to note}
+\begin{description}[font=$\bullet$~\normalfont]
+        \item[Poor interpretability:]Some domains would not use RFs simply because they are too difficult to
+        interpret. Domains like healthcare or finance need the interpretability in order to be viable in day to day
+        use.
+        \item[3 different RF interpretation methods:] feature analysis, model reduction and case.based reasoning
+        \item[Feature Analysis:]Calculation of feature importance is easy and effective (Either Mean Decrease 
+        Accuracy ir Mean Decrease Impurity); However, MDI is specialised for tree-based models. Both can be calculated
+        globally or for an individual feature.
+        \item[Partial Dependence Plots(PDP):]Line chart where x-Axis is feature values and y-axis shows prediction
+        probabilities. \cite{friedman2001greedy}, \cite{hastie2009elements}
+        Usually good for trees, but not as good for forests. But since they included them anyways, there will
+        probably follow a good reason for how and why they included them.
+        \item[Model Reduction:] Mentions the idea of surrogates. Since they usually reduce too much and don't help
+         with the actual understanding of the RF, they are not used here.
+        \item[Case-based Reasoning:]Picking some kind of idealised sample in order to inspect the results of the RF
+        based on the specific sample and user-configured permutations of that sample. This is connected to looking
+        at distance measures between features and inspect correlations of distances and predictions.
+        \item[Design Goals:]A section that I have seen in multiple papers now. Splitting up the different goals of
+        the visualization and the necessary tasks to get there in G1,2,3\dots and T1,2,3\dots
+        \item[Implementation:] This is one of the very few visualization where the implementation gets
+        mentioned. Apparently they used Python (yay!). \textit{Scikitlearn} is used for the entire RF part and
+        \textit{Flask} \cite{grinberg2018flask} for the Backend. The frontend is built using \textit{D3} \cite{d3js}.
+\end{description}
 \subsection{Summary}
+Overall this visualization approach has better scalability than the matrix idea and the icicle representation from
+the master's thesis. The implementation approach of designing the entire visualization as a web-application also
+seems very promising.
+
+\section{Current Bottom Line}
+\subsection{Technical stuff}
+The implementation from iForest seems very solid, but also a lot of work to set up initially. A web application
+would be a modern approach and an excellent showcase for any kind of visualization.
+
+\subsection{Target audience}
+Focusing on a specific target audience seems to be useful as this entire ordeal is a constant decision about
+trade-offs. Focusing on a target audience would reduce the amount of constant arbitrage between different kinds of
+graphics significantly.
+
+\subsection{Explicit goal}
+Tied in with the target audience are the goals that the visualization wants to achieve. They will be helpful to
+have an orientation during development but also give the thesis clearer path. Do I want DSs to precisely optimize
+their RF model or do I want a doctor to understand why the model chose a specific class for a sample?
+
+\subsection{Honest reflection on the necessity of the initial thesis statement}
+A significant amount of high quality work has been done on the topic of visualizing RFs. Is it really necessary to
+build something completely new from scratch or is there a smarter way to go about this?
+Maybe it is possible to improve on one of the existing approaches. This would reduce development time significantly
+(at least in theory, depending on how well documented the existing implementations are\dots) and enable more 
+in-depth apporaches, that I would otherwise not be able to achieve if I was starting from nothing.
+In order to do that, I would need to formulate a strong argument for why it is necessary to improve the existing
+works and how this would be enough to warrant an entire thesis on it.
+
+\subsection{Discussion with Aleksandar}
+\begin{description}[font=$\bullet$~\normalfont]
+        \item[Explainations:]How much explanation of RFs/Decision Trees concepts and algorithms is enough/too much?
+        \item[Other ensemble methods:]Should I only focus on RFs?
+        \item[Online vs. books:]Is it considered a problem that most of the resources are journal articles instead
+        of books?
+        \item[Research question:]Is it still to be formulated or was there a clear idea present?
+        \item[Target audience:]Visualization needs will differ depending on who is supposed to use it.
+        \item[Evaluation:]Is this an important part of the thesis or is a use case presentation sufficient?
+        \item[Prototypes:]Relevant concept? (Idealised samples)
+        \item[Scope:]Data preparation, Model creation, Data/Feature Analysis, Model performance\dots What to include?
+        \item[\textit{Bad} Sources:]How to deal with sources that are obviously lackluster, but have important ideas?
+        \item[Technical explanations:]Many of the works do not even mention implementation details. Why?
+        \item[Breimann:]I read this name a lot in connection with basic concepts. Did he 'invent' RFs?
+        \item[Build new or improve old:]Is it really necessary to build something new from scratch? How about
+        improving or extending existing work? 
+\end{description}
 
 % This is where the references are created
 % They "speak" with NotesReferences.bib
 \clearpage
 \bibliographystyle{apacite}
 \bibliography{NotesReferences}
-
 \end{document}

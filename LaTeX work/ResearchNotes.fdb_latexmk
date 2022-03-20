@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex ResearchNotes"] 1647774208 "ResearchNotes.aux" "ResearchNotes.bbl" "ResearchNotes" 1647775474
+["bibtex ResearchNotes"] 1647781539 "ResearchNotes.aux" "ResearchNotes.bbl" "ResearchNotes" 1647781976
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/bibtex/bst/apacite/apacite.bst" 1374952728 146156 9d7b79dbf9d91133318126032cff8c27 ""
-  "NotesReferences.bib" 1647179709 2108 418d41995787efd384270728be0cd3e2 ""
-  "ResearchNotes.aux" 1647775473 4768 b5c0a1e22d7f7cd4393c3edf90cb01a1 "pdflatex"
+  "NotesReferences.bib" 1647780168 3301 373d35556eaf7e1a6016086902cce899 ""
+  "ResearchNotes.aux" 1647781975 6364 407da05ee14be5c589eef7b5638cf43d "pdflatex"
   (generated)
   "ResearchNotes.bbl"
   "ResearchNotes.blg"
-["pdflatex"] 1647775473 "c:/Users/Fabio/Documents/Uni Zeugs/03_WI Marburg Master/Masterarbeit/LaTeX work/ResearchNotes.tex" "ResearchNotes.pdf" "ResearchNotes" 1647775474
+["pdflatex"] 1647781975 "c:/Users/Fabio/Documents/Uni Zeugs/03_WI Marburg Master/Masterarbeit/LaTeX work/ResearchNotes.tex" "ResearchNotes.pdf" "ResearchNotes" 1647781976
   "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1647085659 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1200.pk" 1647085669 31952 ffdc15a02cc93534ebceb34ac142f80b ""
   "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1440.pk" 1647085661 40136 7a9b8679f64e050fedbd2ec5176bea35 ""
@@ -15,6 +15,7 @@
   "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1440.pk" 1647085665 34320 41646fa663aa6df179fcc858cb04511c ""
   "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm2074.pk" 1647085666 53736 acd6cc3078d33c0c3e32ba9f44aa26bb ""
   "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecti1200.pk" 1647085668 39120 b39994fa68e81bfd923cf1c68bf3e3fa ""
+  "C:/Users/Fabio/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ectt1200.pk" 1647780171 24152 3d7c14eb8f922cc6e9e52eeac7a1053b ""
   "C:/Users/Fabio/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1647085648 10246961 7ec4046397739efd94758287cc3e09cd ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecbx1200.tfm" 993061958 3200 b8d69bc738e5ef3e08cefeef3109ff56 ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecbx1440.tfm" 993061960 3196 0b37fa3083e15c57cfa8c4ff52f2807a ""
@@ -24,6 +25,7 @@
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecrm1728.tfm" 993062128 3168 11457c8185ce67fb79662ba8b03d6db1 ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecrm2074.tfm" 993062130 3184 b2541675eba9fa86d240ec0ecc913558 ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecti1200.tfm" 993062324 2832 28bbd97ca29f46e76c87a158a9915203 ""
+  "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ectt1200.tfm" 993062344 1348 c48a0620e07683860afba1730adf9e53 ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1233951848 1004 54797486969f23fa377b128694d548df ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1233951848 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmex10.tfm" 1136765053 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
@@ -47,13 +49,14 @@
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/tex/latex/base/article.cls" 1638775084 20144 8a7de377ae7a11ee924a7499611f5a9d ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/tex/latex/base/fontenc.sty" 1638775084 4946 461cc78f6f26901410d9f1d725079cc6 ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/tex/latex/base/size12.clo" 1638775084 8449 bc7344e882df4d7e51c046514dee83e4 ""
+  "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/tex/latex/base/t1cmtt.fd" 1638775084 2443 6dd9a5deeddddfcceb01d1932590ebad ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/tex/latex/enumitem/enumitem.sty" 1561039820 51697 f8f08183cd2080d9d18a41432d651dfb ""
   "C:/Users/Fabio/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-pdftex.def" 1644215060 29921 d0acc05a38bd4aa3af2017f0b7c137ce ""
-  "ResearchNotes.aux" 1647775473 4768 b5c0a1e22d7f7cd4393c3edf90cb01a1 "pdflatex"
-  "ResearchNotes.bbl" 1647774208 4953 dc99f8a79f2bba5ba46b8c05021d1d01 "bibtex ResearchNotes"
-  "ResearchNotes.tex" 1647775472 8554 6bd798a253d887bef1ba2c4f54815240 ""
-  "ResearchNotes.toc" 1647775473 1546 d35f3f08212ddf2866dd226461df7ca8 "pdflatex"
-  "c:/Users/Fabio/Documents/Uni Zeugs/03_WI Marburg Master/Masterarbeit/LaTeX work/ResearchNotes.tex" 1647775472 8554 6bd798a253d887bef1ba2c4f54815240 ""
+  "ResearchNotes.aux" 1647781975 6364 407da05ee14be5c589eef7b5638cf43d "pdflatex"
+  "ResearchNotes.bbl" 1647781539 7230 3e1e94abfce9e25e4875d83e38a2d4cb "bibtex ResearchNotes"
+  "ResearchNotes.tex" 1647781974 14387 f5f21eca5c6713184f06a68bb0e5c227 ""
+  "ResearchNotes.toc" 1647781975 2008 4368dc4f660c2ed9bc844c0e8edbcecf "pdflatex"
+  "c:/Users/Fabio/Documents/Uni Zeugs/03_WI Marburg Master/Masterarbeit/LaTeX work/ResearchNotes.tex" 1647781974 14387 f5f21eca5c6713184f06a68bb0e5c227 ""
   (generated)
   "ResearchNotes.aux"
   "ResearchNotes.log"

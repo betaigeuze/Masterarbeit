@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex 2022.3.12)  20 MAR 2022 12:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex 2022.3.12)  20 MAR 2022 14:12
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -121,27 +121,31 @@ LaTeX Font Info:    ... okay on input line 13.
 File: english.apc 2013/07/21 v6.03 apacite language file
 LaTeX Info: Redefining \BPBI on input line 129.
 LaTeX Info: Redefining \BHBI on input line 130.
-) (ResearchNotes.toc)
+) (ResearchNotes.toc [1
+
+{C:/Users/Fabio/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}])
 \tf@toc=\write3
 \openout3 = `ResearchNotes.toc'.
 
- [1
-
-{C:/Users/Fabio/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] [3] [4] [5] [6] (ResearchNotes.bbl) [7
+ [2] [3] [4] [5] [6] [7] [8] [9] (ResearchNotes.bbl
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 23.
+ (C:\Users\Fabio\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
+File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)) [10
 
 ] (ResearchNotes.aux) ) 
 Here is how much of TeX's memory you used:
- 2188 strings out of 478582
- 32843 string characters out of 2844344
- 337056 words of memory out of 3000000
- 20399 multiletter control sequences out of 15000+600000
- 480117 words of font info for 53 fonts, out of 8000000 for 9000
+ 2221 strings out of 478582
+ 33710 string characters out of 2844344
+ 337267 words of memory out of 3000000
+ 20428 multiletter control sequences out of 15000+600000
+ 480430 words of font info for 54 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 54i,6n,62p,336b,225s stack positions out of 5000i,500n,10000p,200000b,80000s
- <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1440.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2074.pk><C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on ResearchNotes.pdf (7 pages, 111008 bytes).
+ 54i,6n,62p,336b,234s stack positions out of 5000i,500n,10000p,200000b,80000s
+ <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1440.pk> <C:\Users\Fabio\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2074.pk><C:/Users/Fabio/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on ResearchNotes.pdf (10 pages, 136028 bytes).
 PDF statistics:
- 299 PDF objects out of 1000 (max. 8388607)
+ 363 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
