@@ -14,14 +14,12 @@ Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'wiz_functions' (item size: 4) to 9000 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Database file #1: NotesReferences.bib
-Warning--entry type for "d3js" isn't style-file defined
---line 159 of file NotesReferences.bib
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
 You've used 11 entries,
             6951 wiz_defined-function locations,
             1332 strings with 12438 characters,
-and the built_in function-call counts, 20612 in all, are:
-= -- 2583
+and the built_in function-call counts, 20336 in all, are:
+= -- 2509
 > -- 176
 < -- 944
 + -- 971
@@ -33,29 +31,28 @@ call.type$ -- 11
 change.case$ -- 188
 chr.to.int$ -- 0
 cite$ -- 22
-duplicate$ -- 527
+duplicate$ -- 526
 empty$ -- 819
 format.name$ -- 282
-if$ -- 3960
+if$ -- 3886
 int.to.chr$ -- 0
 int.to.str$ -- 33
 missing$ -- 0
 newline$ -- 275
 num.names$ -- 88
-pop$ -- 344
+pop$ -- 393
 preamble$ -- 1
 purify$ -- 44
 quote$ -- 0
-skip$ -- 1416
+skip$ -- 1312
 stack$ -- 0
 substring$ -- 1056
 swap$ -- 314
 text.length$ -- 30
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 1016
+type$ -- 944
 warning$ -- 0
 while$ -- 97
 width$ -- 0
 write$ -- 340
-(There was 1 warning)
