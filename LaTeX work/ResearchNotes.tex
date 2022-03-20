@@ -71,7 +71,7 @@ This paper is from 2021 and therefore far more relevant than the others. It also
 problematics of RFs.
 
 \subsection{Points to note}
-\begin{description}
+\begin{description}[font=$\bullet$~\normalfont]
     \item[Model interpretability:]The main problem statement is the lack of interpretability of models and their
             decisions despite being accurate. A 99\% accuracy does not convince anyone, if there is no
             explanation for the decision.
@@ -107,11 +107,22 @@ interesting. The code is on github and a forked version would be an option. Howe
 since last year April. I could consider contacting the authors if I pursue any further ideas along their approach.
 
 \section{BaobabView}
-%NEXT ONE:
-\cite{van2011baobabview}
+This \cite{van2011baobabview} is a paper about the visualization of decision trees with the focus on giving domain
+experts the ability to bring in their specific knowledge.
 \subsection{Remarks}
+Since this is mostly about decision trees, it might not be very applicable to RFs. It is also quite old already
+(2011).
 \subsection{Points to note}
+\begin{description}[font=$\bullet$~\normalfont]
+        \item[User requirements]Users of the visualization usually only want 3 different things: EDIT the tree (grow,
+        prune or optimize) USE it (classification) or ANALYSE it (data exploration)
+        \item [Node-Link diagram] Visualization uses a Node-Link diagram
+        \item [Streamgraphs]Figure 4, might be interesting for Node visualization
+        \item [Confusion Matrix]Should be considered to inspect misclassifications
+\end{description}
 \subsection{Summary}
+"Different activities require different visualizations"(in 6, Conclusion) is a simple, but important lesson from
+this paper.
 
 \section{Matrix Visualization}
 %AND THEN THIS:

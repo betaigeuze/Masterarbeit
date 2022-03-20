@@ -14,11 +14,11 @@
 \contentsline {subsection}{\numberline {4.1}Remarks}{5}{}%
 \contentsline {subsection}{\numberline {4.2}Points to note}{5}{}%
 \contentsline {subsection}{\numberline {4.3}Summary}{5}{}%
-\contentsline {section}{\numberline {5}Matrix Visualization}{5}{}%
-\contentsline {subsection}{\numberline {5.1}Remarks}{5}{}%
-\contentsline {subsection}{\numberline {5.2}Points to note}{5}{}%
-\contentsline {subsection}{\numberline {5.3}Summary}{5}{}%
-\contentsline {section}{\numberline {6}iForest}{5}{}%
+\contentsline {section}{\numberline {5}Matrix Visualization}{6}{}%
+\contentsline {subsection}{\numberline {5.1}Remarks}{6}{}%
+\contentsline {subsection}{\numberline {5.2}Points to note}{6}{}%
+\contentsline {subsection}{\numberline {5.3}Summary}{6}{}%
+\contentsline {section}{\numberline {6}iForest}{6}{}%
 \contentsline {subsection}{\numberline {6.1}Remarks}{6}{}%
 \contentsline {subsection}{\numberline {6.2}Points to note}{6}{}%
 \contentsline {subsection}{\numberline {6.3}Summary}{6}{}%
