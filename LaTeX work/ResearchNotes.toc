@@ -28,4 +28,6 @@
 \contentsline {subsection}{\numberline {7.3}Explicit goal}{8}{}%
 \contentsline {subsection}{\numberline {7.4}Honest reflection on the necessity of the initial thesis statement}{8}{}%
 \contentsline {subsection}{\numberline {7.5}Discussion with Aleksandar}{9}{}%
-\contentsline {section}{References}{10}{}%
+\contentsline {section}{\numberline {8}What Next?}{10}{}%
+\contentsline {subsection}{\numberline {8.1}30.03.2022}{10}{}%
+\contentsline {section}{References}{11}{}%
