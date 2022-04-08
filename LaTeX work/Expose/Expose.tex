@@ -1,0 +1,91 @@
+\documentclass[a4paper, 12pt]{article}
+% "couple of pages" about:
+% Give an overview over the field of random forest visualization
+
+% TaxonTree, SpaceTree DoubleTree TreeWiz => examples for scalable tree visualizations
+% Woodburn, makes the argument for Treemaps, icicle charts and sunburst charts being most
+% prevalent
+
+% What has been done:
+% Around that time there were approaches like RAFT by Breimann and ReFINE by the dutch author
+% BaobabView is an example for a tree visualization approach, that is however not scalable
+% iForest and ExMatrix are the best visualizations to date
+
+% What I want to convey:
+% 2 main problems:
+% I think that using tree visualizations is not smart and instead use something more
+% scalable.
+% => Tree visualisations are scalable for LARGE trees, but not for MANY trees
+% These approaches target professionals with a background in data science.
+% If you want to approach true domain experts, the solution has to be MORE ACCESSIBLE
+
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{apacite}
+\usepackage{enumitem}
+
+
+\title{Expose - Explainability Machine Learning - Visualization of Random Forests}
+\author{Fabio Rougier}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\clearpage
+\section{Introduction}
+Random Forests (RF) are a powerful ensemble method with a low barrier of entry. Because of their
+ease of use and performance they are used in many applications. However, they fall short
+when it comes to transparency.
+RFs yield a multitude of valuable insights into their decision making and the data they
+process. Visualizing this is usually a challenge because of the inherent scale that of a RF. 
+In this work we want to look at the approaches trying to overcome this limitation.
+
+\section{Visualizing Decision Trees}
+An obvious approach to visualizing a RF is to inspect the decision trees, constituting the
+RF. One example for the visualization of a decision tree is \textit{BaobabView}
+\cite{van2011baobabview}. As many other approaches visualizing decision trees, it utilizes
+Node-Link Diagrams (NLDs) as its' main visualization. A confusion matrix yields additional
+insights into the relations of the underlying features.
+However this visualization does fall short when trees grow too large, as it becomes hard to
+inspect every individual node and branch of the tree.
+This is one of the problems that \textit{TaxonTree} tries to overcome 
+\cite{parr2003taxontree}. It uses a tree visualization approach that is scalable for large 
+trees by adding the possibility to zoom, browse and search the tree. While this does deal
+help if a tree grows too large, it does not provide any insight on the general structure of
+the tree as a whole.
+\linebreak
+\linebreak
+Generalizing either of the approaches towards RFs is also non trivial. Both simply lack the
+scalability in the desired dimension. It also leads into a dangerous of focusing too much on
+the structure of individual trees. RFs - as all ensemble methods - arrive at their decisions
+by combining the decisions of the individual trees. Inspecting and even understanding
+individual trees, will only yield limited insights over the RF.
+
+\section{Visualizing Random Forests}
+To fully understand the structure and decision making of a RF, many aspects of the RF have to
+be conveyed by the visualization. First of all the typical indicators like a 
+\textit{mean squared error} or a \textit{mean average error} of any machine Learning model
+give an indication of the overall performance. Adiitionaly there are some metrics specific
+to RFs that should be included to get a deeper understanding of the specific instance of the
+RF, like the \textit{mean impurity} of the individual trees or the 
+\textit{out of bag error}. With its' unique way of giving a distance measure for features,
+a confusion matrix can also yield valuable insights to the relations of the features and how
+the RF interprets them. As stated before, the visualization of RFs heavily relies on how it
+overcomes the scalability issues of RFs.
+
+\subsection{RAFT}
+The RAFT visualization is one of the first of its' kind and features all of the
+aforementioned criteria. 
+
+
+\section{Summary}
+\cite{zhao2018iforest}
+
+\clearpage
+\bibliographystyle{apacite}
+\bibliography{ExposeReferences}
+\end{document}
