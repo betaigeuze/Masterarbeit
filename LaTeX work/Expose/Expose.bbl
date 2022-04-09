@@ -1,6 +1,64 @@
 \begin{thebibliography}{}
 
 \bibitem [\protect \citeauthoryear {%
+Ming%
+, Qu%
+\BCBL {}\ \BBA {} Bertini%
+}{%
+Ming%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+ming2018rulematrix}
+\APACinsertmetastar {%
+ming2018rulematrix}%
+\begin{APACrefauthors}%
+Ming, Y.%
+, Qu, H.%
+\BCBL {}\ \BBA {} Bertini, E.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Rulematrix: Visualizing and understanding classifiers
+  with rules} {Rulematrix: Visualizing and understanding classifiers with
+  rules}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE transactions on visualization and computer
+  graphics}{25}{1}{342--352}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Neto%
+\ \BBA {} Paulovich%
+}{%
+Neto%
+\ \BBA {} Paulovich%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+neto2020explainable}
+\APACinsertmetastar {%
+neto2020explainable}%
+\begin{APACrefauthors}%
+Neto, M\BPBI P.%
+\BCBT {}\ \BBA {} Paulovich, F\BPBI V.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Explainable matrix-visualization for global and local
+  interpretability of random forest classification ensembles} {Explainable
+  matrix-visualization for global and local interpretability of random forest
+  classification ensembles}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Visualization and Computer
+  Graphics}{27}{2}{1427--1437}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Parr%
 , Lee%
 , Campbell%

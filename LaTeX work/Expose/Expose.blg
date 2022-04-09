@@ -16,45 +16,45 @@ Reallocating 'singl_function' (item size: 4) to 100 items.
 Database file #1: ExposeReferences.bib
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
 Warning--No address in parr2003taxontree
-You've used 3 entries,
+You've used 5 entries,
             6951 wiz_defined-function locations,
-            1287 strings with 11271 characters,
-and the built_in function-call counts, 6293 in all, are:
-= -- 792
-> -- 65
-< -- 269
-+ -- 297
-- -- 6
-* -- 393
-:= -- 1092
-add.period$ -- 15
-call.type$ -- 3
-change.case$ -- 52
+            1298 strings with 11657 characters,
+and the built_in function-call counts, 10533 in all, are:
+= -- 1310
+> -- 98
+< -- 498
++ -- 536
+- -- 10
+* -- 693
+:= -- 1940
+add.period$ -- 23
+call.type$ -- 5
+change.case$ -- 86
 chr.to.int$ -- 0
-cite$ -- 7
-duplicate$ -- 178
-empty$ -- 243
-format.name$ -- 106
-if$ -- 1215
+cite$ -- 11
+duplicate$ -- 277
+empty$ -- 391
+format.name$ -- 162
+if$ -- 1982
 int.to.chr$ -- 0
-int.to.str$ -- 9
+int.to.str$ -- 15
 missing$ -- 0
-newline$ -- 84
-num.names$ -- 24
-pop$ -- 140
+newline$ -- 135
+num.names$ -- 40
+pop$ -- 190
 preamble$ -- 1
-purify$ -- 12
+purify$ -- 20
 quote$ -- 0
-skip$ -- 390
+skip$ -- 640
 stack$ -- 0
-substring$ -- 332
-swap$ -- 103
-text.length$ -- 12
+substring$ -- 588
+swap$ -- 168
+text.length$ -- 16
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 304
+type$ -- 464
 warning$ -- 1
-while$ -- 36
+while$ -- 55
 width$ -- 0
-write$ -- 111
+write$ -- 177
 (There was 1 warning)
