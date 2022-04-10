@@ -1,25 +1,4 @@
 \documentclass[a4paper, 12pt]{article}
-% "couple of pages" about:
-% Give an overview over the field of random forest visualization
-
-% TaxonTree, SpaceTree DoubleTree TreeWiz => examples for scalable tree visualizations
-% Woodburn, makes the argument for Treemaps, icicle charts and sunburst charts being most
-% prevalent
-
-% What has been done:
-% Around that time there were approaches like RAFT by Breimann and ReFINE by the dutch author
-% BaobabView is an example for a tree visualization approach, that is however not scalable
-% iForest and ExMatrix are the best visualizations to date
-
-% What I want to convey:
-% 2 main problems:
-% I think that using tree visualizations is not smart and instead use something more
-% scalable.
-% => Tree visualisations are scalable for LARGE trees, but not for MANY trees
-% These approaches target professionals with a background in data science.
-% If you want to approach true domain experts, the solution has to be MORE ACCESSIBLE
-
-
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{apacite}
@@ -45,8 +24,8 @@ process. Visualizing this is usually a challenge because of the inherent scale t
 In this work we want to look at the approaches trying to overcome this limitation.
 
 \section{Visualizing Decision Trees}
-An obvious approach to visualizing a RF is to inspect the decision trees, constituting the
-RF. One example for the visualization of a decision tree is \textit{BaobabView}
+An obvious approach to visualizing a RF is inspecting the decision trees that constitute
+the RF. One example for the visualization of a decision tree is \textit{BaobabView}
 \cite{van2011baobabview}. As many other approaches visualizing decision trees, it utilizes
 Node-Link Diagrams (NLDs) as its' main visualization. A confusion matrix yields additional
 insights into the relations of the underlying features.
@@ -78,7 +57,18 @@ the RF interprets them. As stated before, the visualization of RFs heavily relie
 overcomes the scalability issues of RFs.
 
 \subsection{ReFine}
-
+This approach is rather old, but still worth mentioning, because it highlights the fact,
+that visualizing RFs has been a challenge for some time now \cite{kuznetsova2014random}.
+In this particular case, the technical implementation is of course rather out-dated, but
+the ideas are still relevant. \textit{ReFine} uses a small multiples view to give the user
+insights from different angles. The main visualization uses icicle plots, as the author
+deems them most suitable due to their efficient use of space. While this does allow to
+show a considerable number of trees in one view, this does not scale well enough for large
+amounts of trees in a RF.
+An important distinction raised by the author is that there are different users for RFs,
+with very different requirements towards a RF visualization. While a machine learning
+expert might be more focused on improving model performance, an analyst or domain expert
+would be more concerned about the insights provided by the models.
 
 \subsection{iForest}
 The \textit{iForest} visualization is one of the most promising visualization approaches for RFs.
@@ -117,14 +107,14 @@ expected to wrap their head around the idea of disassembling a RF into a set of 
 idea is not intuitive for a domain expert who might already have trouble understanding how
 the RF works in the first place.
 
-% Look for RAFT paper in firefox bookmarks
-
 \section{Summary}
 While the main challenge of gaining access to the insights and details of the inner workings
 of a RF might already have been solved they seem to be hidden behind a kind of complexity
 layer. Powerful approaches for RF visualization exist, but there is a need to make them more
-accessible for domain experts. There is a lot of value to be derived from the existing work
-and they will surely be an influence to possible approaches aimed at domain experts.
+accessible for domain experts. Considering not only the audience, but also the intended
+use of the visualization is paramount for the visualization to be useful. There is a lot
+of value to be derived from the existing work and they will surely be an influence to
+possible approaches aimed at domain experts.
 
 \clearpage
 \bibliographystyle{apacite}

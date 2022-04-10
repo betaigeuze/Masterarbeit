@@ -1,6 +1,37 @@
 \begin{thebibliography}{}
 
 \bibitem [\protect \citeauthoryear {%
+Kuznetsova%
+, Westenberg%
+, Buchin%
+, Dinkla%
+\BCBL {}\ \BBA {} van~den Elzen%
+}{%
+Kuznetsova%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+kuznetsova2014random}
+\APACinsertmetastar {%
+kuznetsova2014random}%
+\begin{APACrefauthors}%
+Kuznetsova, N.%
+, Westenberg, M.%
+, Buchin, K.%
+, Dinkla, K.%
+\BCBL {}\ \BBA {} van~den Elzen, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Random Forest Visualization} {Random forest
+  visualization}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Eindhoven University of Technology}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Ming%
 , Qu%
 \BCBL {}\ \BBA {} Bertini%
