@@ -1,11 +1,16 @@
 from dashboard_controller import DashboardController
 from RFmodeller import RFmodeller
 import pandas as pd
-import numpy as np
+import os
 
 
 def main():
-    melbourne_data = pd.read_csv("melb_data.csv")
+    # GET A RELIABLE PATH
+    __location__ = os.path.realpath(
+        os.path.join(os.getcwd(), os.path.dirname(__file__))
+    )
+    reliable_path = os.path.join(__location__, "melb_data.csv")
+    melbourne_data = pd.read_csv(reliable_path)
     melbourne_features = [
         "Rooms",
         "Bathroom",
