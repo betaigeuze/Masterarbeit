@@ -1,4 +1,6 @@
-*.vscode/settings.json
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
 *.fdb_latexmk
 *.aux
 *.log
