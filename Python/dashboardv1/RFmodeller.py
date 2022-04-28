@@ -15,6 +15,8 @@ class RFmodeller:
             self.val_y,
         ) = self.train_model()
 
+
+    # Regression...? Should be a classification problem
     def train_model(self):
         self.data = self.data.dropna(axis=0)
         y = self.data.Price
