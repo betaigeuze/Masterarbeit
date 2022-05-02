@@ -1,3 +1,4 @@
+from pyexpat import features
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -16,36 +17,31 @@ class DashboardController:
 
     def create_base_dashboard(self):
         st.subheader("Input Data")
-        # st.write(self.dataset.head())
 
-    def feature_importance_barchart(
-        self,
-        feature_importances_: pd.DataFrame,
-        scatter_interval: alt.selection_interval,
+    def create_feature_importance_barchart(
+        self, tree_df: pd.DataFrame, filter_interval: alt.selection_interval
     ):
-        importances = list(feature_importances_)
-        # List of tuples with variable and importance
-        feature_importance = [
-            (feature, round(importance, 2))
-            for feature, importance in zip(self.features, importances)
-        ]
-        # Sort the feature importances by most important first
-        # feature_importances = sorted(feature_importances, key=lambda x: x[1], reverse=True)
-        feature_importance_df = pd.DataFrame(
-            sorted(feature_importance, key=lambda x: x[1], reverse=True)
-        )
+        st.write(tree_df)
         chart = (
-            alt.Chart(feature_importance_df)
+            alt.Chart(tree_df)
+            .transform_fold(self.features, as_=["feature", "importance"])
             .mark_bar(opacity=0.3)
-            .encode(x="1:Q", y=alt.Y("0:N", stack=None, sort="-x"))
-        ).transform_filter(scatter_interval)
-        st.altair_chart(chart, use_container_width=True)
+            .encode(
+                x="mean(importance):Q",
+                y=alt.Y("feature:N", stack=None, sort="-x"),
+            )
+            .transform_filter(filter_interval)
+        )
+        return chart
 
     """Scatterplot displaying all estimators of the RF model
     x-Axis: number of leaves
     y-Axis: depth of the tree"""
 
     def create_scatter(self, tree_df: pd.DataFrame):
+        # (reference this: https://altair-viz.github.io/altair-tutorial/notebooks/06-Selections.html)
+        # (reference this: https://altair-viz.github.io/user_guide/selection_intervals.html)
+        # to understand what the interval variable is doing
         interval = alt.selection_interval()
         chart = (
             alt.Chart(tree_df)
@@ -56,23 +52,16 @@ class DashboardController:
             )
             .add_selection(interval)
         )
-        st.altair_chart(chart, use_container_width=True)
-        return interval
 
-    # Deprecated and replaced by create_scatter
-    def create_RF_overview(self):
-        a = range(10)
-        b = range(10)
-        product = itertools.product(a, b)
-        product_df = pd.DataFrame(
-            [x for x in product], columns=["latitude", "longitude"]
-        )
-        chart = (
-            alt.Chart(product_df)
-            .mark_circle(size=60)
-            .encode(
-                x="latitude:N",
-                y="longitude:N",
-            )
-        )
-        st.altair_chart(chart, use_container_width=True)
+        return interval, chart
+
+    """Pass any number of altair charts to this function and they will be displayed.
+    The order in the provided list is the order in which the charts will be displayed"""
+
+    def display_charts(self, *charts):
+        # This logic is necessary in order to make the selection interval work
+        # Meaning: "concatenating" the two charts with "&" is the only way this will work
+        if len(charts) == 1:
+            st.altair_chart(charts[0], use_container_width=True)
+        else:
+            st.altair_chart(alt.vconcat(charts), use_container_width=True)
