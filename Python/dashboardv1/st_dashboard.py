@@ -35,7 +35,7 @@ def main():
 
 # Inspect RF trees and retrieve number of leaves and depth for each tree
 # This could be altered to more interesting metrics in the future
-def get_tree_df_from_model(rfm, features):
+def get_tree_df_from_model(rfm, features) -> pd.DataFrame:
     tree_df = pd.DataFrame(columns=(["n_leaves", "depth"] + features))
     for est in rfm.model.estimators_:
         new_row = {"n_leaves": est.get_n_leaves(), "depth": est.get_depth()}
@@ -48,9 +48,10 @@ def get_tree_df_from_model(rfm, features):
         # Add feature importance to the new row
         new_row.update(dict(feature_importances))
 
-        # TODO:
-        # regarding pandas warning => replace append with concat
-        tree_df = tree_df.append(new_row, ignore_index=True)
+        # replaced append with concat
+        tree_df = pd.concat(
+            [tree_df, pd.DataFrame(new_row, index=[0])], ignore_index=True
+        )
 
     return tree_df
 
