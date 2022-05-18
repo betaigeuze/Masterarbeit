@@ -9,6 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "~/Masterarbeit/Python/dashboardv1/st_dashboard.py",
+            //"program": "~/Masterarbeit/Python/EarlyTests/networkxtest.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }

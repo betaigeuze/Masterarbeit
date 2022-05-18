@@ -51,6 +51,8 @@ class DashboardController:
             .encode(
                 x=alt.X("n_leaves", scale=alt.Scale(zero=False)),
                 y=alt.Y("depth", scale=alt.Scale(zero=False)),
+                # once we have the cluster label in the tree_df, we can use it here
+                # color=alt.Color("cluster:N", legend=None),
             )
             .add_selection(interval)
         )
