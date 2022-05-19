@@ -38,6 +38,9 @@ class RFmodeller:
         return forest_model, train_X, val_X, train_y, val_y
 
     def create_dot_trees(self) -> list[nx.DiGraph]:
+        # TODO:
+        # This is also really slow still. Maybe I can find a more efficient way
+        # of converting the trees from into dot format and then into a DG.
         directed_graphs = []
         for estimator in self.model.estimators_:
             tree.export_graphviz(estimator, out_file="tree.dot")
