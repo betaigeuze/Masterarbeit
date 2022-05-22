@@ -1,9 +1,10 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import tree
-from sklearn.cluster import DBSCAN, KMeans, AgglomerativeClustering
-from scipy.spatial.distance import pdist
+from sklearn.cluster import AgglomerativeClustering
 from collections import deque
+from timeit import default_timer as timer
+from datetime import timedelta
 import multiprocessing as mp
 import pandas as pd
 import networkx as nx
@@ -33,7 +34,7 @@ class RFmodeller:
             X, y, random_state=0, test_size=0.25
         )
         forest_model = RandomForestRegressor(
-            n_estimators=50, random_state=1, max_depth=4, n_jobs=-1
+            n_estimators=30, random_state=1, max_depth=4, n_jobs=-1
         )
         forest_model.fit(train_X, train_y)
         return forest_model, train_X, val_X, train_y, val_y
@@ -53,9 +54,37 @@ class RFmodeller:
     def calculate_tree_clusters(self):
         # TODO:
         # 1. Combine the cluster labels with the trees, so that the rfm object has
-        # that information.
+        # that information. Do the same for the created trees. Each tree should be
+        # assigned linked to the respective entry in the tree_df.
         # 2. Find a more efficient way to do this. It scales very poorly with tree
-        # depth. Check if it also scales as bad with the number of trees.
+        # depth.
+
+        # Run the calc_dist_matrix method in parallel.
+        # I used this idea:
+        # https://stackoverflow.com/a/56038389/12355337
+        # Every process gets a slice of the list of graphs.
+        # sklearn's pdist won't work because it needs numeric value inputs.
+        start = timer()
+        with mp.Pool() as pool:
+            distance_matrix = np.array(
+                pool.map(self.calc_dist_matrix_parallel, self.directed_graphs)
+            )
+
+        # calculate clusters
+        clustering = AgglomerativeClustering(
+            affinity="precomputed", linkage="average"
+        ).fit(distance_matrix)
+        stop = timer()
+        print(
+            f"Time spent in calculcate_tree_clusters: {timedelta(seconds=stop-start)}"
+        )
+        return clustering
+
+    def calc_dist_matrix_parallel(self, directed_graph: nx.DiGraph) -> np.ndarray:
+        # This is still not optimal, because every row and column value is being calculated
+        # It would be possible (and smarter) to calculate half the matrix and then mirror it.
+        # However, this is difficult, because of the calculations happening in parallel.
+        # It would be necessary to use a shared memory array to store the results.
 
         # Problem here is:
         # The unoptimized distance calculation performs very poorly.
@@ -65,51 +94,13 @@ class RFmodeller:
         # => the lowest GED (graph edit distance)
         # We also can not use the scipy distance matrix method because it needs
         # vector inputs, but we only have 2 graph objects.
-
-        # Run the calc_dist_matrix method in parallel.
-        # I used this idea:
-        # https://stackoverflow.com/a/56038389/12355337
-        # Every process gets a slice of the list of graphs.
-        with mp.Pool() as pool:
-            distance_matrix = np.array(
-                pool.map(self.calc_dist_matrix_parallel, self.directed_graphs)
-            )
-
-        # OUTDATED, Only here for reference
-        # Unparallelized:
-        # distance_matrix = self.calc_dist_matrix(self.directed_graphs)
-
-        # calculate clusters
-        clustering = AgglomerativeClustering(
-            affinity="precomputed", linkage="average"
-        ).fit(distance_matrix)
-        return clustering
-
-    def calc_dist_matrix_parallel(self, directed_graph: nx.DiGraph) -> np.ndarray:
-        # This is still not optimal, because every row and column value is being calculated
-        # It would be possible (and smarter) to calculate half the matrix and then mirror it.
-        # However, this is difficult, because of the calculations happening in parallel.
         dist_matrix = np.zeros(len(self.directed_graphs))
         for i, graph1 in enumerate(self.directed_graphs):
             if graph1 != directed_graph:
                 result_generator = nx.optimize_edit_paths(
-                    graph1, directed_graph, timeout=1
+                    graph1, directed_graph, timeout=0.5
                 )
                 dist_matrix[i] = deque(result_generator, maxlen=1).pop()[2]
             else:
                 dist_matrix[i] = 0
-        return dist_matrix
-
-    # OUTDATED, only here for reference
-    def calc_dist_matrix(self, directed_graphs: list[nx.DiGraph]) -> np.ndarray:
-        dist_matrix = np.empty([len(directed_graphs)] * 2, nx.DiGraph)
-        for i, graph1 in enumerate(directed_graphs):
-            for j, graph2 in enumerate(directed_graphs):
-                if graph1 != graph2:
-                    dist_matrix[i, j] = deque(
-                        nx.optimize_graph_edit_distance(graph1, graph2),
-                        maxlen=1,
-                    ).pop()
-                else:
-                    dist_matrix[i, j] = 0
         return dist_matrix

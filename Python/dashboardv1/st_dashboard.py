@@ -58,5 +58,8 @@ def get_tree_df_from_model(rfm, features) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    mp.set_start_method("spawn")
+    try:
+        mp.set_start_method("spawn")
+    except RuntimeError:
+        pass
     main()
