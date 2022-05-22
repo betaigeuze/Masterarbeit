@@ -2,6 +2,7 @@ from dashboard_controller import DashboardController
 from RFmodeller import RFmodeller
 import pandas as pd
 import os
+import multiprocessing as mp
 
 
 def main():
@@ -57,4 +58,5 @@ def get_tree_df_from_model(rfm, features) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    mp.set_start_method("spawn")
     main()
