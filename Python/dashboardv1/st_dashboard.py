@@ -1,31 +1,26 @@
 from dashboard_controller import DashboardController
 from RFmodeller import RFmodeller
 import pandas as pd
-import os
+from sklearn.datasets import load_iris
 import multiprocessing as mp
 
 
 def main():
-    # GET A RELIABLE PATH
-    __location__ = os.path.realpath(
-        os.path.join(os.getcwd(), os.path.dirname(__file__))
+    iris = load_iris()
+    data = pd.DataFrame(
+        {
+            "sepal length": iris.data[:, 0],
+            "sepal width": iris.data[:, 1],
+            "petal length": iris.data[:, 2],
+            "petal width": iris.data[:, 3],
+            "species": iris.target,
+        }
     )
-    reliable_path = os.path.join(__location__, "melb_data.csv")
-    melbourne_data = pd.read_csv(reliable_path)
-    melbourne_features = [
-        "Rooms",
-        "Bathroom",
-        "Landsize",
-        "Propertycount",
-        "BuildingArea",
-        "YearBuilt",
-        "Lattitude",
-        "Longtitude",
-    ]
-    rfm = RFmodeller(melbourne_data, melbourne_features)
-    dc = DashboardController(melbourne_data, melbourne_features)
+    features = ["sepal length", "sepal width", "petal length", "petal width"]
+    rfm = RFmodeller(data, features, ["species"])
+    dc = DashboardController(data, features)
     dc.create_base_dashboard()
-    tree_df = get_tree_df_from_model(rfm, melbourne_features)
+    tree_df = get_tree_df_from_model(rfm, features)
 
     # create scatter returns the filtered altair selection interval object
     # in addition to the chart itself

@@ -1,8 +1,7 @@
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.cluster import AgglomerativeClustering
-from collections import deque
 from timeit import default_timer as timer
 from datetime import timedelta
 import multiprocessing as mp
@@ -12,37 +11,36 @@ import numpy as np
 
 
 class RFmodeller:
-    def __init__(self, data: pd.DataFrame, feature_list: list = None):
+    def __init__(
+        self, data: pd.DataFrame, feature_list: list[str], label_list: list[str]
+    ):
         self.data = data
         self.features = feature_list
+        self.labels = label_list
         (
             self.model,
-            self.train_X,
-            self.val_X,
-            self.train_y,
-            self.val_y,
+            self.X_train,
+            self.X_test,
+            self.y_train,
+            self.y_test,
         ) = self.train_model()
         self.directed_graphs = self.create_dot_trees()
         self.clustering = self.calculate_tree_clusters()
 
-    # Regression...? Should be a classification problem
     def train_model(self):
-        self.data = self.data.dropna(axis=0)
-        y = self.data.Price
         X = self.data[self.features]
-        train_X, val_X, train_y, val_y = train_test_split(
-            X, y, random_state=0, test_size=0.25
+        y = self.data[self.labels]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+        forest_model = RandomForestClassifier(
+            n_estimators=100, max_depth=6, random_state=0, n_jobs=-1
         )
-        forest_model = RandomForestRegressor(
-            n_estimators=30, random_state=1, max_depth=4, n_jobs=-1
-        )
-        forest_model.fit(train_X, train_y)
-        return forest_model, train_X, val_X, train_y, val_y
+        forest_model.fit(X_train, y_train)
+        return forest_model, X_train, X_test, y_train, y_test
 
     def create_dot_trees(self) -> list[nx.DiGraph]:
         # TODO:
         # This is also really slow still. Maybe I can find a more efficient way
-        # of converting the trees from into dot format and then into a DG.
+        # of converting the trees from sklearn objects into dot format and then into a DG.
         directed_graphs = []
         for estimator in self.model.estimators_:
             tree.export_graphviz(estimator, out_file="tree.dot")
@@ -56,8 +54,6 @@ class RFmodeller:
         # 1. Combine the cluster labels with the trees, so that the rfm object has
         # that information. Do the same for the created trees. Each tree should be
         # assigned linked to the respective entry in the tree_df.
-        # 2. Find a more efficient way to do this. It scales very poorly with tree
-        # depth.
 
         # Run the calc_dist_matrix method in parallel.
         # I used this idea:
@@ -85,22 +81,24 @@ class RFmodeller:
         # It would be possible (and smarter) to calculate half the matrix and then mirror it.
         # However, this is difficult, because of the calculations happening in parallel.
         # It would be necessary to use a shared memory array to store the results.
-
-        # Problem here is:
-        # The unoptimized distance calculation performs very poorly.
-        # We therefore choose the optimized version, which returns an iterator.
-        # This is what makes the deque part necessary. The deque + .pop() returns
-        # the last element of the iterator, which is the lowest value.
-        # => the lowest GED (graph edit distance)
-        # We also can not use the scipy distance matrix method because it needs
-        # vector inputs, but we only have 2 graph objects.
-        dist_matrix = np.zeros(len(self.directed_graphs))
+        row_distances = np.zeros(len(self.directed_graphs))
         for i, graph1 in enumerate(self.directed_graphs):
             if graph1 != directed_graph:
-                result_generator = nx.optimize_edit_paths(
-                    graph1, directed_graph, timeout=0.5
+                # Get this out of the loop and create a dict maybe?
+                # No need to compute this on every loop iteration.
+                root1 = self.get_root(graph1)
+                root2 = self.get_root(directed_graph)
+                row_distances[i] = nx.graph_edit_distance(
+                    graph1, directed_graph, timeout=0.01, roots=(root1, root2)
                 )
-                dist_matrix[i] = deque(result_generator, maxlen=1).pop()[2]
             else:
-                dist_matrix[i] = 0
-        return dist_matrix
+                row_distances[i] = 0
+        # Remove possible nans, resulting from timeouts (or so I assume).
+        # We currently use an arbitrary measure of twice the maximum distance.
+        # This is fine for now, but should be adjusted to something more reasonable.
+        max = np.nanmax(row_distances, axis=0)
+        row_distances[np.isnan(row_distances)] = max * 2
+        return row_distances
+
+    def get_root(self, graph: nx.DiGraph) -> str:
+        return [n for n, d in graph.in_degree() if d == 0][0]

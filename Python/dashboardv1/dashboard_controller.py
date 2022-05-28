@@ -1,4 +1,3 @@
-from pyexpat import features
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -6,7 +5,7 @@ from typing import Tuple
 
 
 class DashboardController:
-    def __init__(self, dataset: pd.DataFrame, features: list):
+    def __init__(self, dataset: pd.DataFrame, features: list[str]):
         self.dashboard_sidebar = st.sidebar.empty()
         self.dashboard_sidebar.title("Sidebar")
         self.dashboard_sidebar.markdown("# Sidebar")
