@@ -27,6 +27,8 @@ class RFmodeller:
         self.directed_graphs = self.create_dot_trees()
         self.clustering = self.calculate_tree_clusters()
 
+    """Standard Iris RF classification model"""
+
     def train_model(self):
         X = self.data[self.features]
         y = self.data[self.labels]
