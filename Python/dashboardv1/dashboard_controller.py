@@ -15,7 +15,7 @@ class DashboardController:
         self.features = features
 
     def create_base_dashboard(self):
-        st.subheader("Input Data")
+        st.subheader("Tree Data with Feature Importances")
 
     def create_feature_importance_barchart(
         self, tree_df: pd.DataFrame, filter_interval: alt.selection_interval
@@ -50,13 +50,27 @@ class DashboardController:
             .encode(
                 x=alt.X("n_leaves", scale=alt.Scale(zero=False)),
                 y=alt.Y("depth", scale=alt.Scale(zero=False)),
-                # once we have the cluster label in the tree_df, we can use it here
-                # color=alt.Color("cluster:N", legend=None),
+                color=alt.Color("cluster:N"),
             )
             .add_selection(interval)
         )
 
         return interval, chart
+
+    def create_heatmap(self, tree_df: pd.DataFrame) -> alt.Chart:
+        # Alternative to the scatterplot
+        # still experimental
+        # for some reason no data displayed
+        chart = (
+            alt.Chart(tree_df)
+            .mark_rect()
+            .encode(
+                x=alt.X("F1:Q", scale=alt.Scale(zero=False)),
+                y=alt.Y("accuracy:Q", scale=alt.Scale(zero=False)),
+                color=alt.Color("cluster:N", scale=alt.Scale(scheme="redblue")),
+            )
+        )
+        return chart
 
     """Pass any number of altair charts to this function and they will be displayed.
     The order in the provided list is the order in which the charts will be displayed
@@ -73,3 +87,4 @@ class DashboardController:
             # using "charts" instead of charts[0] & charts[1] didn't work for some reason
             # If this scales up for more charts, I need a better solution
             st.altair_chart(charts[0] & charts[1], use_container_width=True)
+            st.altair_chart(charts[2], use_container_width=True)

@@ -1,7 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 from timeit import default_timer as timer
 from datetime import timedelta
 import multiprocessing as mp
@@ -25,7 +25,7 @@ class RFmodeller:
             self.y_test,
         ) = self.train_model()
         self.directed_graphs = self.create_dot_trees()
-        self.clustering = self.calculate_tree_clusters()
+        (self.clustering, self.cluster_df) = self.calculate_tree_clusters()
 
     """Standard Iris RF classification model"""
 
@@ -33,8 +33,9 @@ class RFmodeller:
         X = self.data[self.features]
         y = self.data[self.labels]
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+        # 100 estimators and depth of 6 works fine with around 15 secs of processing time.
         forest_model = RandomForestClassifier(
-            n_estimators=100, max_depth=6, random_state=0, n_jobs=-1
+            n_estimators=50, max_depth=5, random_state=0, oob_score=True, n_jobs=-1
         )
         forest_model.fit(X_train, y_train)
         return forest_model, X_train, X_test, y_train, y_test
@@ -52,11 +53,6 @@ class RFmodeller:
         return directed_graphs
 
     def calculate_tree_clusters(self):
-        # TODO:
-        # 1. Combine the cluster labels with the trees, so that the rfm object has
-        # that information. Do the same for the created trees. Each tree should be
-        # assigned linked to the respective entry in the tree_df.
-
         # Run the calc_dist_matrix method in parallel.
         # I used this idea:
         # https://stackoverflow.com/a/56038389/12355337
@@ -68,15 +64,22 @@ class RFmodeller:
                 pool.map(self.calc_dist_matrix_parallel, self.directed_graphs)
             )
 
-        # calculate clusters
-        clustering = AgglomerativeClustering(
-            affinity="precomputed", linkage="average"
-        ).fit(distance_matrix)
+        # Cluster the graphs.
+        clustering = DBSCAN(eps=0.5, min_samples=3, metric="precomputed").fit(
+            distance_matrix
+        )
+        # Create a dataframe with the cluster labels.
+        cluster_df = pd.DataFrame(
+            {
+                "cluster": clustering.labels_,
+                "tree": list(range(len(self.directed_graphs))),
+            }
+        )
         stop = timer()
         print(
             f"Time spent in calculcate_tree_clusters: {timedelta(seconds=stop-start)}"
         )
-        return clustering
+        return clustering, cluster_df
 
     def calc_dist_matrix_parallel(self, directed_graph: nx.DiGraph) -> np.ndarray:
         # This is still not optimal, because every row and column value is being calculated
