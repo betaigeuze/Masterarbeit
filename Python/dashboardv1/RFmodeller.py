@@ -1,3 +1,4 @@
+from dis import dis
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
@@ -61,8 +62,27 @@ class RFmodeller:
         start = timer()
         with mp.Pool() as pool:
             distance_matrix = np.array(
-                pool.map(self.calc_dist_matrix_parallel, self.directed_graphs)
+                pool.map(self.calc_dist_matrix_parallel2, self.directed_graphs),
+                dtype=np.float64,
             )
+
+        # TODO:
+        # Validate, that the new distance calculation is correct.
+        # The idea is:
+        # 1. Calculate each line of the matrix
+        # 2. Leave out each lines' leading indices up until the current element.
+        # 3. Set the current element's distance to 0.
+        # 4. Do this for each element (and therefore for each line).
+        # 5. Pool them together and copy the upper right triangle to the lower left.
+        # Most likely error here could result from the way the lines are being
+        # concatenated together from the pool. Maybe sorting before copying is an option.
+        print(distance_matrix)
+        # https://stackoverflow.com/questions/16444930/copy-upper-triangle-to-lower-triangle-in-a-python-matrix
+        distance_matrix = (
+            distance_matrix + distance_matrix.T - np.diag(np.diag(distance_matrix))
+        )
+        print(distance_matrix)
+        distance_matrix = self.remove_possible_nans(distance_matrix)
 
         # Cluster the graphs.
         clustering = DBSCAN(eps=0.5, min_samples=3, metric="precomputed").fit(
@@ -81,6 +101,11 @@ class RFmodeller:
         )
         return clustering, cluster_df
 
+    """One directed graph will be sent to this method per process.
+    We calculate the distances per row.
+    Each row is then collected by the multiprocessing pool, which results in the
+    distance matrix."""
+
     def calc_dist_matrix_parallel(self, directed_graph: nx.DiGraph) -> np.ndarray:
         # This is still not optimal, because every row and column value is being calculated
         # It would be possible (and smarter) to calculate half the matrix and then mirror it.
@@ -98,12 +123,41 @@ class RFmodeller:
                 )
             else:
                 row_distances[i] = 0
-        # Remove possible nans, resulting from timeouts (or so I assume).
+
+        return row_distances
+
+    """One directed graph will be sent to this method per process.
+    We calculate the distances per row.
+    Each row is then collected by the multiprocessing pool, which results in the
+    distance matrix."""
+
+    def calc_dist_matrix_parallel2(self, directed_graph: nx.DiGraph) -> np.ndarray:
+        # This is the smart version of the above method.
+        # TODO: Verify, that this is working as intended.
+        row_distances = np.zeros(len(self.directed_graphs))
+        dg_index = self.directed_graphs.index(directed_graph)
+        for i, graph1 in enumerate(self.directed_graphs[dg_index:]):
+            if i == 0:
+                row_distances[i] = 0
+            else:
+                # Get this out of the loop and create a dict maybe?
+                # No need to compute this on every loop iteration.
+                root1 = self.get_root(graph1)
+                root2 = self.get_root(directed_graph)
+                row_distances[i] = nx.graph_edit_distance(
+                    graph1, directed_graph, timeout=0.01, roots=(root1, root2)
+                )
+
+        return row_distances
+
+    def remove_possible_nans(self, distance_matrix: np.ndarray) -> np.ndarray:
+        # Remove possible nans, resulting from timeouts in the nx.graph_edit_distance
+        # (or so I assume).
         # We currently use an arbitrary measure of twice the maximum distance.
         # This is fine for now, but should be adjusted to something more reasonable.
-        max = np.nanmax(row_distances, axis=0)
-        row_distances[np.isnan(row_distances)] = max * 2
-        return row_distances
+        double_max = np.nanmax(distance_matrix) * 2
+        distance_matrix = np.nan_to_num(distance_matrix, nan=double_max)
+        return distance_matrix
 
     def get_root(self, graph: nx.DiGraph) -> str:
         return [n for n, d in graph.in_degree() if d == 0][0]
