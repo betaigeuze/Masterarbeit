@@ -14,11 +14,16 @@ import warnings
 
 class RFmodeller:
     def __init__(
-        self, data: pd.DataFrame, feature_list: list[str], label_list: list[str]
+        self,
+        data: pd.DataFrame,
+        feature_list: list[str],
+        label_list: list[str],
+        target_names: list[str],
     ):
         self.data = data
         self.features = feature_list
         self.labels = label_list
+        self.target_names = target_names
         (
             self.model,
             self.X_train,

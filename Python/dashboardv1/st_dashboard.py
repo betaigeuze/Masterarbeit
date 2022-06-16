@@ -1,9 +1,11 @@
+from cProfile import label
 from dashboard_controller import DashboardController
 from RFmodeller import RFmodeller
 import pandas as pd
+import numpy as np
 from sklearn.datasets import load_iris
 import multiprocessing as mp
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import classification_report
 
 
 def main():
@@ -20,7 +22,7 @@ def main():
     )
     features = ["sepal length", "sepal width", "petal length", "petal width"]
     # Create RF model
-    rfm = RFmodeller(data, features, ["species"])
+    rfm = RFmodeller(data, features, ["species"], iris.target_names)
     # Create dashboard controller
     dc = DashboardController(data, features)
     dc.create_base_dashboard()
@@ -52,15 +54,25 @@ def get_tree_df_from_model(rfm, features) -> pd.DataFrame:
         # Add feature importance per feature to the new row
         new_row.update(dict(feature_importances))
 
-        # Calculate estimator ROC AUC score
-        new_row["Accuracy"] = round(
-            accuracy_score(rfm.y_test, est.predict(rfm.X_test)), 2
-        )
+        y_predicted = est.predict(rfm.X_test)
 
-        # Calculate estimator F1 score
-        new_row["F1"] = round(
-            f1_score(rfm.y_test, est.predict(rfm.X_test), average="weighted"), 2
+        labels = np.unique(rfm.y_test)
+
+        classific_report = classification_report(
+            rfm.y_test,
+            y_predicted,
+            output_dict=True,
+            labels=labels,
+            target_names=rfm.target_names,
+            digits=4,
         )
+        # Add each feature's classification report dictionary values to the new row
+        for metric, value in classific_report.items():
+            if isinstance(value, dict):
+                for label, value in value.items():
+                    new_row[f"{metric}_{label}"] = value
+            else:
+                new_row[f"{metric}"] = value
 
         tree_df = pd.concat(
             [tree_df, pd.DataFrame(new_row, index=[0])], ignore_index=True

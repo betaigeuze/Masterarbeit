@@ -48,8 +48,8 @@ class DashboardController:
             alt.Chart(tree_df)
             .mark_point()
             .encode(
-                x=alt.X("n_leaves", scale=alt.Scale(zero=False)),
-                y=alt.Y("depth", scale=alt.Scale(zero=False)),
+                x=alt.X("virginica_f1-score", scale=alt.Scale(zero=False)),
+                y=alt.Y("versicolor_f1-score", scale=alt.Scale(zero=False)),
                 color=alt.Color("cluster:N"),
             )
             .add_selection(interval)
