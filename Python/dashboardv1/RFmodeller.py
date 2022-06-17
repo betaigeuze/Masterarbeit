@@ -72,7 +72,13 @@ class RFmodeller:
         return directed_graphs
 
     def calculate_tsne_embedding(self):
-        tsne = TSNE(n_components=2, perplexity=30, n_iter=300, metric="precomputed")
+        tsne = TSNE(
+            n_components=2,
+            perplexity=30,
+            n_iter=300,
+            random_state=123,
+            metric="precomputed",
+        )
         tsne_embedding = tsne.fit_transform(self.distance_matrix)
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
         return tsne_embedding, tsne_df
