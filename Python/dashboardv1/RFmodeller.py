@@ -2,6 +2,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.cluster import DBSCAN
+from sklearn.manifold import TSNE
 from timeit import default_timer as timer
 from datetime import timedelta
 from collections import ChainMap
@@ -32,7 +33,12 @@ class RFmodeller:
             self.y_test,
         ) = self.train_model()
         self.directed_graphs = self.create_dot_trees()
-        (self.clustering, self.cluster_df) = self.calculate_tree_clusters()
+        self.distance_matrix = self.compute_distance_matrix()
+        (
+            self.clustering,
+            self.cluster_df,
+        ) = self.calculate_tree_clusters()
+        (self.tsne_embedding, self.tsne_df) = self.calculate_tsne_embedding()
 
     """Standard Iris RF classification model"""
 
@@ -65,42 +71,15 @@ class RFmodeller:
             directed_graphs.append(DG)
         return directed_graphs
 
+    def calculate_tsne_embedding(self):
+        tsne = TSNE(n_components=2, perplexity=30, n_iter=300, metric="precomputed")
+        tsne_embedding = tsne.fit_transform(self.distance_matrix)
+        tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
+        return tsne_embedding, tsne_df
+
     def calculate_tree_clusters(self):
-        # I used this idea: https://stackoverflow.com/a/56038389/12355337
-        # Every process gets a slice of the list of graphs.
-        # sklearn's pdist won't work because it needs numeric value inputs.
-        start = timer()
-        with mp.Pool() as pool:
-            distance_matrix_rows = pool.map(
-                self.calc_dist_matrix_parallel, self.directed_graphs
-            )
-
-        # Transform list of dicts into a single dict.
-        distance_matrix_dict = dict(ChainMap(*distance_matrix_rows))
-
-        # Assemble distance matrix based on line indices
-        distance_matrix = np.zeros(
-            (len(self.directed_graphs), len(self.directed_graphs))
-        )
-
-        # Transform the dict into a numpy array matrix
-        for i in range(len(distance_matrix_dict)):
-            distance_matrix[i] = distance_matrix_dict.get(i)
-
-        # https://stackoverflow.com/questions/16444930/copy-upper-triangle-to-lower-triangle-in-a-python-matrix
-        distance_matrix = (
-            distance_matrix + distance_matrix.T - np.diag(np.diag(distance_matrix))
-        )
-
-        distance_matrix = remove_possible_nans(distance_matrix)
-
-        if not self.dist_matr_shape_ok(distance_matrix):
-            raise ValueError(
-                "RFModeller: Error after calculating distance matrix. Distance matrix shape is not correct."
-            )
-
         clustering = DBSCAN(eps=0.5, min_samples=3, metric="precomputed").fit(
-            distance_matrix
+            self.distance_matrix
         )
 
         cluster_df = pd.DataFrame(
@@ -109,11 +88,44 @@ class RFmodeller:
                 "tree": list(range(len(self.directed_graphs))),
             }
         )
+        return clustering, cluster_df
+
+    """Calculate the pairwise distance matrix for the directed graphs
+    We use graph edit distance as the distance metric."""
+
+    def compute_distance_matrix(self):
+        start = timer()
+        # I used this idea: https://stackoverflow.com/a/56038389/12355337
+        # Every process gets a slice of the list of graphs.
+        # sklearn's pdist won't work because it needs numeric value inputs.
+        with mp.Pool() as pool:
+            distance_matrix_rows = pool.map(
+                self.calc_dist_matrix_parallel, self.directed_graphs
+            )
+        # Transform list of dicts into a single dict.
+        distance_matrix_dict = dict(ChainMap(*distance_matrix_rows))
+        # Assemble distance matrix based on line indices
+        distance_matrix = np.zeros(
+            (len(self.directed_graphs), len(self.directed_graphs))
+        )
+        # Transform the dict into a numpy array matrix
+        for i in range(len(distance_matrix_dict)):
+            distance_matrix[i] = distance_matrix_dict.get(i)
+        # https://stackoverflow.com/questions/16444930/copy-upper-triangle-to-lower-triangle-in-a-python-matrix
+        distance_matrix = (
+            distance_matrix + distance_matrix.T - np.diag(np.diag(distance_matrix))
+        )
+        distance_matrix = remove_possible_nans(distance_matrix)
+        if not self.dist_matr_shape_ok(distance_matrix):
+            raise ValueError(
+                "RFModeller: Error after calculating distance matrix. Distance matrix shape is not correct."
+            )
         stop = timer()
         print(
-            f"Time spent in calculcate_tree_clusters: {timedelta(seconds=stop-start)}"
+            f"Time spent in calculcate_distance_matrix: {timedelta(seconds=stop-start)}"
         )
-        return clustering, cluster_df
+
+        return distance_matrix
 
     """One directed graph will be sent to this method per process.
     We calculate the distances per row.
