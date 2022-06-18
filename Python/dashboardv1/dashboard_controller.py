@@ -18,7 +18,7 @@ class DashboardController:
 
     def create_base_dashboard(self, tree_df: pd.DataFrame):
         self.dashboard.subheader("Tree Data with Feature Importances")
-        self.dashboard.write(tree_df)
+        # self.dashboard.write(tree_df)
 
     def create_feature_importance_barchart(self, tree_df: pd.DataFrame) -> alt.Chart:
         chart = (
@@ -71,13 +71,16 @@ class DashboardController:
         # This is not optimal, but apparently there is no way in altair (and not even in)
         # Vega-Lite to sort by 2 attributes at the same time...
         # Let's just hope, we dont need any sorting after this point
-        tree_df.sort_values(by=["Silhouette Score", "cluster"], inplace=True)
+        # Note the sort=None, because altair would otherwise overwrite the pandas sort
+        tree_df.sort_values(
+            by=["cluster", "Silhouette Score"], ascending=False, inplace=True
+        )
         chart = (
             alt.Chart(tree_df)
             .mark_bar()
             .encode(
                 x=alt.X("Silhouette Score:Q"),
-                y=alt.Y("tree:N", sort="-x", axis=alt.Axis(labels=False, ticks=False)),
+                y=alt.Y("tree:N", sort=None, axis=alt.Axis(labels=False, ticks=False)),
                 color=alt.Color("cluster:N", scale=self.scale_color),
             )
             .properties(width=200, height=300)
