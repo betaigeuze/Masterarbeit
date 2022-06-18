@@ -1,4 +1,5 @@
-from sklearn.metrics import silhouette_samples
+from random import sample
+from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
@@ -83,7 +84,7 @@ class RFmodeller:
             random_state=123,
             metric="precomputed",
             init="random",
-            verbose=1,
+            verbose=0,
         )
         tsne_embedding = tsne.fit_transform(self.distance_matrix)
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
@@ -91,7 +92,12 @@ class RFmodeller:
 
     def calculate_tree_clusters(self):
         clustering = DBSCAN(
-            eps=0.3, min_samples=5, metric="precomputed", n_jobs=-1
+            eps=10,
+            min_samples=3,
+            metric="precomputed",
+            n_jobs=-1,
+            algorithm="brute",
+            p=3,
         ).fit(self.distance_matrix)
 
         cluster_df = pd.DataFrame(
@@ -170,6 +176,13 @@ class RFmodeller:
         )
 
     def calculate_silhouette_scores_df(self):
+        cluster_silhouette_score = silhouette_score(
+            X=self.distance_matrix,
+            labels=self.cluster_df["cluster"],
+            metric="precomputed",
+            sample_size=None,
+        )
+        print(f"Silhouette score: {cluster_silhouette_score}")
         return pd.DataFrame(
             silhouette_samples(
                 X=self.distance_matrix,
