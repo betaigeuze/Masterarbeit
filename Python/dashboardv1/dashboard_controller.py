@@ -1,3 +1,4 @@
+from sklearn import tree
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -67,16 +68,21 @@ class DashboardController:
         return chart
 
     def create_silhouette_plot(self, tree_df: pd.DataFrame) -> alt.Chart:
+        # This is not optimal, but apparently there is no way in altair (and not even in)
+        # Vega-Lite to sort by 2 attributes at the same time...
+        # Let's just hope, we dont need any sorting after this point
+        tree_df.sort_values(by=["Silhouette Score", "cluster"], inplace=True)
         chart = (
             alt.Chart(tree_df)
-            .mark_area()
+            .mark_bar()
             .encode(
-                x=alt.X("tree:N", sort="-y", axis=alt.Axis(labels=False, ticks=False)),
-                y=alt.Y("Silhouette Score:Q"),
+                x=alt.X("Silhouette Score:Q"),
+                y=alt.Y("tree:N", sort="-x", axis=alt.Axis(labels=False, ticks=False)),
                 color=alt.Color("cluster:N", scale=self.scale_color),
             )
-            .properties(width=600, height=300)
+            .properties(width=200, height=300)
         )
+
         return chart
 
     """Pass any number of altair charts to this function and they will be displayed.
