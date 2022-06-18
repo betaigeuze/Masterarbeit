@@ -24,19 +24,17 @@ def main():
     rfm = RFmodeller(data, features, ["species"], iris.target_names)
     # Create dashboard controller
     dc = DashboardController(data, features)
-    dc.create_base_dashboard()
     # Create tree dataframe
     tree_df = get_tree_df_from_model(rfm, features)
-    tree_df = add_clusters_to_tree_df(rfm, features)
+    tree_df = add_cluster_information_to_tree_df(rfm, features)
 
-    # create_scatter() returns the filtered altair selection interval object
-    # in addition to the chart itself
     scatter_chart = dc.basic_scatter(tree_df)
-    # Create a scatter plot showing the tsne embedding of the rfm
     tsne_chart = dc.create_tsne_scatter(tree_df)
+    silhouette_plot = dc.create_silhouette_plot(tree_df)
     bar_chart = dc.create_feature_importance_barchart(tree_df)
 
-    dc.display_charts(scatter_chart, tsne_chart, bar_chart)
+    dc.create_base_dashboard(tree_df=tree_df)
+    dc.display_charts(scatter_chart, tsne_chart, silhouette_plot, bar_chart)
 
 
 # Inspect RF trees and retrieve number of leaves and depth for each tree
@@ -82,10 +80,11 @@ def add_classification_report_metrics_to_row(rfm, est, new_row):
 
 
 # Add the cluster information to the tree dataframey
-def add_clusters_to_tree_df(rfm, features) -> pd.DataFrame:
+def add_cluster_information_to_tree_df(rfm, features) -> pd.DataFrame:
     tree_df = get_tree_df_from_model(rfm, features)
     tree_df = pd.concat([tree_df, rfm.cluster_df], axis=1)
     tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
+    tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
     return tree_df
 
 

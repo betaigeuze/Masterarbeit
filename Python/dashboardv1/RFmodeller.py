@@ -1,3 +1,4 @@
+from sklearn.metrics import silhouette_samples
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
@@ -39,6 +40,7 @@ class RFmodeller:
             self.cluster_df,
         ) = self.calculate_tree_clusters()
         (self.tsne_embedding, self.tsne_df) = self.calculate_tsne_embedding()
+        self.silhouette_scores_df = self.calculate_silhouette_scores_df()
 
     """Standard Iris RF classification model"""
 
@@ -48,11 +50,11 @@ class RFmodeller:
         # Have to run this with the .values on X and y, to avoid passing the series with
         # field names etc.
         X_train, X_test, y_train, y_test = train_test_split(
-            X.values, y.values, test_size=0.3
+            X.values, y.values, test_size=0.3, random_state=123
         )
         # 100 estimators and depth of 6 works fine with around 15 secs of processing time.
         forest_model = RandomForestClassifier(
-            n_estimators=100, max_depth=10, random_state=0, oob_score=True, n_jobs=-1
+            n_estimators=100, max_depth=10, random_state=123, oob_score=True, n_jobs=-1
         )
         forest_model.fit(X_train, y_train.ravel())
         return forest_model, X_train, X_test, y_train, y_test
@@ -74,19 +76,23 @@ class RFmodeller:
     def calculate_tsne_embedding(self):
         tsne = TSNE(
             n_components=2,
-            perplexity=30,
-            n_iter=300,
+            perplexity=5,
+            early_exaggeration=4,
+            learning_rate=100,
+            n_iter=1000,
             random_state=123,
             metric="precomputed",
+            init="random",
+            verbose=1,
         )
         tsne_embedding = tsne.fit_transform(self.distance_matrix)
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
         return tsne_embedding, tsne_df
 
     def calculate_tree_clusters(self):
-        clustering = DBSCAN(eps=0.5, min_samples=3, metric="precomputed").fit(
-            self.distance_matrix
-        )
+        clustering = DBSCAN(
+            eps=0.3, min_samples=5, metric="precomputed", n_jobs=-1
+        ).fit(self.distance_matrix)
 
         cluster_df = pd.DataFrame(
             {
@@ -163,6 +169,16 @@ class RFmodeller:
             len(self.directed_graphs),
         )
 
+    def calculate_silhouette_scores_df(self):
+        return pd.DataFrame(
+            silhouette_samples(
+                X=self.distance_matrix,
+                labels=self.cluster_df["cluster"].values,
+                metric="precomputed",
+            ),
+            columns=["Silhouette Score"],
+        )
+
 
 """Remove possible nans, resulting from timeouts in the nx.graph_edit_distance
 (or so I assume)."""
@@ -171,9 +187,10 @@ class RFmodeller:
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:
     # We currently use an arbitrary measure of twice the maximum distance.
     # This is fine for now, but should be adjusted to something more reasonable.
-    if np.count_nonzero(~np.isnan(distance_matrix)) > distance_matrix.shape[0]:
+    nan_count = np.count_nonzero(np.isnan(distance_matrix))
+    if nan_count > distance_matrix.shape[0]:
         warnings.warn(
-            "Warning: Many NaNs in distance matrix. Consider adjusting timeout parameter in nx.graph_edit_distance."
+            f"{nan_count} NaNs in distance matrix. Consider adjusting timeout parameter in nx.graph_edit_distance."
         )
     double_max = np.nanmax(distance_matrix) * 2
     distance_matrix = np.nan_to_num(distance_matrix, nan=double_max)
