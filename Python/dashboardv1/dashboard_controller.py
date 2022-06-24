@@ -33,11 +33,12 @@ class DashboardController:
         )
         return chart
 
-    """Scatterplot displaying all estimators of the RF model
-    x-Axis: number of leaves
-    y-Axis: depth of the tree"""
-
     def basic_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
+        """
+        Scatterplot displaying all estimators of the RF model
+        x-Axis: number of leaves
+        y-Axis: depth of the tree
+        """
         # (reference this: https://altair-viz.github.io/altair-tutorial/notebooks/06-Selections.html)
         # (reference this: https://altair-viz.github.io/user_guide/selection_intervals.html)
         # to understand what the interval variable is doing
@@ -88,12 +89,13 @@ class DashboardController:
 
         return chart
 
-    """Pass any number of altair charts to this function and they will be displayed.
-    The order in the provided list is the order in which the charts will be displayed
-    on the page. Concatenated charts will be able to be affected by the selection in the
-    scatterplot."""
-
     def display_charts(self, *charts: list[alt.Chart]):
+        """
+        Pass any number of altair charts to this function and they will be displayed.
+        The order in the provided list is the order in which the charts will be displayed
+        on the page. Concatenated charts will be able to be affected by the selection in the
+        scatterplot.
+        """
         if len(charts) == 1:
             self.dashboard.altair_chart(charts[0], use_container_width=True)
         else:
