@@ -1,4 +1,3 @@
-from random import sample
 from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -71,7 +70,8 @@ class RFmodeller:
         Transform the sklearn estimators of Tree class to nxDiGraphs
         """
         # TODO:
-        # This is also really slow still. Maybe I can find a more efficient way
+        # Not a priority!
+        # This is slow (0.13 secswith 100 trees). Maybe I can find a more efficient way
         # of converting the trees from sklearn objects into dot format and then into a DG.
         directed_graphs = []
         for estimator in self.model.estimators_:
@@ -162,7 +162,6 @@ class RFmodeller:
         distance matrix.
         """
         # This is the smart version of the above method.
-        # TODO: Verify, that this is working as intended.
         row_distances = np.zeros(len(self.directed_graphs))
         dg_index = self.directed_graphs.index(directed_graph)
         for i, graph1 in enumerate(self.directed_graphs[dg_index:]):

@@ -28,13 +28,13 @@ def main():
     tree_df = get_tree_df_from_model(rfm, features)
     tree_df = add_cluster_information_to_tree_df(rfm, features)
 
-    scatter_chart = dc.basic_scatter(tree_df)
+    # scatter_chart = dc.basic_scatter(tree_df)
     tsne_chart = dc.create_tsne_scatter(tree_df)
-    silhouette_plot = dc.create_silhouette_plot(tree_df)
     bar_chart = dc.create_feature_importance_barchart(tree_df)
+    cluster_comparison_chart = dc.create_cluster_comparison_bar_plt(tree_df)
 
     dc.create_base_dashboard(tree_df=tree_df)
-    dc.display_charts(scatter_chart, tsne_chart, silhouette_plot, bar_chart)
+    dc.display_charts(cluster_comparison_chart, tsne_chart, bar_chart)
 
 
 # Inspect RF trees and retrieve number of leaves and depth for each tree
