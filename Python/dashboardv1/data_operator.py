@@ -33,10 +33,10 @@ class DataOperator:
         return tree_df
 
     def add_classification_report_metrics_to_row(self, rfm, est, new_row):
-        y_predicted = est.predict(rfm.X_test)
-        labels = np.unique(rfm.y_test)
+        y_predicted = est.predict(rfm.X_train)
+        labels = np.unique(rfm.y_train)
         classific_report = classification_report(
-            rfm.y_test,
+            rfm.y_train,
             y_predicted,
             output_dict=True,
             labels=labels,
