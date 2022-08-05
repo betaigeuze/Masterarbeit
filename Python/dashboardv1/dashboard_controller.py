@@ -1,4 +1,6 @@
+from cProfile import label
 from mimetypes import init
+from numpy import spacing
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -87,13 +89,24 @@ class DashboardController:
             alt.Chart(tree_df)
             .mark_bar()
             .encode(
-                x=alt.X("Silhouette Score:Q"),
-                y=alt.Y("tree:N", sort=None, axis=alt.Axis(labels=False, ticks=False)),
+                x=alt.X(
+                    "tree:N",
+                    sort=None,
+                    axis=alt.Axis(labels=False, ticks=False),
+                ),
+                y=alt.Y("Silhouette Score:Q"),
                 color=alt.Color("cluster:N", scale=self.scale_color),
-                tooltip="cluster:N",
+                tooltip="Silhouette Score:Q",
             )
-            .properties(width=200, height=300)
+            .facet(
+                column=alt.Row("cluster:N", sort="descending", title="Cluster"),
+                spacing=0.4,
+            )
+            .resolve_scale(x="independent")
         )
+        # Not pretty at all, but autosizing does not work with faceted charts (yet)
+        # see: https://github.com/vega/vega-lite/pull/6672
+        chart.spec.width = 20
 
         return chart
 
