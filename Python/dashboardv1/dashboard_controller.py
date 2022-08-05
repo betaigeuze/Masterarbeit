@@ -1,6 +1,12 @@
+from mimetypes import init
 import streamlit as st
 import pandas as pd
 import altair as alt
+
+# TODO:
+# color scheme
+# more in depth analysis of clusters
+# more in depth analysis of trees?
 
 
 class DashboardController:
@@ -92,6 +98,10 @@ class DashboardController:
         return chart
 
     def create_cluster_comparison_bar_plt(self, tree_df: pd.DataFrame) -> alt.Chart:
+        # Likely the prefered way to do this
+        # However, combining it with the dropdown from below would be really cool
+        # It seems I can only do one of each in one chart:
+        # Either dropdown OR aggragation and repeat
         chart = (
             alt.Chart(tree_df)
             .mark_bar()
@@ -116,8 +126,38 @@ class DashboardController:
         )
         return chart
 
-    # Example for selection based encodings:
-    # https://github.com/altair-viz/altair/issues/1617
+    def create_cluster_comparison_bar_plt_2(self, tree_df: pd.DataFrame) -> alt.Chart:
+        # Example for selection based encodings:
+        # https://github.com/altair-viz/altair/issues/1617
+        # Problem here:
+        # Can't get sorting to work
+        # Also, not really sure what kind of aggregation is used for calculating the cluster scores
+        # Trying to specify the method made me reach the library limits
+
+        columns = [
+            "virginica_f1-score",
+            "versicolor_f1-score",
+            "setosa_f1-score",
+        ]
+        select_box = alt.binding_select(options=columns, name="column")
+        sel = alt.selection_single(
+            fields=["column"],
+            bind=select_box,
+            init={"column": "virginica_f1-score"},
+        )
+        chart = (
+            alt.Chart(tree_df)
+            .transform_fold(columns, as_=["column", "value"])
+            .transform_filter(sel)
+            .mark_bar()
+            .encode(
+                x=alt.X("cluster:N", sort="-y"),
+                y=alt.Y("value:Q"),
+                color=alt.Color("cluster:N", scale=self.scale_color),
+            )
+            .add_selection(sel)
+        )
+        return chart
 
     def display_charts(self, *charts: list[alt.Chart]):
         """
@@ -130,3 +170,8 @@ class DashboardController:
             self.dashboard.altair_chart(charts[0], use_container_width=True)
         else:
             self.dashboard.altair_chart(alt.vconcat(*charts), use_container_width=True)
+
+        # Problems might arise from this:
+        # Selection over multiple charts requires me to concatenate them - or so I think
+        # However, if I concatenate the charts, interactive selections like the dropdown
+        # will appear at the bottom of the page instead of next to the relevant chart
