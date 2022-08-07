@@ -5,11 +5,6 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-# TODO:
-# color scheme
-# more in depth analysis of clusters
-# more in depth analysis of trees?
-
 
 class DashboardController:
     def __init__(self, dataset: pd.DataFrame, features: list[str]):
@@ -65,7 +60,7 @@ class DashboardController:
     def create_tsne_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
         tsne_chart = (
             alt.Chart(tree_df)
-            .mark_point()
+            .mark_circle()
             .encode(
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
                 y=alt.Y("Component 2:Q", scale=alt.Scale(zero=False)),
@@ -169,6 +164,20 @@ class DashboardController:
                 color=alt.Color("cluster:N", scale=self.scale_color),
             )
             .add_selection(sel)
+        )
+        return chart
+
+    def create_basic_rank_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
+        chart = (
+            alt.Chart(tree_df)
+            .mark_circle(size=20)
+            .encode(
+                x=alt.X("weighted_avg_f1_rank"),
+                y=alt.Y("accuracy_rank"),
+                color=alt.Color("cluster:N"),
+                tooltip="cluster:N",
+            )
+            .add_selection(self.filter_interval)
         )
         return chart
 

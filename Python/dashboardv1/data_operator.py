@@ -5,11 +5,14 @@ from RFmodeller import RFmodeller
 
 
 class DataOperator:
+    """Handling everything related to preparing the dataframe for the visualization."""
+
     def __init__(self, rfm: RFmodeller, features: list[str]):
         self.rfm = rfm
         self.features = features
         self.tree_df = self.get_tree_df_from_model(rfm, features)
         self.tree_df = self.add_cluster_information_to_tree_df(rfm, features)
+        self.tree_df = self.add_ranks_to_tree_df(self.tree_df)
 
     # Inspect RF trees and retrieve number of leaves and depth for each tree
     # This could be altered to more interesting metrics in the future
@@ -51,10 +54,18 @@ class DataOperator:
             else:
                 new_row[f"{metric}"] = value
 
-    # Add the cluster information to the tree dataframey
     def add_cluster_information_to_tree_df(self, rfm, features) -> pd.DataFrame:
         tree_df = self.get_tree_df_from_model(rfm, features)
         tree_df = pd.concat([tree_df, rfm.cluster_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
+        return tree_df
+
+    def add_ranks_to_tree_df(self, tree_df):
+        tree_df["weighted_avg_f1_rank"] = tree_df["weighted avg_f1-score"].rank(
+            ascending=False, method="first"
+        )
+        tree_df["accuracy_rank"] = tree_df["accuracy"].rank(
+            ascending=False, method="first"
+        )
         return tree_df

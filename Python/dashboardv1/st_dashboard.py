@@ -31,10 +31,15 @@ def main():
     bar_chart = dc.create_feature_importance_barchart(tree_df)
     cluster_comparison_chart = dc.create_cluster_comparison_bar_plt(tree_df)
     cluster_comparison_chart2 = dc.create_cluster_comparison_bar_plt_2(tree_df)
+    rank_scatter = dc.create_basic_rank_scatter(tree_df)
 
     dc.create_base_dashboard(tree_df=tree_df)
     dc.display_charts(
-        cluster_comparison_chart, cluster_comparison_chart2, tsne_chart, bar_chart
+        cluster_comparison_chart,
+        rank_scatter,
+        cluster_comparison_chart2,
+        tsne_chart,
+        bar_chart,
     )
 
 
