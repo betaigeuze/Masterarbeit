@@ -15,8 +15,13 @@ class DashboardController:
         self.dashboard.header("RaFoView")
         self.dataset = dataset
         self.features = features
-        self.filter_interval = alt.selection_interval()
+        self.brush = alt.selection_interval()
         self.scale_color = alt.Scale(scheme="redblue")
+        self.color = alt.condition(
+            self.brush,
+            alt.Color("Silhouette Score:Q", scale=self.scale_color),
+            alt.value("lightgray"),
+        )
 
     def create_base_dashboard(self, tree_df: pd.DataFrame):
         self.dashboard.subheader("Tree Data with Feature Importances")
@@ -31,7 +36,7 @@ class DashboardController:
                 x=alt.X("mean(importance):Q"),
                 y=alt.Y("feature:N", stack=None, sort="-x"),
             )
-            .transform_filter(self.filter_interval)
+            .transform_filter(self.brush)
         )
         return chart
 
@@ -52,7 +57,7 @@ class DashboardController:
                 y=alt.Y("versicolor_f1-score:Q", scale=alt.Scale(zero=False)),
                 color=alt.Color("cluster:N"),
             )
-            .add_selection(self.filter_interval)
+            .add_selection(self.brush)
         )
 
         return chart
@@ -64,10 +69,10 @@ class DashboardController:
             .encode(
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
                 y=alt.Y("Component 2:Q", scale=alt.Scale(zero=False)),
-                color=alt.Color("cluster:N", scale=self.scale_color),
+                color=self.color,
                 tooltip="cluster:N",
             )
-            .add_selection(self.filter_interval)
+            .add_selection(self.brush)
         )
         silhoutte_chart = self.create_silhouette_plot(tree_df)
         return alt.hconcat(tsne_chart, silhoutte_chart)
@@ -90,7 +95,7 @@ class DashboardController:
                     axis=alt.Axis(labels=False, ticks=False),
                 ),
                 y=alt.Y("Silhouette Score:Q"),
-                color=alt.Color("cluster:N", scale=self.scale_color),
+                color=self.color,
                 tooltip="Silhouette Score:Q",
             )
             .facet(
@@ -119,16 +124,16 @@ class DashboardController:
                 color=alt.Color("cluster:N", scale=self.scale_color),
             )
             .transform_aggregate(
-                average_virginica_f1_score="average(virginica_f1-score)",
-                average_versicolor_f1_score="average(versicolor_f1-score)",
-                average_setosa_f1_score="average(setosa_f1-score)",
+                mean_virginica_f1_score="mean(virginica_f1-score)",
+                mean_versicolor_f1_score="mean(versicolor_f1-score)",
+                mean_setosa_f1_score="mean(setosa_f1-score)",
                 groupby=["cluster"],
             )
             .repeat(
                 column=[
-                    "average_virginica_f1_score",
-                    "average_versicolor_f1_score",
-                    "average_setosa_f1_score",
+                    "mean_virginica_f1_score",
+                    "mean_versicolor_f1_score",
+                    "mean_setosa_f1_score",
                 ]
             )
         )
@@ -174,10 +179,10 @@ class DashboardController:
             .encode(
                 x=alt.X("weighted_avg_f1_rank"),
                 y=alt.Y("accuracy_rank"),
-                color=alt.Color("cluster:N"),
+                color=self.color,
                 tooltip="cluster:N",
             )
-            .add_selection(self.filter_interval)
+            .add_selection(self.brush)
         )
         return chart
 
