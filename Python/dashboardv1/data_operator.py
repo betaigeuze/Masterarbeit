@@ -2,10 +2,11 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import classification_report
 from RFmodeller import RFmodeller
+from sklearn.tree import DecisionTreeClassifier
 
 
 class DataOperator:
-    """Handling everything related to preparing the dataframe for the visualization."""
+    """Handling everything related to preparing the {tree_df} dataframe for visualization."""
 
     def __init__(self, rfm: RFmodeller, features: list[str]):
         self.rfm = rfm
@@ -13,10 +14,13 @@ class DataOperator:
         self.tree_df = self.get_tree_df_from_model(rfm, features)
         self.tree_df = self.add_cluster_information_to_tree_df(rfm, features)
         self.tree_df = self.add_ranks_to_tree_df(self.tree_df)
+        self.tree_df = self.add_grid_coordinates_to_tree_df(self.tree_df)
 
     # Inspect RF trees and retrieve number of leaves and depth for each tree
     # This could be altered to more interesting metrics in the future
-    def get_tree_df_from_model(self, rfm, features) -> pd.DataFrame:
+    def get_tree_df_from_model(
+        self, rfm: RFmodeller, features: list[str]
+    ) -> pd.DataFrame:
         tree_df = pd.DataFrame(columns=(["n_leaves", "depth"] + features))
         for est in rfm.model.estimators_:
             new_row = {"n_leaves": est.get_n_leaves(), "depth": est.get_depth()}
@@ -35,7 +39,9 @@ class DataOperator:
 
         return tree_df
 
-    def add_classification_report_metrics_to_row(self, rfm, est, new_row):
+    def add_classification_report_metrics_to_row(
+        self, rfm: RFmodeller, est: list[DecisionTreeClassifier], new_row: dict
+    ) -> None:
         y_predicted = est.predict(rfm.X_train)
         labels = np.unique(rfm.y_train)
         classific_report = classification_report(
@@ -54,18 +60,32 @@ class DataOperator:
             else:
                 new_row[f"{metric}"] = value
 
-    def add_cluster_information_to_tree_df(self, rfm, features) -> pd.DataFrame:
+    def add_cluster_information_to_tree_df(
+        self, rfm: RFmodeller, features: list[str]
+    ) -> pd.DataFrame:
         tree_df = self.get_tree_df_from_model(rfm, features)
         tree_df = pd.concat([tree_df, rfm.cluster_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
         return tree_df
 
-    def add_ranks_to_tree_df(self, tree_df):
+    def add_ranks_to_tree_df(self, tree_df: pd.DataFrame) -> pd.DataFrame:
+        """Arbitrary measure to rank the trees by their rank of classifying a specific class.
+        EXSPERIMENTAL"""
         tree_df["weighted_avg_f1_rank"] = tree_df["weighted avg_f1-score"].rank(
             ascending=False, method="first"
         )
         tree_df["accuracy_rank"] = tree_df["accuracy"].rank(
             ascending=False, method="first"
+        )
+        return tree_df
+
+    def add_grid_coordinates_to_tree_df(self, tree_df: pd.DataFrame) -> pd.DataFrame:
+        """Assigns each tree a grid coordinate based on their tree id.
+        The coordinate has no deeper meaning and serves only to visualize the trees in a grid."""
+        tree_df["grid_x"] = tree_df["tree"].apply(lambda x: str(x)[-1:])
+        # assign grid y to the 10^1 position of the tree number
+        tree_df["grid_y"] = tree_df["tree"].apply(
+            lambda x: int(str(x)[:1] if x > 9 else 0)
         )
         return tree_df

@@ -56,7 +56,7 @@ class RFmodeller:
         )
         # 100 estimators and depth of 6 works fine with around 15 secs of processing time.
         forest_model = RandomForestClassifier(
-            n_estimators=100,
+            n_estimators=50,
             max_depth=10,
             random_state=123,
             oob_score=True,
