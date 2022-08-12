@@ -12,6 +12,7 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 import warnings
+import streamlit as st
 
 
 class RFmodeller:
@@ -21,6 +22,7 @@ class RFmodeller:
         feature_list: list[str],
         label_list: list[str],
         target_names: list[str],
+        n_estimators: int = 100,
     ):
         self.data = data
         self.features = feature_list
@@ -32,7 +34,7 @@ class RFmodeller:
             self.X_test,
             self.y_train,
             self.y_test,
-        ) = self.train_model()
+        ) = self.train_model(n_estimators)
         self.directed_graphs = self.create_dot_trees()
         self.distance_matrix = self.compute_distance_matrix()
         (
@@ -42,7 +44,7 @@ class RFmodeller:
         (self.tsne_embedding, self.tsne_df) = self.calculate_tsne_embedding()
         self.silhouette_scores_df = self.calculate_silhouette_scores_df()
 
-    def train_model(self):
+    def train_model(self, n_estimators=100):
         """
         Standard Iris RF classification model
         """
@@ -56,7 +58,7 @@ class RFmodeller:
         )
         # 100 estimators and depth of 6 works fine with around 15 secs of processing time.
         forest_model = RandomForestClassifier(
-            n_estimators=50,
+            n_estimators=n_estimators,
             max_depth=10,
             random_state=123,
             oob_score=True,
@@ -116,11 +118,13 @@ class RFmodeller:
         )
         return clustering, cluster_df
 
+    @st.cache(suppress_st_warning=True)
     def compute_distance_matrix(self):
         """
         Calculate the pairwise distance matrix for the directed graphs
         We use graph edit distance as the distance metric.
         """
+        st.spinner()
         start = timer()
         # I used this idea: https://stackoverflow.com/a/56038389/12355337
         # Every process gets a slice of the list of graphs.

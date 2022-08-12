@@ -20,7 +20,7 @@ def main():
     )
     features = ["sepal length", "sepal width", "petal length", "petal width"]
     # Create RF model
-    rfm = RFmodeller(data, features, ["species"], iris.target_names)
+    rfm = RFmodeller(data, features, ["species"], iris.target_names, n_estimators=100)
     # Create dashboard controller
     dc = DashboardController(data, features)
     # Create tree dataframe
@@ -32,14 +32,11 @@ def main():
     cluster_comparison_chart = dc.create_cluster_comparison_bar_plt(tree_df)
     # cluster_comparison_chart2 = dc.create_cluster_comparison_bar_plt_dropdown(tree_df)
     # rank_scatter = dc.create_basic_rank_scatter(tree_df)
+    modal = dc.test_modal()
 
-    dc.create_base_dashboard(tree_df=tree_df)
-    dc.display_charts(
-        scatter_chart,
-        cluster_comparison_chart,
-        tsne_chart,
-        bar_chart,
-    )
+    dc.create_base_dashboard(tree_df, show_df=False)
+    dc.display_charts(scatter_chart, cluster_comparison_chart, tsne_chart, bar_chart)
+    dc.test_modal()
 
 
 if __name__ == "__main__":

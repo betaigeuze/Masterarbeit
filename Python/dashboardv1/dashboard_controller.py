@@ -1,4 +1,6 @@
+from textwrap import fill
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import altair as alt
 
@@ -31,20 +33,31 @@ class DashboardController:
         self.scale_color = alt.Scale(range=self.range_)
         self.color = alt.condition(
             self.brush,
-            alt.Color("Silhouette Score:Q", scale=self.scale_color),
-            alt.value("black"),
+            alt.Color(
+                "Silhouette Score:Q",
+                scale=self.scale_color,
+                legend=alt.Legend(
+                    orient="none",
+                    legendX=210,
+                    legendY=-40,
+                    direction="vertical",
+                    titleAnchor="middle",
+                    title="Silhouette Score",
+                ),
+            ),
+            alt.value("lightblue"),
         )
 
-    def create_base_dashboard(self, tree_df: pd.DataFrame):
+    def create_base_dashboard(self, tree_df: pd.DataFrame, show_df: bool = False):
         self.dashboard.subheader("Tree Data with Feature Importances")
-        self.dashboard.write(tree_df)
+        if show_df:
+            self.dashboard.write(tree_df)
 
     def create_feature_importance_barchart(self, tree_df: pd.DataFrame) -> alt.Chart:
-        # TODO: COLOR
         chart = (
             alt.Chart(tree_df)
             .transform_fold(self.features, as_=["feature", "importance"])
-            .mark_bar()
+            .mark_bar(fill="#4E1E1E")
             .encode(
                 x=alt.X("mean(importance):Q"),
                 y=alt.Y("feature:N", stack=None, sort="-x"),
@@ -57,14 +70,13 @@ class DashboardController:
         """
         Scatterplot displaying all estimators of the RF model
         """
-        # TODO: COLOR
         chart = (
             alt.Chart(tree_df)
-            .mark_point()
+            .mark_circle(stroke="#4E1E1E", strokeWidth=1)
             .encode(
                 x=alt.X("grid_x:N", scale=alt.Scale(zero=False)),
                 y=alt.Y("grid_y:N", scale=alt.Scale(zero=False)),
-                # color=alt.Color(),
+                color=self.color,
             )
             .add_selection(self.brush)
         )
@@ -73,7 +85,7 @@ class DashboardController:
     def create_tsne_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
         tsne_chart = (
             alt.Chart(tree_df)
-            .mark_circle()
+            .mark_circle(stroke="#4E1E1E", strokeWidth=1)
             .encode(
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
                 y=alt.Y("Component 2:Q", scale=alt.Scale(zero=False)),
@@ -100,7 +112,7 @@ class DashboardController:
                 x=alt.X(
                     "tree:N",
                     sort=None,
-                    axis=alt.Axis(labels=False, ticks=False),
+                    axis=alt.Axis(labels=False, ticks=False, title=None),
                 ),
                 y=alt.Y("Silhouette Score:Q"),
                 color=self.color,
@@ -129,12 +141,13 @@ class DashboardController:
             .encode(
                 x=alt.X("cluster:N", sort="-y"),
                 y=alt.Y(alt.repeat("column"), type="quantitative"),
-                color=alt.Color("cluster:N", scale=self.scale_color),
+                color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
             )
             .transform_aggregate(
                 mean_virginica_f1_score="mean(virginica_f1-score)",
                 mean_versicolor_f1_score="mean(versicolor_f1-score)",
                 mean_setosa_f1_score="mean(setosa_f1-score)",
+                mean_silhouette_score="mean(Silhouette Score)",
                 groupby=["cluster"],
             )
             .repeat(
@@ -214,3 +227,6 @@ class DashboardController:
         # Selection over multiple charts requires me to concatenate them - or so I think
         # However, if I concatenate the charts, interactive selections like the dropdown
         # will appear at the bottom of the page instead of next to the relevant chart
+
+    def test_modal(self):
+        pass
