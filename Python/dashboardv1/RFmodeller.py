@@ -46,9 +46,13 @@ class RFmodeller:
 
     def train_model(self, n_estimators=100):
         """
-        Standard Iris RF classification model
+        Standard RF classification model
         """
-
+        # TODO: Add support for categorical feature input as in the mushroom dataset
+        # I could do this by checking for the session state
+        # However it is probably best to instead add a field in the DataLoader class
+        # to indicate whether and which categorical features are present.
+        # That way it would work on any dataset, which is configured correctly.
         X = self.data[self.features]
         y = self.data[self.target]
         # Have to run this with the .values on X and y, to avoid passing the series with

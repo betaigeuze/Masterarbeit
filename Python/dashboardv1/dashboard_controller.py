@@ -1,6 +1,4 @@
-from textwrap import fill
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import altair as alt
 
@@ -8,10 +6,10 @@ import altair as alt
 class DashboardController:
     """Creates all of the visualizations"""
 
+    # TODO: Think of a way to add explanation/tutorial part
+
     def __init__(self, dataset: pd.DataFrame, features: list[str]):
-        self.dashboard_sidebar = st.sidebar.empty()
-        self.dashboard_sidebar.title("Sidebar")
-        self.dashboard_sidebar.markdown("# Sidebar")
+        self.dashboard_sidebar = self.create_sidebar()
         self.dashboard = st.container()
         self.dashboard.header("RaFoView")
         self.dataset = dataset
@@ -46,6 +44,26 @@ class DashboardController:
                 ),
             ),
             alt.value("lightblue"),
+        )
+
+    def create_sidebar(self):
+        def _change_data_key(key: str):
+            st.session_state["dataset"] = key
+
+        self.dashboard_sidebar = st.sidebar
+        self.dashboard_sidebar.title("Sidebar")
+        self.data_form = self.dashboard_sidebar.form(
+            "Data Selection", clear_on_submit=True
+        )
+        self.data_form.markdown("## Dataset selection")
+        # TODO: Make this dropdown dependent on the dataloader dataset map for robustness
+        data_choice = self.data_form.selectbox(
+            "Choose a dataset:", ["Iris", "Mushrooms", "My Dataset"]
+        )
+        self.data_form.form_submit_button(
+            "Run",
+            help="On 'run' the selected dataset will be loaded into the dashboard",
+            on_click=_change_data_key(data_choice),
         )
 
     def create_base_dashboard(self, tree_df: pd.DataFrame, show_df: bool = False):
