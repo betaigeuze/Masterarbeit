@@ -5,7 +5,7 @@ from RFmodeller import RFmodeller
 from sklearn.tree import DecisionTreeClassifier
 
 
-class DataOperator:
+class DataframeOperator:
     """Handling everything related to preparing the {tree_df} dataframe for visualization."""
 
     def __init__(self, rfm: RFmodeller, features: list[str]):

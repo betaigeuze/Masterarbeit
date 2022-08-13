@@ -20,13 +20,13 @@ class RFmodeller:
         self,
         data: pd.DataFrame,
         feature_list: list[str],
-        label_list: list[str],
+        target: list[str],
         target_names: list[str],
         n_estimators: int = 100,
     ):
         self.data = data
         self.features = feature_list
-        self.labels = label_list
+        self.target = target
         self.target_names = target_names
         (
             self.model,
@@ -50,7 +50,7 @@ class RFmodeller:
         """
 
         X = self.data[self.features]
-        y = self.data[self.labels]
+        y = self.data[self.target]
         # Have to run this with the .values on X and y, to avoid passing the series with
         # field names etc.
         X_train, X_test, y_train, y_test = train_test_split(
