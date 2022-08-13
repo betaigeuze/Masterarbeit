@@ -3,29 +3,20 @@ from RFmodeller import RFmodeller
 import pandas as pd
 from sklearn.datasets import load_iris
 import multiprocessing as mp
-from data_operator import DataOperator
+from dataframe_operator import DataframeOperator
+from data_loader import DataLoader
 
 
 def main():
-    # Define dataset
-    iris = load_iris()
-    data = pd.DataFrame(
-        {
-            "sepal length": iris.data[:, 0],
-            "sepal width": iris.data[:, 1],
-            "petal length": iris.data[:, 2],
-            "petal width": iris.data[:, 3],
-            "species": iris.target,
-        }
-    )
-    features = ["sepal length", "sepal width", "petal length", "petal width"]
+    # Load dataset
+    dl = DataLoader()
     # Create RF model
-    rfm = RFmodeller(data, features, ["species"], iris.target_names, n_estimators=100)
+    rfm = RFmodeller(dl.data, dl.features, dl.target, dl.target_names, n_estimators=100)
     # Create dashboard controller
-    dc = DashboardController(data, features)
+    dc = DashboardController(dl.data, dl.features)
     # Create tree dataframe
-    data_operator = DataOperator(rfm, features)
-    tree_df = data_operator.tree_df
+    df_operator = DataframeOperator(rfm, dl.features)
+    tree_df = df_operator.tree_df
     scatter_chart = dc.basic_scatter(tree_df)
     tsne_chart = dc.create_tsne_scatter(tree_df)
     bar_chart = dc.create_feature_importance_barchart(tree_df)
