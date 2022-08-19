@@ -7,6 +7,10 @@ class DashboardController:
     """Creates all of the visualizations"""
 
     # TODO: Think of a way to add explanation/tutorial part
+    # Requirements:
+    # - Explanation and accompanying pictures
+    # - Space in the dashboard
+    # - A way to toggle the explanation on and off
 
     def __init__(self, dataset: pd.DataFrame, features: list[str]):
         self.dashboard_sidebar = self.create_sidebar()
@@ -92,8 +96,13 @@ class DashboardController:
             alt.Chart(tree_df)
             .mark_circle(stroke="#4E1E1E", strokeWidth=1)
             .encode(
-                x=alt.X("grid_x:N", scale=alt.Scale(zero=False)),
-                y=alt.Y("grid_y:N", scale=alt.Scale(zero=False)),
+                x=alt.X(
+                    "grid_x:N",
+                    scale=alt.Scale(zero=False),
+                    title=None,
+                    axis=alt.Axis(labelAngle=0),
+                ),
+                y=alt.Y("grid_y:N", scale=alt.Scale(zero=False), title=None),
                 color=self.color,
             )
             .add_selection(self.brush)
@@ -108,7 +117,9 @@ class DashboardController:
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
                 y=alt.Y("Component 2:Q", scale=alt.Scale(zero=False)),
                 color=self.color,
-                tooltip="cluster:N",
+                tooltip=[
+                    alt.Tooltip("cluster:N", title="Cluster"),
+                ],
             )
             .add_selection(self.brush)
         )
@@ -157,15 +168,17 @@ class DashboardController:
             alt.Chart(tree_df)
             .mark_bar()
             .encode(
-                x=alt.X("cluster:N", sort="-y"),
+                x=alt.X("cluster:N", sort="-y", axis=alt.Axis(labelAngle=0)),
                 y=alt.Y(alt.repeat("column"), type="quantitative"),
                 color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
+                tooltip=[alt.Tooltip("count_tree:Q", title="Number of Trees")],
             )
             .transform_aggregate(
                 mean_virginica_f1_score="mean(virginica_f1-score)",
                 mean_versicolor_f1_score="mean(versicolor_f1-score)",
                 mean_setosa_f1_score="mean(setosa_f1-score)",
                 mean_silhouette_score="mean(Silhouette Score)",
+                count_tree="count(tree)",
                 groupby=["cluster"],
             )
             .repeat(
@@ -178,9 +191,7 @@ class DashboardController:
         )
         return chart
 
-    def create_cluster_comparison_bar_plt_dropdown(
-        self, tree_df: pd.DataFrame
-    ) -> alt.Chart:
+    def create_cluster_zoom_in(self, tree_df: pd.DataFrame) -> alt.Chart:
         # Example for selection based encodings:
         # https://github.com/altair-viz/altair/issues/1617
         # Problem here:
@@ -214,27 +225,12 @@ class DashboardController:
         )
         return chart
 
-    def create_basic_rank_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
-        # Omitted for now, adds little value
-        chart = (
-            alt.Chart(tree_df)
-            .mark_circle(size=20)
-            .encode(
-                x=alt.X("weighted_avg_f1_rank"),
-                y=alt.Y("accuracy_rank"),
-                color=self.color,
-                tooltip="cluster:N",
-            )
-            .add_selection(self.brush)
-        )
-        return chart
-
     def display_charts(self, *charts: list[alt.Chart]):
         """
         Pass any number of altair charts to this function and they will be displayed.
         The order in the provided list is the order in which the charts will be displayed
-        on the page. Concatenated charts will be able to be affected by the selection in the
-        scatterplot.
+        on the page. The passed charts will be concatenated. These concatenated charts will
+        be affected by selections in plots.
         """
         if len(charts) == 1:
             self.dashboard.altair_chart(charts[0], use_container_width=True)
@@ -245,6 +241,3 @@ class DashboardController:
         # Selection over multiple charts requires me to concatenate them - or so I think
         # However, if I concatenate the charts, interactive selections like the dropdown
         # will appear at the bottom of the page instead of next to the relevant chart
-
-    def test_modal(self):
-        pass

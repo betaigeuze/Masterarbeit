@@ -7,6 +7,18 @@ import streamlit as st
 
 
 def main():
+    # Handling page selection here for now
+    # Might want to offload this to dashboard_controller
+    app_mode = st.sidebar.selectbox(
+        "Select a page to display", ["Dashboard", "Tutorial"]
+    )
+    if app_mode == "Dashboard":
+        display_dashboard()
+    elif app_mode == "Tutorial":
+        st.markdown("""Tutorial""")
+
+
+def display_dashboard():
     # Load dataset
     if "dataset" in st.session_state:
         dl = DataLoader(st.session_state["dataset"])
@@ -28,7 +40,6 @@ def main():
 
     dc.create_base_dashboard(tree_df, show_df=False)
     dc.display_charts(scatter_chart, cluster_comparison_chart, tsne_chart, bar_chart)
-    # dc.test_modal()
 
 
 if __name__ == "__main__":

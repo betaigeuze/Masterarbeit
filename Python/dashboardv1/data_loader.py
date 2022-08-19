@@ -6,6 +6,9 @@ import os
 class DataLoader:
     # TODO: Add suppport for custom datasets
     # -> Has to be supported by DashboardController Forms in the sidebar
+    # No priority right now. First decide on how a user will interact with the dashboard.
+    # Handling user input will be very different wether the user inputs it via web
+    # interface or via code.
     def __init__(self, dataset: str = "Iris"):
         self.data = None
         self.features = None

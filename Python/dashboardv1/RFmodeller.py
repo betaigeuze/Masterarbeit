@@ -13,6 +13,7 @@ import networkx as nx
 import numpy as np
 import warnings
 import streamlit as st
+import pygraphviz as pgv
 
 
 class RFmodeller:
@@ -77,14 +78,18 @@ class RFmodeller:
         """
         # TODO:
         # Not a priority!
-        # This is slow (0.13 secswith 100 trees). Maybe I can find a more efficient way
-        # of converting the trees from sklearn objects into dot format and then into a DG.
+        # Changed to avoid using .dot files
+        # Need a to verify that information is preserved.
         directed_graphs = []
         for estimator in self.model.estimators_:
-            tree.export_graphviz(estimator, out_file="tree.dot")
-            DG = nx.DiGraph()
-            DG = nx.nx_agraph.read_dot("tree.dot")
-            directed_graphs.append(DG)
+            pgv_tree_string = tree.export_graphviz(
+                estimator, feature_names=self.features
+            )
+            pgv_digraph = pgv.AGraph(directed=True)
+            pgv_digraph = pgv.AGraph(pgv_tree_string)
+            nx_digraph = nx.DiGraph()
+            nx_digraph = nx.nx_agraph.from_agraph(pgv_digraph)
+            directed_graphs.append(nx_digraph)
         return directed_graphs
 
     def calculate_tsne_embedding(self):
@@ -170,6 +175,8 @@ class RFmodeller:
         distance matrix.
         """
         # This is the smart version of the above method.
+        # TODO: Verify how graph_edit_distance works
+        # Does it take node labels, split points, etc. into account?
         row_distances = np.zeros(len(self.directed_graphs))
         dg_index = self.directed_graphs.index(directed_graph)
         for i, graph1 in enumerate(self.directed_graphs[dg_index:]):

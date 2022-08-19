@@ -65,6 +65,9 @@ class DataframeOperator:
     ) -> pd.DataFrame:
         tree_df = self.get_tree_df_from_model(rfm, features)
         tree_df = pd.concat([tree_df, rfm.cluster_df], axis=1)
+        tree_df["cluster"] = tree_df["cluster"].apply(
+            lambda x: "Noise" if x == -1 else x
+        )
         tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
         return tree_df
