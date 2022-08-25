@@ -1,13 +1,5 @@
 # Masterarbeit
 
-
-
-You generate a "requirements" file (usually requirements.txt) that you commit with your project:
-
-pip freeze > requirements.txt
-
-Then, each developer will set up their own virtualenv and run:
-
-pip install -r requirements.txt
-
-https://stackoverflow.com/questions/9586346/virtualenv-and-source-version-control
+To run the code, install pipenv. Then install the environment via 'pipenv install'.
+For more information on how to use pipenv:
+https://pipenv.pypa.io/en/latest/basics/#example-pipenv-workflow

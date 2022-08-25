@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+from pathlib import Path
 
 
 class DashboardController:
@@ -241,3 +242,14 @@ class DashboardController:
         # Selection over multiple charts requires me to concatenate them - or so I think
         # However, if I concatenate the charts, interactive selections like the dropdown
         # will appear at the bottom of the page instead of next to the relevant chart
+
+    def create_tutorial_page(self):
+        """
+        Creates a tutorial page with some explanations of a random forest.
+        """
+
+        def read_md(file_name: str) -> str:
+            return Path.cwd().joinpath("Python", "dashboardv1", file_name).read_text()
+
+        tutorial_markdown = read_md("tutorial.md")
+        self.dashboard.markdown(tutorial_markdown, unsafe_allow_html=True)

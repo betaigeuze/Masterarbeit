@@ -1,3 +1,4 @@
+from email.mime import base
 from dashboard_controller import DashboardController
 from RFmodeller import RFmodeller
 import multiprocessing as mp
@@ -10,15 +11,15 @@ def main():
     # Handling page selection here for now
     # Might want to offload this to dashboard_controller
     app_mode = st.sidebar.selectbox(
-        "Select a page to display", ["Dashboard", "Tutorial"]
+        "Select a page to display", ["Tutorial", "Dashboard"]
     )
     if app_mode == "Dashboard":
-        display_dashboard()
+        display_expert_dashboard()
     elif app_mode == "Tutorial":
-        st.markdown("""Tutorial""")
+        display_tutorial()
 
 
-def display_dashboard():
+def base_loader():
     # Load dataset
     if "dataset" in st.session_state:
         dl = DataLoader(st.session_state["dataset"])
@@ -30,6 +31,16 @@ def display_dashboard():
     dc = DashboardController(dl.data, dl.features)
     # Create tree dataframe
     df_operator = DataframeOperator(rfm, dl.features)
+    return dc, df_operator
+
+
+def display_tutorial():
+    dc, df_operator = base_loader()
+    dc.create_tutorial_page()
+
+
+def display_expert_dashboard():
+    dc, df_operator = base_loader()
     tree_df = df_operator.tree_df
     scatter_chart = dc.basic_scatter(tree_df)
     tsne_chart = dc.create_tsne_scatter(tree_df)
