@@ -249,7 +249,34 @@ class DashboardController:
         """
 
         def read_md(file_name: str) -> str:
-            return Path.cwd().joinpath("Python", "dashboardv1", file_name).read_text()
+            return (
+                Path.cwd()
+                .joinpath("Python", "dashboardv1", "text", file_name)
+                .read_text()
+            )
 
-        tutorial_markdown = read_md("tutorial.md")
-        self.dashboard.markdown(tutorial_markdown, unsafe_allow_html=True)
+        def read_image(file_name: str) -> str:
+            return (
+                Path.cwd()
+                .joinpath("Python", "dashboardv1", "images", file_name)
+                .read_bytes()
+            )
+
+        layout = [
+            {"content": "markdown", "file": "tutorial1.md"},
+            {"content": "image", "file": "flowers.png"},
+            {"content": "image", "file": "flower_measures.png"},
+            {"content": "markdown", "file": "tutorial2.md"},
+            {"content": "image", "file": "splitting.png"},
+            {"content": "markdown", "file": "tutorial3.md"},
+            {"content": "image", "file": "decision_tree.png"},
+            {"content": "markdown", "file": "tutorial4.md"},
+            {"content": "image", "file": "bagging.png"},
+            {"content": "markdown", "file": "tutorial5.md"},
+        ]
+
+        for item in layout:
+            if item["content"] == "markdown":
+                self.dashboard.markdown(read_md(item["file"]))
+            elif item["content"] == "image":
+                self.dashboard.image(read_image(item["file"]))

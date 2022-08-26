@@ -1,0 +1,2 @@
+## Tutorial on Random Forests:
+Imagine you had a number of flowers, that you wanted to distinguish into 3 groups, we'll call them *classes*. For each flower, you have measurements of their petal and sepal lengths and widths.
