@@ -11,9 +11,7 @@ def main():
     # Handling page selection here for now
     # Might want to offload this to dashboard_controller
     # Changing the order of this, will change which page is displayed first
-    app_mode = st.sidebar.selectbox(
-        "Select a page to display", ["Tutorial", "Dashboard"]
-    )
+    app_mode = st.sidebar.radio("Select a page to display", ["Tutorial", "Dashboard"])
     if app_mode == "Dashboard":
         display_expert_dashboard()
     elif app_mode == "Tutorial":
