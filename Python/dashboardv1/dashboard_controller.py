@@ -13,12 +13,15 @@ class DashboardController:
     # - Space in the dashboard
     # - A way to toggle the explanation on and off
 
-    def __init__(self, dataset: pd.DataFrame, features: list[str]):
+    def __init__(
+        self, dataset: pd.DataFrame, features: list[str], tree_df: pd.DataFrame
+    ):
         self.dashboard_sidebar = self.create_sidebar()
         self.dashboard = st.container()
         self.dashboard.header("RaFoView")
         self.dataset = dataset
         self.features = features
+        self.tree_df = tree_df
         self.brush = alt.selection_interval()
         self.range_ = [
             "#8e0152",
@@ -71,14 +74,14 @@ class DashboardController:
             on_click=_change_data_key(data_choice),
         )
 
-    def create_base_dashboard(self, tree_df: pd.DataFrame, show_df: bool = False):
+    def create_base_dashboard(self, show_df: bool = False):
         self.dashboard.subheader("Tree Data with Feature Importances")
         if show_df:
-            self.dashboard.write(tree_df)
+            self.dashboard.write(self.tree_df)
 
-    def create_feature_importance_barchart(self, tree_df: pd.DataFrame) -> alt.Chart:
+    def create_feature_importance_barchart(self) -> alt.Chart:
         chart = (
-            alt.Chart(tree_df)
+            alt.Chart(self.tree_df)
             .transform_fold(self.features, as_=["feature", "importance"])
             .mark_bar(fill="#4E1E1E")
             .encode(
@@ -89,12 +92,12 @@ class DashboardController:
         )
         return chart
 
-    def basic_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
+    def basic_scatter(self) -> alt.Chart:
         """
         Scatterplot displaying all estimators of the RF model
         """
         chart = (
-            alt.Chart(tree_df)
+            alt.Chart(self.tree_df)
             .mark_circle(stroke="#4E1E1E", strokeWidth=1)
             .encode(
                 x=alt.X(
@@ -110,9 +113,9 @@ class DashboardController:
         )
         return chart
 
-    def create_tsne_scatter(self, tree_df: pd.DataFrame) -> alt.Chart:
+    def create_tsne_scatter(self) -> alt.Chart:
         tsne_chart = (
-            alt.Chart(tree_df)
+            alt.Chart(self.tree_df)
             .mark_circle(stroke="#4E1E1E", strokeWidth=1)
             .encode(
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
@@ -124,19 +127,19 @@ class DashboardController:
             )
             .add_selection(self.brush)
         )
-        silhoutte_chart = self.create_silhouette_plot(tree_df)
+        silhoutte_chart = self.create_silhouette_plot()
         return alt.hconcat(tsne_chart, silhoutte_chart)
 
-    def create_silhouette_plot(self, tree_df: pd.DataFrame) -> alt.Chart:
+    def create_silhouette_plot(self) -> alt.Chart:
         # This is not optimal, but apparently there is no way in altair (and not even in)
         # Vega-Lite to sort by 2 attributes at the same time...
         # Let's just hope, we dont need any sorting after this point
         # Note the sort=None, because altair would otherwise overwrite the pandas sort
-        tree_df.sort_values(
+        self.tree_df.sort_values(
             by=["cluster", "Silhouette Score"], ascending=False, inplace=True
         )
         chart = (
-            alt.Chart(tree_df)
+            alt.Chart(self.tree_df)
             .mark_bar()
             .encode(
                 x=alt.X(
@@ -160,13 +163,13 @@ class DashboardController:
 
         return chart
 
-    def create_cluster_comparison_bar_plt(self, tree_df: pd.DataFrame) -> alt.Chart:
+    def create_cluster_comparison_bar_plt(self) -> alt.Chart:
         # Likely the prefered way to do this
         # However, combining it with the dropdown from below would be really cool
         # It seems I can only do one of each in one chart:
         # Either dropdown OR aggragation and repeat
         chart = (
-            alt.Chart(tree_df)
+            alt.Chart(self.tree_df)
             .mark_bar()
             .encode(
                 x=alt.X("cluster:N", sort="-y", axis=alt.Axis(labelAngle=0)),
@@ -192,7 +195,7 @@ class DashboardController:
         )
         return chart
 
-    def create_cluster_zoom_in(self, tree_df: pd.DataFrame) -> alt.Chart:
+    def create_cluster_zoom_in(self) -> alt.Chart:
         # Example for selection based encodings:
         # https://github.com/altair-viz/altair/issues/1617
         # Problem here:
@@ -213,7 +216,7 @@ class DashboardController:
             init={"column": "virginica_f1-score"},
         )
         chart = (
-            alt.Chart(tree_df)
+            alt.Chart(self.tree_df)
             .transform_fold(columns, as_=["column", "value"])
             .transform_filter(sel)
             .mark_bar()
@@ -226,7 +229,7 @@ class DashboardController:
         )
         return chart
 
-    def display_charts(self, *charts: list[alt.Chart]):
+    def display_charts(self, charts: list[alt.Chart]):
         """
         Pass any number of altair charts to this function and they will be displayed.
         The order in the provided list is the order in which the charts will be displayed
@@ -245,7 +248,44 @@ class DashboardController:
 
     def create_tutorial_page(self):
         """
-        Creates a tutorial page with some explanations of a random forest.
+        Create a tutorial page with some examples of how to use the dashboard.
+        """
+        layout = [
+            {"content": "markdown", "file": "tutorial1.md"},
+            {"content": "image", "file": "flowers.png"},
+            {"content": "image", "file": "flower_measures.png"},
+            {"content": "markdown", "file": "tutorial2.md"},
+            {"content": "image", "file": "splitting.png"},
+            {"content": "markdown", "file": "tutorial3.md"},
+            {"content": "image", "file": "decision_tree.png"},
+            {"content": "markdown", "file": "tutorial4.md"},
+            {"content": "image", "file": "bagging.png"},
+            {"content": "markdown", "file": "tutorial5.md"},
+        ]
+        self.create_page(layout)
+
+    def create_expert_page(self, show_df: bool = False):
+        """
+        Create the expert dashboard according to the layout dictionary.
+        """
+        self.create_base_dashboard(show_df=show_df)
+        layout = [
+            {"content": "chart", "chart_element": self.basic_scatter()},
+            {
+                "content": "chart",
+                "chart_element": self.create_cluster_comparison_bar_plt(),
+            },
+            {"content": "chart", "chart_element": self.create_tsne_scatter()},
+            {
+                "content": "chart",
+                "chart_element": self.create_feature_importance_barchart(),
+            },
+        ]
+        self.create_page(layout)
+
+    def create_page(self, layout: list[dict]):
+        """
+        Creates a page with according to the passed layout.
         """
 
         def read_md(file_name: str) -> str:
@@ -262,21 +302,24 @@ class DashboardController:
                 .read_bytes()
             )
 
-        layout = [
-            {"content": "markdown", "file": "tutorial1.md"},
-            {"content": "image", "file": "flowers.png"},
-            {"content": "image", "file": "flower_measures.png"},
-            {"content": "markdown", "file": "tutorial2.md"},
-            {"content": "image", "file": "splitting.png"},
-            {"content": "markdown", "file": "tutorial3.md"},
-            {"content": "image", "file": "decision_tree.png"},
-            {"content": "markdown", "file": "tutorial4.md"},
-            {"content": "image", "file": "bagging.png"},
-            {"content": "markdown", "file": "tutorial5.md"},
-        ]
-
+        # In order to have concatenated charts between markdown elements,
+        # we need to check if the previous element of the loop was a chart.
+        # If it was and the current element is not, we can just display it.
+        # Otherwise the list of charts grows and gets displayed either with
+        # the first non-chart element or at the end of the loop.
+        charts = []
         for item in layout:
             if item["content"] == "markdown":
+                if charts:
+                    self.display_charts(charts)
+                    charts = []
                 self.dashboard.markdown(read_md(item["file"]))
             elif item["content"] == "image":
+                if charts:
+                    self.display_charts(charts)
+                    charts = []
                 self.dashboard.image(read_image(item["file"]))
+            elif item["content"] == "chart":
+                charts.append(item["chart_element"])
+        if charts:
+            self.display_charts(charts)
