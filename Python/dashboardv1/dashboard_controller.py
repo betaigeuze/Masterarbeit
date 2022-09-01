@@ -1,3 +1,4 @@
+from xmlrpc.client import Boolean
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -16,6 +17,8 @@ class DashboardController:
     def __init__(
         self, dataset: pd.DataFrame, features: list[str], tree_df: pd.DataFrame
     ):
+        self.app_mode = None  # Defined in create_sidebar()
+        self.show_explanations = None  # Defined in create_sidebar()
         self.dashboard_sidebar = self.create_sidebar()
         self.dashboard = st.container()
         self.dashboard.header("RaFoView")
@@ -43,11 +46,11 @@ class DashboardController:
                 "Silhouette Score:Q",
                 scale=self.scale_color,
                 legend=alt.Legend(
-                    orient="none",
-                    legendX=210,
-                    legendY=-40,
+                    orient="left",
+                    # legendX=210,
+                    # legendY=-40,
                     direction="vertical",
-                    titleAnchor="middle",
+                    titleAnchor="start",
                     title="Silhouette Score",
                 ),
             ),
@@ -60,26 +63,35 @@ class DashboardController:
 
         self.dashboard_sidebar = st.sidebar
         self.dashboard_sidebar.title("Sidebar")
+        # Page selection
+        self.app_mode = self.dashboard_sidebar.radio(
+            "Select a page to display", ["Standard", "Expert", "Tutorial"]
+        )
+        # Example selection
         self.data_form = self.dashboard_sidebar.form(
             "Data Selection", clear_on_submit=True
         )
-        self.data_form.markdown("## Dataset selection")
-        # TODO: Make this dropdown dependent on the dataloader dataset map for robustness
+        self.data_form.markdown("## Example Use Cases")
         data_choice = self.data_form.selectbox(
-            "Choose a dataset:", ["Iris", "Mushrooms", "My Dataset"]
+            "Choose a dataset:", ["Iris", "Mushrooms"]
         )
         self.data_form.form_submit_button(
             "Run",
             help="On 'run' the selected dataset will be loaded into the dashboard",
             on_click=_change_data_key(data_choice),
         )
+        # Explanation toggle
+        self.dashboard_sidebar.markdown("## Toggle Explanations")
+        self.show_explanations = self.dashboard_sidebar.checkbox(
+            label="Show explanations", value=True, key="show_explanations"
+        )
 
     def create_base_dashboard(self, show_df: bool = False):
-        self.dashboard.subheader("Tree Data with Feature Importances")
+        self.dashboard.subheader("Investigating the Random Forest")
         if show_df:
             self.dashboard.write(self.tree_df)
 
-    def create_feature_importance_barchart(self) -> alt.Chart:
+    def create_feature_importance_barchart(self, selection: bool = True) -> alt.Chart:
         chart = (
             alt.Chart(self.tree_df)
             .transform_fold(self.features, as_=["feature", "importance"])
@@ -88,11 +100,12 @@ class DashboardController:
                 x=alt.X("mean(importance):Q"),
                 y=alt.Y("feature:N", stack=None, sort="-x"),
             )
-            .transform_filter(self.brush)
         )
+        if selection:
+            chart = chart.transform_filter(self.brush)
         return chart
 
-    def basic_scatter(self) -> alt.Chart:
+    def basic_scatter(self, color: alt.Color, selection: bool = True) -> alt.Chart:
         """
         Scatterplot displaying all estimators of the RF model
         """
@@ -104,13 +117,22 @@ class DashboardController:
                     "grid_x:N",
                     scale=alt.Scale(zero=False),
                     title=None,
-                    axis=alt.Axis(labelAngle=0),
+                    axis=alt.Axis(labels=False, ticks=False),
                 ),
-                y=alt.Y("grid_y:N", scale=alt.Scale(zero=False), title=None),
-                color=self.color,
+                y=alt.Y(
+                    "grid_y:N",
+                    scale=alt.Scale(zero=False),
+                    title=None,
+                    axis=alt.Axis(labels=False, ticks=False),
+                ),
+                color=color,
+                tooltip=[
+                    alt.Tooltip("tree:N", title="Tree"),
+                ],
             )
-            .add_selection(self.brush)
         )
+        if selection:
+            chart = chart.add_selection(self.brush)
         return chart
 
     def create_tsne_scatter(self) -> alt.Chart:
@@ -198,33 +220,35 @@ class DashboardController:
     def create_cluster_zoom_in(self) -> alt.Chart:
         # Example for selection based encodings:
         # https://github.com/altair-viz/altair/issues/1617
-        # Problem here:
-        # Can't get sorting to work
-        # Also, not really sure what kind of aggregation is used for calculating the cluster scores
-        # Trying to specify the method made me reach the library limits
-        # For now: Leave this here as reference
 
         columns = [
-            "virginica_f1-score",
-            "versicolor_f1-score",
-            "setosa_f1-score",
+            "mean_virginica_f1_score",
+            "mean_versicolor_f1_score",
+            "mean_setosa_f1_score",
         ]
         select_box = alt.binding_select(options=columns, name="column")
         sel = alt.selection_single(
             fields=["column"],
             bind=select_box,
-            init={"column": "virginica_f1-score"},
+            init={"column": "mean_virginica_f1_score"},
         )
         chart = (
             alt.Chart(self.tree_df)
+            .transform_aggregate(
+                mean_virginica_f1_score="mean(virginica_f1-score)",
+                mean_versicolor_f1_score="mean(versicolor_f1-score)",
+                mean_setosa_f1_score="mean(setosa_f1-score)",
+                mean_silhouette_score="mean(Silhouette Score)",
+                groupby=["cluster"],
+            )
             .transform_fold(columns, as_=["column", "value"])
-            .transform_filter(sel)
             .mark_bar()
             .encode(
                 x=alt.X("cluster:N", sort="-y"),
                 y=alt.Y("value:Q"),
-                color=alt.Color("cluster:N", scale=self.scale_color),
+                color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
             )
+            .transform_filter(sel)
             .add_selection(sel)
         )
         return chart
@@ -240,11 +264,6 @@ class DashboardController:
             self.dashboard.altair_chart(charts[0], use_container_width=True)
         else:
             self.dashboard.altair_chart(alt.vconcat(*charts), use_container_width=True)
-
-        # Problems might arise from this:
-        # Selection over multiple charts requires me to concatenate them - or so I think
-        # However, if I concatenate the charts, interactive selections like the dropdown
-        # will appear at the bottom of the page instead of next to the relevant chart
 
     def create_tutorial_page(self):
         """
@@ -264,13 +283,43 @@ class DashboardController:
         ]
         self.create_page(layout)
 
+    def create_standard_page(self, show_df: bool = False):
+        """
+        Create the expert dashboard according to the layout dictionary.
+        """
+        self.create_base_dashboard(show_df=show_df)
+        layout = [
+            {
+                "content": "chart",
+                "chart_element": self.basic_scatter(
+                    color=alt.value("#4E1E1E"),
+                    selection=False,
+                ),
+            },
+            {
+                "content": "chart",
+                "chart_element": self.create_feature_importance_barchart(
+                    selection=False
+                ),
+            },
+            {
+                "content": "chart",
+                "chart_element": self.create_cluster_zoom_in(),
+            },
+            {"content": "chart", "chart_element": self.create_tsne_scatter()},
+        ]
+        if self.show_explanations:
+            layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
+            layout.insert(3, {"content": "markdown", "file": "explanation2.md"})
+        self.create_page(layout)
+
     def create_expert_page(self, show_df: bool = False):
         """
         Create the expert dashboard according to the layout dictionary.
         """
         self.create_base_dashboard(show_df=show_df)
         layout = [
-            {"content": "chart", "chart_element": self.basic_scatter()},
+            {"content": "chart", "chart_element": self.basic_scatter(self.color)},
             {
                 "content": "chart",
                 "chart_element": self.create_cluster_comparison_bar_plt(),
@@ -281,6 +330,9 @@ class DashboardController:
                 "chart_element": self.create_feature_importance_barchart(),
             },
         ]
+        if self.show_explanations:
+            layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
+
         self.create_page(layout)
 
     def create_page(self, layout: list[dict]):

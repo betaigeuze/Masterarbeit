@@ -1,0 +1,1 @@
+This is just an arbritrary scatterplot of all of the trees in the forest. The x- and y-axis do not have any meaning. Its' only purpose is to remind you that you are dealing with a random **forest**, that consists of **many** trees and that you should never make the mistake to investigate too much into a single tree. It simply does not yield any meaningful insights.

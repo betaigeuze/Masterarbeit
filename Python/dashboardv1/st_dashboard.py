@@ -7,14 +7,13 @@ import streamlit as st
 
 
 def main():
-    # Handling page selection here for now
-    # Might want to offload this to dashboard_controller
-    # Changing the order of this, will change which page is displayed first
-    app_mode = st.sidebar.radio("Select a page to display", ["Dashboard", "Tutorial"])
-    if app_mode == "Dashboard":
-        display_expert_dashboard()
-    elif app_mode == "Tutorial":
-        display_tutorial()
+    dc = base_loader()
+    if dc.app_mode == "Expert":
+        dc.create_expert_page()
+    elif dc.app_mode == "Tutorial":
+        dc.create_tutorial_page()
+    elif dc.app_mode == "Standard":
+        dc.create_standard_page(show_df=False)
 
 
 def base_loader():
@@ -30,16 +29,6 @@ def base_loader():
     # Create dashboard controller
     dc = DashboardController(dl.data, dl.features, df_operator.tree_df)
     return dc
-
-
-def display_tutorial():
-    dc = base_loader()
-    dc.create_tutorial_page()
-
-
-def display_expert_dashboard():
-    dc = base_loader()
-    dc.create_expert_page(show_df=False)
 
 
 if __name__ == "__main__":
