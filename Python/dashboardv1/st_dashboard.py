@@ -3,17 +3,19 @@ from RFmodeller import RFmodeller
 import multiprocessing as mp
 from dataframe_operator import DataframeOperator
 from data_loader import DataLoader
+from dashboard_page_creator import DashboardPageCreator
 import streamlit as st
 
 
 def main():
     dc = base_loader()
+    dpc = DashboardPageCreator(dc)
     if dc.app_mode == "Expert":
-        dc.create_expert_page()
+        dpc.create_expert_page()
     elif dc.app_mode == "Tutorial":
-        dc.create_tutorial_page()
+        dpc.create_tutorial_page()
     elif dc.app_mode == "Standard":
-        dc.create_standard_page(show_df=False)
+        dpc.create_standard_page(show_df=False)
 
 
 def base_loader():
