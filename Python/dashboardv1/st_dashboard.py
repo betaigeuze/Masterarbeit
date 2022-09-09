@@ -8,6 +8,8 @@ import streamlit as st
 
 
 def main():
+    # Pylance pull request regarding altair change
+    # https://github.com/microsoft/pylance-release/issues/3210
     dc = base_loader()
     dpc = DashboardPageCreator(dc)
     if dc.app_mode == "Expert":
