@@ -1,18 +1,13 @@
-from xmlrpc.client import Boolean
+"""Streamlit is used to display the dashboard in the browser.
+Pandas handles all of the dataframes in the background.
+Altair is responsible for the charts."""
 import streamlit as st
 import pandas as pd
 import altair as alt
-from pathlib import Path
 
 
 class DashboardController:
     """Creates all of the visualizations"""
-
-    # TODO: Think of a way to add explanation/tutorial part
-    # Requirements:
-    # - Explanation and accompanying pictures
-    # - Space in the dashboard
-    # - A way to toggle the explanation on and off
 
     def __init__(
         self, dataset: pd.DataFrame, features: list[str], tree_df: pd.DataFrame
@@ -57,20 +52,22 @@ class DashboardController:
             alt.value("lightblue"),
         )
 
-    def create_sidebar(self):
+    def create_sidebar(self) -> st.sidebar:
+        """
+        Creates the sidebar of the dashboard.
+        """
+
         def _change_data_key(key: str):
             st.session_state["dataset"] = key
 
-        self.dashboard_sidebar = st.sidebar
-        self.dashboard_sidebar.title("Sidebar")
+        sidebar = st.sidebar
+        sidebar.title("Sidebar")
         # Page selection
-        self.app_mode = self.dashboard_sidebar.radio(
+        self.app_mode = sidebar.radio(
             "Select a page to display", ["Standard", "Expert", "Tutorial"]
         )
         # Example selection
-        self.data_form = self.dashboard_sidebar.form(
-            "Data Selection", clear_on_submit=True
-        )
+        self.data_form = sidebar.form("Data Selection", clear_on_submit=True)
         self.data_form.markdown("## Example Use Cases")
         data_choice = self.data_form.selectbox(
             "Choose a dataset:", ["Iris", "Mushrooms"]
@@ -81,12 +78,16 @@ class DashboardController:
             on_click=_change_data_key(data_choice),
         )
         # Explanation toggle
-        self.dashboard_sidebar.markdown("## Toggle Explanations")
-        self.show_explanations = self.dashboard_sidebar.checkbox(
+        sidebar.markdown("## Toggle Explanations")
+        self.show_explanations = sidebar.checkbox(
             label="Show explanations", value=True, key="show_explanations"
         )
+        return sidebar
 
     def create_base_dashboard(self, show_df: bool = False):
+        """
+        Creates the base dashboard object.
+        """
         self.dashboard.subheader("Investigating the Random Forest")
         if show_df:
             self.dashboard.write(self.tree_df)

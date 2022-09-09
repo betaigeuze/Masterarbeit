@@ -1,8 +1,15 @@
+"""
+numpy is used for some calculations.
+pandas handles dataframe operations.
+sklearn calculates some performance metrics and the the decision tree
+class is just used as a type hint, as some trees are passed as arguments.
+RFmodeller is used to create the random forest model.
+"""
 import numpy as np
 import pandas as pd
 from sklearn.metrics import classification_report
-from RFmodeller import RFmodeller
 from sklearn.tree import DecisionTreeClassifier
+from random_forest_modeller import RFmodeller
 
 
 class DataframeOperator:
@@ -21,6 +28,11 @@ class DataframeOperator:
     def get_tree_df_from_model(
         self, rfm: RFmodeller, features: list[str]
     ) -> pd.DataFrame:
+        """
+        Constructs the tree_df dataframe from the random forest model.
+        This dataframe contains information about each tree in the random forest.
+        The method iterates over each estimator to retrieve metrics about them.
+        """
         tree_df = pd.DataFrame(columns=(["n_leaves", "depth"] + features))
         for est in rfm.model.estimators_:
             new_row = {"n_leaves": est.get_n_leaves(), "depth": est.get_depth()}
@@ -40,8 +52,11 @@ class DataframeOperator:
         return tree_df
 
     def add_classification_report_metrics_to_row(
-        self, rfm: RFmodeller, est: list[DecisionTreeClassifier], new_row: dict
+        self, rfm: RFmodeller, est: DecisionTreeClassifier, new_row: dict
     ) -> None:
+        """
+        Assembles classification report metrics about the given estimator.
+        """
         y_predicted = est.predict(rfm.X_train)
         labels = np.unique(rfm.y_train)
         classific_report = classification_report(
@@ -63,6 +78,9 @@ class DataframeOperator:
     def add_cluster_information_to_tree_df(
         self, rfm: RFmodeller, features: list[str]
     ) -> pd.DataFrame:
+        """
+        Adds cluster information to the tree_df dataframe.
+        """
         tree_df = self.get_tree_df_from_model(rfm, features)
         tree_df = pd.concat([tree_df, rfm.cluster_df], axis=1)
         tree_df["cluster"] = tree_df["cluster"].apply(

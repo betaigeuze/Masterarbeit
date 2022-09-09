@@ -1,22 +1,36 @@
+"""
+warnings, timeit, datetime, chainmap and numpy are mostly used for utility stuff.
+multiprocessing is used for parallelization of the graph edit distance.
+sklearn is used for the random forest classifier, the clustering and the
+tsne embedding.
+pandas is handling the dataframes in the background
+networkx is used for the graph edit distance
+streamlit is only used in this class for caching and the loading spinner
+pygraphviz is used to convert the sklearn tree to pygraph and then networkx
+"""
+import warnings
+from timeit import default_timer as timer
+from datetime import timedelta
+from collections import ChainMap
+import multiprocessing as mp
 from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.cluster import DBSCAN
 from sklearn.manifold import TSNE
-from timeit import default_timer as timer
-from datetime import timedelta
-from collections import ChainMap
-import multiprocessing as mp
 import pandas as pd
 import networkx as nx
 import numpy as np
-import warnings
 import streamlit as st
 import pygraphviz as pgv
 
 
 class RFmodeller:
+    """
+    Handles the creation of the random forest model, the clustering and the tsne embedding.
+    """
+
     def __init__(
         self,
         data: pd.DataFrame,
@@ -54,12 +68,12 @@ class RFmodeller:
         # However it is probably best to instead add a field in the DataLoader class
         # to indicate whether and which categorical features are present.
         # That way it would work on any dataset, which is configured correctly.
-        X = self.data[self.features]
+        x = self.data[self.features]
         y = self.data[self.target]
         # Have to run this with the .values on X and y, to avoid passing the series with
         # field names etc.
-        X_train, X_test, y_train, y_test = train_test_split(
-            X.values, y.values, test_size=0.3, random_state=123
+        x_train, x_test, y_train, y_test = train_test_split(
+            x.values, y.values, test_size=0.3, random_state=123
         )
         # 100 estimators and depth of 6 works fine with around 15 secs of processing time.
         forest_model = RandomForestClassifier(
@@ -69,8 +83,8 @@ class RFmodeller:
             oob_score=True,
             n_jobs=-1,
         )
-        forest_model.fit(X_train, y_train.ravel())
-        return forest_model, X_train, X_test, y_train, y_test
+        forest_model.fit(x_train, y_train.ravel())
+        return forest_model, x_train, x_test, y_train, y_test
 
     def create_dot_trees(self) -> list[nx.DiGraph]:
         """

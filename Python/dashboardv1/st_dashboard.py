@@ -1,5 +1,5 @@
 from dashboard_controller import DashboardController
-from RFmodeller import RFmodeller
+from random_forest_modeller import RFmodeller
 import multiprocessing as mp
 from dataframe_operator import DataframeOperator
 from data_loader import DataLoader

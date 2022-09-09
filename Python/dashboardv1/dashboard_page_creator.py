@@ -1,11 +1,17 @@
-import altair as alt
+"""Path enables the reading of files containing the markdown for the dashboard."""
 from pathlib import Path
+import altair as alt
 from dashboard_controller import DashboardController
 
 
 class DashboardPageCreator:
-    def __init__(self, dc: DashboardController):
-        self.dc = dc
+    """
+    Handles the creation of the different dashboard pages.
+    Methods include a way to format pages by using the layout dictionary.
+    """
+
+    def __init__(self, dashboard_controller: DashboardController):
+        self.dashboard_controller = dashboard_controller
 
     def create_tutorial_page(self):
         """
@@ -30,32 +36,37 @@ class DashboardPageCreator:
         Create the standard dashboard according to the layout dictionary.
         Explanations will be toggled on by default.
         """
-        self.dc.create_base_dashboard(show_df=show_df)
+        self.dashboard_controller.create_base_dashboard(show_df=show_df)
         layout = [
             {
                 "content": "chart",
-                "chart_element": self.dc.basic_scatter(
+                "chart_element": self.dashboard_controller.basic_scatter(
                     color=alt.value("#4E1E1E"),
                     selection=False,
                 ),
             },
             {
                 "content": "chart",
-                "chart_element": self.dc.create_feature_importance_barchart(
+                "chart_element": self.dashboard_controller.create_feature_importance_barchart(
                     selection=False
                 ),
             },
             {
                 "content": "chart",
-                "chart_element": self.dc.create_cluster_comparison_bar_dropdown(),
+                "chart_element": self.dashboard_controller.create_cluster_comparison_bar_dropdown(),
             },
-            {"content": "chart", "chart_element": self.dc.create_tsne_scatter()},
             {
                 "content": "chart",
-                "chart_element": self.dc.create_tsne_scatter(importance=True),
+                "chart_element": self.dashboard_controller.create_tsne_scatter(),
+            },
+            {
+                "content": "chart",
+                "chart_element": self.dashboard_controller.create_tsne_scatter(
+                    importance=True
+                ),
             },
         ]
-        if self.dc.show_explanations:
+        if self.dashboard_controller.show_explanations:
             layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
             layout.insert(3, {"content": "markdown", "file": "explanation2.md"})
             layout.insert(5, {"content": "markdown", "file": "explanation3.md"})
@@ -66,20 +77,28 @@ class DashboardPageCreator:
         """
         Create the expert dashboard according to the layout dictionary.
         """
-        self.dc.create_base_dashboard(show_df=show_df)
+        self.dashboard_controller.create_base_dashboard(show_df=show_df)
         layout = [
-            {"content": "chart", "chart_element": self.dc.basic_scatter(self.color)},
             {
                 "content": "chart",
-                "chart_element": self.dc.create_cluster_comparison_bar_repeat(),
+                "chart_element": self.dashboard_controller.basic_scatter(
+                    self.dashboard_controller.color
+                ),
             },
-            {"content": "chart", "chart_element": self.dc.create_tsne_scatter()},
             {
                 "content": "chart",
-                "chart_element": self.dc.create_feature_importance_barchart(),
+                "chart_element": self.dashboard_controller.create_cluster_comparison_bar_repeat(),
+            },
+            {
+                "content": "chart",
+                "chart_element": self.dashboard_controller.create_tsne_scatter(),
+            },
+            {
+                "content": "chart",
+                "chart_element": self.dashboard_controller.create_feature_importance_barchart(),
             },
         ]
-        if self.show_explanations:
+        if self.dashboard_controller.show_explanations:
             layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
 
         self.create_page(layout)
@@ -93,7 +112,7 @@ class DashboardPageCreator:
             return (
                 Path.cwd()
                 .joinpath("Python", "dashboardv1", "text", file_name)
-                .read_text()
+                .read_text(encoding="utf-8")
             )
 
         def read_image(file_name: str) -> str:
@@ -112,15 +131,15 @@ class DashboardPageCreator:
         for item in layout:
             if item["content"] == "markdown":
                 if charts:
-                    self.dc.display_charts(charts)
+                    self.dashboard_controller.display_charts(charts)
                     charts = []
-                self.dc.dashboard.markdown(read_md(item["file"]))
+                self.dashboard_controller.dashboard.markdown(read_md(item["file"]))
             elif item["content"] == "image":
                 if charts:
-                    self.dc.display_charts(charts)
+                    self.dashboard_controller.display_charts(charts)
                     charts = []
-                self.dc.dashboard.image(read_image(item["file"]))
+                self.dashboard_controller.dashboard.image(read_image(item["file"]))
             elif item["content"] == "chart":
                 charts.append(item["chart_element"])
         if charts:
-            self.dc.display_charts(charts)
+            self.dashboard_controller.display_charts(charts)
