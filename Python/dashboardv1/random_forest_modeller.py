@@ -22,6 +22,7 @@ from sklearn.manifold import TSNE
 import pandas as pd
 import networkx as nx
 import numpy as np
+import numpy.typing as npt
 import streamlit as st
 import pygraphviz as pgv
 
@@ -83,7 +84,7 @@ class RFmodeller:
             oob_score=True,
             n_jobs=-1,
         )
-        forest_model.fit(x_train, y_train.ravel())
+        forest_model.fit(x_train, y_train.ravel())  # type: ignore
         return forest_model, x_train, x_test, y_train, y_test
 
     def create_dot_trees(self) -> list[nx.DiGraph]:
@@ -111,7 +112,7 @@ class RFmodeller:
             n_components=2,
             perplexity=5,
             early_exaggeration=4,
-            learning_rate=100,
+            learning_rate=100,  # type: ignore
             n_iter=1000,
             random_state=123,
             metric="precomputed",
@@ -181,7 +182,9 @@ class RFmodeller:
 
         return distance_matrix
 
-    def calc_dist_matrix_parallel(self, directed_graph: nx.DiGraph) -> np.ndarray:
+    def calc_dist_matrix_parallel(
+        self, directed_graph: nx.DiGraph
+    ) -> dict[int, npt.NDArray[np.float64]]:
         """
         One directed graph will be sent to this method per process.
         We calculate the distances per row.
@@ -249,4 +252,5 @@ def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:
 
 
 def get_root(graph: nx.DiGraph) -> str:
-    return [n for n, d in graph.in_degree() if d == 0][0]
+    # TODO: check if this is really no problem and if in_degree is always > 0
+    return [n for n, d in graph.in_degree() if d == 0][0]  # type: ignore

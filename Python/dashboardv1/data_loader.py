@@ -14,15 +14,15 @@ class DataLoader:
     """
 
     def __init__(self, dataset: str = "Iris"):
-        self.data = None
-        self.features = None
-        self.target = None
-        self.target_names = None
+        self.data: pd.DataFrame
+        self.features: list[str]
+        self.target: list[str]
+        self.target_names: list[str]
         self._dirname = os.path.dirname(__file__)
         self._filename_mushrooms = os.path.join(self._dirname, "data/mushrooms.csv")
         self._dataset_map = {
             "Iris": {
-                "data": load_iris(as_frame=True)["frame"],
+                "data": load_iris(as_frame=True)["frame"],  # type: ignore
                 "features": [
                     "sepal length (cm)",
                     "sepal width (cm)",

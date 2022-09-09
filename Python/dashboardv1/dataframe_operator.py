@@ -68,7 +68,7 @@ class DataframeOperator:
             digits=4,
         )
         # Add each feature's classification report dictionary values to the new row
-        for metric, value in classific_report.items():
+        for metric, value in classific_report.items():  # type: ignore
             if isinstance(value, dict):
                 for label, value in value.items():
                     new_row[f"{metric}_{label}"] = value

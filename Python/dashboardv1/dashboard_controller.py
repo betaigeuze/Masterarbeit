@@ -4,6 +4,7 @@ Altair is responsible for the charts."""
 import streamlit as st
 import pandas as pd
 import altair as alt
+from typing import Union
 
 
 class DashboardController:
@@ -52,7 +53,7 @@ class DashboardController:
             alt.value("lightblue"),
         )
 
-    def create_sidebar(self) -> st.sidebar:
+    def create_sidebar(self) -> st.sidebar:  # type: ignore
         """
         Creates the sidebar of the dashboard.
         """
@@ -117,7 +118,9 @@ class DashboardController:
             chart.encoding.y = alt.Y("mean(importance):Q")
         return chart
 
-    def basic_scatter(self, color: alt.Color, selection: bool = True) -> alt.Chart:
+    def basic_scatter(
+        self, color: Union[dict, alt.SchemaBase, list], selection: bool = True
+    ) -> alt.Chart:
         """
         Scatterplot displaying all estimators of the RF model
         selection allows to concatenate the chart with others and interact with
@@ -173,9 +176,9 @@ class DashboardController:
             return alt.hconcat(
                 tsne_chart,
                 self.create_feature_importance_barchart(selection=True, flip=True),
-            )
+            )  # type: ignore
         else:
-            return alt.hconcat(tsne_chart, self.create_silhouette_plot())
+            return alt.hconcat(tsne_chart, self.create_silhouette_plot())  # type: ignore
 
     def create_silhouette_plot(self) -> alt.Chart:
         """
@@ -303,4 +306,4 @@ class DashboardController:
         if len(charts) == 1:
             self.dashboard.altair_chart(charts[0], use_container_width=True)
         else:
-            self.dashboard.altair_chart(alt.vconcat(*charts), use_container_width=True)
+            self.dashboard.altair_chart(alt.vconcat(*charts), use_container_width=True)  # type: ignore

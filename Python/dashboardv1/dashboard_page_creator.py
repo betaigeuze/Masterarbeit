@@ -41,7 +41,7 @@ class DashboardPageCreator:
             {
                 "content": "chart",
                 "chart_element": self.dashboard_controller.basic_scatter(
-                    color=alt.value("#4E1E1E"),
+                    color=alt.value("#4E1E1E"),  # type: ignore
                     selection=False,
                 ),
             },
@@ -115,7 +115,7 @@ class DashboardPageCreator:
                 .read_text(encoding="utf-8")
             )
 
-        def read_image(file_name: str) -> str:
+        def read_image(file_name: str) -> bytes:
             return (
                 Path.cwd()
                 .joinpath("Python", "dashboardv1", "images", file_name)
@@ -138,7 +138,7 @@ class DashboardPageCreator:
                 if charts:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
-                self.dashboard_controller.dashboard.image(read_image(item["file"]))
+                self.dashboard_controller.dashboard.image(read_image(item["file"]))  # type: ignore
             elif item["content"] == "chart":
                 charts.append(item["chart_element"])
         if charts:
