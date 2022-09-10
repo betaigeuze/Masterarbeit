@@ -4,7 +4,10 @@ import multiprocessing as mp
 from dataframe_operator import DataframeOperator
 from data_loader import DataLoader
 from dashboard_page_creator import DashboardPageCreator
+from os.path import exists
+from pathlib import Path
 import streamlit as st
+import pickle
 
 
 def main():
@@ -26,10 +29,25 @@ def base_loader():
         dl = DataLoader(st.session_state["dataset"])
     else:
         dl = DataLoader()
-    # Create RF model
-    rfm = RFmodeller(dl.data, dl.features, dl.target, dl.target_names, n_estimators=100)
+
+    pickle_path = Path.cwd().joinpath("Python", "dashboardv1", "text", "rfm.pickle")
+
+    # Check for existing pickle
+    if not exists(pickle_path):
+        # Create RF model
+        rfm = RFmodeller(
+            dl.data, dl.features, dl.target, dl.target_names, n_estimators=100
+        )
+        # Serialize
+        with open(pickle_path, "wb") as outfile:
+            pickle.dump(rfm, outfile)
+
+    # Deserialization
+    with open(pickle_path, "rb") as infile:
+        rfm_unpickled = pickle.load(infile)
+
     # Create tree dataframe
-    df_operator = DataframeOperator(rfm, dl.features)
+    df_operator = DataframeOperator(rfm_unpickled, dl.features)
     # Create dashboard controller
     dc = DashboardController(dl.data, dl.features, df_operator.tree_df)
     return dc
