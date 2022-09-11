@@ -30,7 +30,7 @@ def base_loader():
     else:
         dl = DataLoader()
 
-    pickle_path = Path.cwd().joinpath("src", "dashboardv1", "text", "rfm.pickle")
+    pickle_path = Path.cwd().joinpath("src", "dashboardv1", "pickle", "rfm.pickle")
 
     # Check for existing pickle
     if not exists(pickle_path):
