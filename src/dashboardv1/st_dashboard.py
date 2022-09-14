@@ -4,10 +4,7 @@ import multiprocessing as mp
 from dataframe_operator import DataframeOperator
 from data_loader import DataLoader
 from dashboard_page_creator import DashboardPageCreator
-from os.path import exists
-from pathlib import Path
 import streamlit as st
-import pickle
 
 
 def main():
@@ -16,7 +13,7 @@ def main():
     dc = base_loader()
     dpc = DashboardPageCreator(dc)
     if dc.app_mode == "Expert":
-        dpc.create_expert_page()
+        dpc.create_expert_page(show_df=True)
     elif dc.app_mode == "Tutorial":
         dpc.create_tutorial_page()
     elif dc.app_mode == "Standard":
@@ -30,26 +27,13 @@ def base_loader():
     else:
         dl = DataLoader()
 
-    pickle_path = Path.cwd().joinpath("src", "dashboardv1", "pickle", "rfm.pickle")
-
-    # Check for existing pickle
-    if not exists(pickle_path):
-        # Create RF model
-        rfm = RFmodeller(
-            dl.data, dl.features, dl.target, dl.target_names, n_estimators=100
-        )
-        # Serialize
-        with open(pickle_path, "wb") as outfile:
-            pickle.dump(rfm, outfile)
-
-    # Deserialization
-    with open(pickle_path, "rb") as infile:
-        rfm_unpickled = pickle.load(infile)
+    # Create RF model
+    rfm = RFmodeller(dl.data, dl.features, dl.target, dl.target_names, n_estimators=100)
 
     # Create tree dataframe
-    df_operator = DataframeOperator(rfm_unpickled, dl.features)
+    df_operator = DataframeOperator(rfm, dl.features)
     # Create dashboard controller
-    dc = DashboardController(dl.data, dl.features, df_operator.tree_df)
+    dc = DashboardController(dl.data, dl.features, df_operator)
     return dc
 
 

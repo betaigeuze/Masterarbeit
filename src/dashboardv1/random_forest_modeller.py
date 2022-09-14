@@ -8,7 +8,9 @@ networkx is used for the graph edit distance
 streamlit is only used in this class for caching and the loading spinner
 pygraphviz is used to convert the sklearn tree to pygraph and then networkx
 """
+from pathlib import Path
 import warnings
+import pickle
 from timeit import default_timer as timer
 from datetime import timedelta
 from collections import ChainMap
@@ -19,6 +21,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.cluster import DBSCAN
 from sklearn.manifold import TSNE
+from os.path import exists
 import pandas as pd
 import networkx as nx
 import numpy as np
@@ -107,12 +110,14 @@ class RFmodeller:
             directed_graphs.append(nx_digraph)
         return directed_graphs
 
-    def calculate_tsne_embedding(self):
+    def calculate_tsne_embedding(self, learning_rate: int = 100):
+        if "learning_rate" not in st.session_state:
+            st.session_state.learning_rate = learning_rate
         tsne = TSNE(
             n_components=2,
             perplexity=5,
             early_exaggeration=4,
-            learning_rate=100,  # type: ignore
+            learning_rate=learning_rate,  # type: ignore
             n_iter=1000,
             random_state=123,
             metric="precomputed",
@@ -123,15 +128,21 @@ class RFmodeller:
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
         return tsne_embedding, tsne_df
 
-    def calculate_tree_clusters(self):
+    def calculate_tree_clusters(
+        self, eps: float = 0.3, min_samples: int = 3, p: int = 2
+    ):
+        if "eps_slider" not in st.session_state:
+            st.session_state.eps_slider = eps
+        if "min_samples" not in st.session_state:
+            st.session_state.min_samples = min_samples
         clustering = DBSCAN(
             # best combination so far: eps=0.1, min_samples=2
-            eps=0.3,
-            min_samples=3,
+            eps=st.session_state.eps_slider,
+            min_samples=st.session_state.min_samples,
             metric="precomputed",
             n_jobs=-1,
             algorithm="brute",
-            p=2,
+            p=p,
         ).fit(self.distance_matrix)
 
         cluster_df = pd.DataFrame(
@@ -148,39 +159,52 @@ class RFmodeller:
         Calculate the pairwise distance matrix for the directed graphs
         We use graph edit distance as the distance metric.
         """
-        st.spinner()
-        start = timer()
-        # I used this idea: https://stackoverflow.com/a/56038389/12355337
-        # Every process gets a slice of the list of graphs.
-        # sklearn's pdist won't work because it needs numeric value inputs.
-        with mp.Pool() as pool:
-            distance_matrix_rows = pool.map(
-                self.calc_dist_matrix_parallel, self.directed_graphs
+        pickle_path = Path.cwd().joinpath(
+            "src", "dashboardv1", "pickle", "distance_matrix.pickle"
+        )
+        # Check for existing pickle
+        if not exists(pickle_path):
+            st.spinner()
+            start = timer()
+            # I used this idea: https://stackoverflow.com/a/56038389/12355337
+            # Every process gets a slice of the list of graphs.
+            # sklearn's pdist won't work because it needs numeric value inputs.
+            with mp.Pool() as pool:
+                distance_matrix_rows = pool.map(
+                    self.calc_dist_matrix_parallel, self.directed_graphs
+                )
+            # Transform list of dicts into a single dict.
+            distance_matrix_dict = dict(ChainMap(*distance_matrix_rows))
+            # Assemble distance matrix based on line indices
+            distance_matrix = np.zeros(
+                (len(self.directed_graphs), len(self.directed_graphs))
             )
-        # Transform list of dicts into a single dict.
-        distance_matrix_dict = dict(ChainMap(*distance_matrix_rows))
-        # Assemble distance matrix based on line indices
-        distance_matrix = np.zeros(
-            (len(self.directed_graphs), len(self.directed_graphs))
-        )
-        # Transform the dict into a numpy array matrix
-        for i in range(len(distance_matrix_dict)):
-            distance_matrix[i] = distance_matrix_dict.get(i)
-        # https://stackoverflow.com/questions/16444930/copy-upper-triangle-to-lower-triangle-in-a-python-matrix
-        distance_matrix = (
-            distance_matrix + distance_matrix.T - np.diag(np.diag(distance_matrix))
-        )
-        distance_matrix = remove_possible_nans(distance_matrix)
-        if not self.dist_matr_shape_ok(distance_matrix):
-            raise ValueError(
-                "RFModeller: Error after calculating distance matrix. Distance matrix shape is not correct."
+            # Transform the dict into a numpy array matrix
+            for i in range(len(distance_matrix_dict)):
+                distance_matrix[i] = distance_matrix_dict.get(i)
+            # https://stackoverflow.com/questions/16444930/copy-upper-triangle-to-lower-triangle-in-a-python-matrix
+            distance_matrix = (
+                distance_matrix + distance_matrix.T - np.diag(np.diag(distance_matrix))
             )
-        stop = timer()
-        print(
-            f"Time spent in calculcate_distance_matrix: {timedelta(seconds=stop-start)}"
-        )
+            distance_matrix = remove_possible_nans(distance_matrix)
+            if not self.dist_matr_shape_ok(distance_matrix):
+                raise ValueError(
+                    "RFModeller: Error after calculating distance matrix. Distance matrix shape is not correct."
+                )
+            stop = timer()
+            print(
+                f"Time spent in calculcate_distance_matrix: {timedelta(seconds=stop-start)}"
+            )
 
-        return distance_matrix
+            # Serialize
+            with open(pickle_path, "wb") as outfile:
+                pickle.dump(distance_matrix, outfile)
+
+        # Deserialization
+        with open(pickle_path, "rb") as infile:
+            distance_matrix_unpickled = pickle.load(infile)
+
+        return distance_matrix_unpickled
 
     def calc_dist_matrix_parallel(
         self, directed_graph: nx.DiGraph

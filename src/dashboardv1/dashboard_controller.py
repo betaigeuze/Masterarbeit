@@ -5,13 +5,14 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from typing import Union
+from dataframe_operator import DataframeOperator
 
 
 class DashboardController:
     """Creates all of the visualizations"""
 
     def __init__(
-        self, dataset: pd.DataFrame, features: list[str], tree_df: pd.DataFrame
+        self, dataset: pd.DataFrame, features: list[str], dfo: DataframeOperator
     ):
         self.app_mode = None  # Defined in create_sidebar()
         self.show_explanations = None  # Defined in create_sidebar()
@@ -20,7 +21,9 @@ class DashboardController:
         self.dashboard.header("RaFoView")
         self.dataset = dataset
         self.features = features
-        self.tree_df = tree_df
+        self.tree_df = dfo.tree_df
+        self.rfm = dfo.rfm
+        self.dfo = dfo
         self.brush = alt.selection_interval()
         self.range_ = [
             "#8e0152",
@@ -65,7 +68,7 @@ class DashboardController:
         sidebar.title("Sidebar")
         # Page selection
         self.app_mode = sidebar.radio(
-            "Select a page to display", ["Standard", "Expert", "Tutorial"]
+            "Select a page to display", ["Expert", "Standard", "Tutorial"]
         )
         # Example selection
         self.data_form = sidebar.form("Data Selection", clear_on_submit=True)
@@ -179,6 +182,45 @@ class DashboardController:
             )  # type: ignore
         else:
             return alt.hconcat(tsne_chart, self.create_silhouette_plot())  # type: ignore
+
+    def create_eps_slider(self):
+        """
+        Creates a slider to select the value for eps in the DBSCAN clustering.
+        """
+        self.slider = self.dashboard.slider(
+            label="Select a value for the parameter 'eps':",
+            min_value=0.01,
+            max_value=0.99,
+            value=0.3,
+            step=0.01,
+            key="eps_slider",
+        )
+
+    def create_learning_rate_slider(self):
+        """
+        Creates a slider to select the value for eps in the DBSCAN clustering.
+        """
+        self.slider = self.dashboard.slider(
+            label="Select a value for the parameter 'learning rate':",
+            min_value=1,
+            max_value=500,
+            value=100,
+            step=1,
+            key="learning_rate_slider",
+        )
+
+    def create_min_samples_slider(self):
+        """
+        Creates a slider to select the value for eps in the DBSCAN clustering.
+        """
+        self.slider = self.dashboard.slider(
+            label="Select a value for the parameter 'min samples':",
+            min_value=2,
+            max_value=5,
+            value=3,
+            step=1,
+            key="min_samples",
+        )
 
     def create_silhouette_plot(self) -> alt.Chart:
         """
