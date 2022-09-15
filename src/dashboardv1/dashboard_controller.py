@@ -86,6 +86,48 @@ class DashboardController:
         self.show_explanations = sidebar.checkbox(
             label="Show explanations", value=True, key="show_explanations"
         )
+        sidebar.markdown("## Algorithm Parameters")
+        sidebar.slider(
+            label="Select a value for the DBSCAN parameter 'min samples':",
+            min_value=2,
+            max_value=5,
+            step=1,
+            value=3,
+            key="min_samples",
+        )
+        sidebar.slider(
+            label="Select a value for the DBSCAN parameter 'epsilon':",
+            min_value=0.1,
+            max_value=0.99,
+            step=0.01,
+            value=0.3,
+            key="eps",
+        )
+        sidebar.slider(
+            label="Select a value for the t-SNE parameter 'learning rate':",
+            min_value=1.0,
+            max_value=500.0,
+            step=1.0,
+            value=100.0,
+            key="learning_rate",
+        )
+        sidebar.slider(
+            label="Select a value for the t-SNE parameter 'perplexity':",
+            min_value=2,
+            max_value=100,
+            step=1,
+            value=5,
+            key="perplexity",
+        )
+        sidebar.slider(
+            label="Select a value for the t-SNE parameter 'early exaggeration':",
+            min_value=2.0,
+            max_value=50.0,
+            step=1.0,
+            value=4.0,
+            key="early_exaggeration",
+        )
+
         return sidebar
 
     def create_base_dashboard(self, show_df: bool = False):
@@ -182,45 +224,6 @@ class DashboardController:
             )  # type: ignore
         else:
             return alt.hconcat(tsne_chart, self.create_silhouette_plot())  # type: ignore
-
-    def create_eps_slider(self):
-        """
-        Creates a slider to select the value for eps in the DBSCAN clustering.
-        """
-        self.slider = self.dashboard.slider(
-            label="Select a value for the parameter 'eps':",
-            min_value=0.01,
-            max_value=0.99,
-            value=0.3,
-            step=0.01,
-            key="eps_slider",
-        )
-
-    def create_learning_rate_slider(self):
-        """
-        Creates a slider to select the value for eps in the DBSCAN clustering.
-        """
-        self.slider = self.dashboard.slider(
-            label="Select a value for the parameter 'learning rate':",
-            min_value=1,
-            max_value=500,
-            value=100,
-            step=1,
-            key="learning_rate_slider",
-        )
-
-    def create_min_samples_slider(self):
-        """
-        Creates a slider to select the value for eps in the DBSCAN clustering.
-        """
-        self.slider = self.dashboard.slider(
-            label="Select a value for the parameter 'min samples':",
-            min_value=2,
-            max_value=5,
-            value=3,
-            step=1,
-            key="min_samples",
-        )
 
     def create_silhouette_plot(self) -> alt.Chart:
         """
@@ -330,7 +333,7 @@ class DashboardController:
                 y=alt.Y("value:Q"),
                 tooltip=[
                     alt.Tooltip("value:Q", title="Value"),
-                ]
+                ],
                 # color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
             )
             .transform_filter(sel)

@@ -95,18 +95,6 @@ class DashboardPageCreator:
                 "chart_element": self.dashboard_controller.create_tsne_scatter(),
             },
             {
-                "content": "streamlit",
-                "streamlit_element": self.dashboard_controller.create_eps_slider,
-            },
-            {
-                "content": "streamlit",
-                "streamlit_element": self.dashboard_controller.create_learning_rate_slider,
-            },
-            {
-                "content": "streamlit",
-                "streamlit_element": self.dashboard_controller.create_min_samples_slider,
-            },
-            {
                 "content": "chart",
                 "chart_element": self.dashboard_controller.create_feature_importance_barchart(),
             },
@@ -135,9 +123,6 @@ class DashboardPageCreator:
                 .read_bytes()
             )
 
-        def execute(func: Callable):
-            func()
-
         # In order to have concatenated charts between markdown elements,
         # we need to check if the previous element of the loop was a chart.
         # If it was and the current element is not, we can just display it.
@@ -155,11 +140,6 @@ class DashboardPageCreator:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
                 self.dashboard_controller.dashboard.image(read_image(item["file"]))  # type: ignore
-            elif item["content"] == "streamlit":
-                if charts:
-                    self.dashboard_controller.display_charts(charts)
-                    charts = []
-                execute(item["streamlit_element"])
             elif item["content"] == "chart":
                 charts.append(item["chart_element"])
         if charts:

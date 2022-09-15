@@ -110,14 +110,26 @@ class RFmodeller:
             directed_graphs.append(nx_digraph)
         return directed_graphs
 
-    def calculate_tsne_embedding(self, learning_rate: int = 100):
-        if "learning_rate" not in st.session_state:
-            st.session_state.learning_rate = learning_rate
+    def calculate_tsne_embedding(
+        self,
+        learning_rate: float = 100.0,
+        perplexity: int = 5,
+        early_exaggeration: float = 4.0,
+    ):
+        """
+        Calculate the tsne embedding of the distance matrix.
+        Uses the parameters from the sidebar.
+        """
+        slider_parameters = ["learning_rate", "perplexity", "early_exaggeration"]
+        for parameter in slider_parameters:
+            if parameter not in st.session_state:
+                st.session_state[parameter] = locals()[parameter]
+
         tsne = TSNE(
             n_components=2,
-            perplexity=5,
-            early_exaggeration=4,
-            learning_rate=learning_rate,  # type: ignore
+            perplexity=st.session_state.perplexity,
+            early_exaggeration=st.session_state.early_exaggeration,
+            learning_rate=st.session_state.learning_rate,
             n_iter=1000,
             random_state=123,
             metric="precomputed",
@@ -128,21 +140,19 @@ class RFmodeller:
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
         return tsne_embedding, tsne_df
 
-    def calculate_tree_clusters(
-        self, eps: float = 0.3, min_samples: int = 3, p: int = 2
-    ):
-        if "eps_slider" not in st.session_state:
-            st.session_state.eps_slider = eps
-        if "min_samples" not in st.session_state:
-            st.session_state.min_samples = min_samples
+    def calculate_tree_clusters(self, eps: float = 0.3, min_samples: int = 3):
+        slider_parameters = ["eps", "min_samples"]
+        for parameter in slider_parameters:
+            if parameter not in st.session_state:
+                st.session_state[parameter] = locals()[parameter]
+
         clustering = DBSCAN(
-            # best combination so far: eps=0.1, min_samples=2
-            eps=st.session_state.eps_slider,
+            eps=st.session_state.eps,
             min_samples=st.session_state.min_samples,
             metric="precomputed",
             n_jobs=-1,
             algorithm="brute",
-            p=p,
+            p=2,
         ).fit(self.distance_matrix)
 
         cluster_df = pd.DataFrame(
