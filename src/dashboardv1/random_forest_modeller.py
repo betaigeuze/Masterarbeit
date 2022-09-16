@@ -39,13 +39,13 @@ class RFmodeller:
         self,
         data: pd.DataFrame,
         feature_list: list[str],
-        target: list[str],
+        target_column: list[str],
         target_names: list[str],
         n_estimators: int = 100,
     ):
         self.data = data
         self.features = feature_list
-        self.target = target
+        self.target_column = target_column
         self.target_names = target_names
         (
             self.model,
@@ -67,13 +67,8 @@ class RFmodeller:
         """
         Standard RF classification model
         """
-        # TODO: Add support for categorical feature input as in the mushroom dataset
-        # I could do this by checking for the session state
-        # However it is probably best to instead add a field in the DataLoader class
-        # to indicate whether and which categorical features are present.
-        # That way it would work on any dataset, which is configured correctly.
         x = self.data[self.features]
-        y = self.data[self.target]
+        y = self.data[self.target_column]
         # Have to run this with the .values on X and y, to avoid passing the series with
         # field names etc.
         x_train, x_test, y_train, y_test = train_test_split(
@@ -119,6 +114,8 @@ class RFmodeller:
         """
         Calculate the tsne embedding of the distance matrix.
         Uses the parameters from the sidebar.
+        Do not be confused by the "unused" arguments, as they are simply not directly
+        adressed, but are used in the for loop below via "locals()[parameter]".
         """
         slider_parameters = ["learning_rate", "perplexity", "early_exaggeration"]
         for parameter in slider_parameters:
@@ -163,15 +160,27 @@ class RFmodeller:
         )
         return clustering, cluster_df
 
-    @st.cache(suppress_st_warning=True)
     def compute_distance_matrix(self):
         """
         Calculate the pairwise distance matrix for the directed graphs
         We use graph edit distance as the distance metric.
         """
-        pickle_path = Path.cwd().joinpath(
-            "src", "dashboardv1", "pickle", "distance_matrix.pickle"
+        # TODO: With the current logic, it is not possible check if the pickle was created with a different version of the random forest model.
+        pickle_path_iris = Path.cwd().joinpath(
+            "src", "dashboardv1", "pickle", "distance_matrix_iris.pickle"
         )
+        pickle_path_digits = Path.cwd().joinpath(
+            "src", "dashboardv1", "pickle", "distance_matrix_digits.pickle"
+        )
+        if "data_choice" in st.session_state:
+            pickle_path = (
+                pickle_path_digits
+                if st.session_state.data_choice == "Digits"
+                else pickle_path_iris
+            )
+        else:
+            pickle_path = pickle_path_iris
+
         # Check for existing pickle
         if not exists(pickle_path):
             st.spinner()
@@ -251,21 +260,28 @@ class RFmodeller:
         )
 
     def calculate_silhouette_scores_df(self):
-        cluster_silhouette_score = silhouette_score(
-            X=self.distance_matrix,
-            labels=self.cluster_df["cluster"],
-            metric="precomputed",
-            sample_size=None,
-        )
-        print(f"Silhouette score: {cluster_silhouette_score}")
-        return pd.DataFrame(
-            silhouette_samples(
+        try:
+            cluster_silhouette_score = silhouette_score(
                 X=self.distance_matrix,
-                labels=self.cluster_df["cluster"].values,
+                labels=self.cluster_df["cluster"],
                 metric="precomputed",
-            ),
-            columns=["Silhouette Score"],
-        )
+                sample_size=None,
+            )
+            silhouette_df = pd.DataFrame(
+                silhouette_samples(
+                    X=self.distance_matrix,
+                    labels=self.cluster_df["cluster"].values,
+                    metric="precomputed",
+                ),
+                columns=["Silhouette Score"],
+            )
+        except ValueError:
+            cluster_silhouette_score = -1.0
+            silhouette_df = pd.DataFrame(
+                self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]
+            )
+        print(f"Silhouette score: {cluster_silhouette_score}")
+        return silhouette_df
 
 
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:

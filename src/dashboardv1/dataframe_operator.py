@@ -20,7 +20,6 @@ class DataframeOperator:
         self.features = features
         self.tree_df = self.get_tree_df_from_model(rfm, features)
         self.tree_df = self.add_cluster_information_to_tree_df(rfm, features)
-        self.tree_df = self.add_ranks_to_tree_df(self.tree_df)
         self.tree_df = self.add_grid_coordinates_to_tree_df(self.tree_df)
 
     # Inspect RF trees and retrieve number of leaves and depth for each tree
@@ -33,11 +32,13 @@ class DataframeOperator:
         This dataframe contains information about each tree in the random forest.
         The method iterates over each estimator to retrieve metrics about them.
         """
-        tree_df = pd.DataFrame(columns=(["n_leaves", "depth"] + features))
+        tree_df = pd.DataFrame(columns=["n_leaves", "depth"])
         for est in rfm.model.estimators_:
             new_row = {"n_leaves": est.get_n_leaves(), "depth": est.get_depth()}
 
             # List of tuples with variable and importance
+            # TODO: The column names should be of "featurename_importance" format
+            # Otherwise it is very confusing to see feature names in the tree_df
             feature_importances = [
                 (feature, round(importance, 2))
                 for feature, importance in zip(features, list(est.feature_importances_))
@@ -88,17 +89,6 @@ class DataframeOperator:
         )
         tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
-        return tree_df
-
-    def add_ranks_to_tree_df(self, tree_df: pd.DataFrame) -> pd.DataFrame:
-        """Arbitrary measure to rank the trees by their rank of classifying a specific class.
-        EXSPERIMENTAL"""
-        tree_df["weighted_avg_f1_rank"] = tree_df["weighted avg_f1-score"].rank(
-            ascending=False, method="first"
-        )
-        tree_df["accuracy_rank"] = tree_df["accuracy"].rank(
-            ascending=False, method="first"
-        )
         return tree_df
 
     def add_grid_coordinates_to_tree_df(self, tree_df: pd.DataFrame) -> pd.DataFrame:

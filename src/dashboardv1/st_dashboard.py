@@ -13,7 +13,7 @@ def main():
     dc = base_loader()
     dpc = DashboardPageCreator(dc)
     if dc.app_mode == "Expert":
-        dpc.create_expert_page(show_df=False)
+        dpc.create_expert_page(show_df=True)
     elif dc.app_mode == "Tutorial":
         dpc.create_tutorial_page()
     elif dc.app_mode == "Standard":
@@ -22,13 +22,15 @@ def main():
 
 def base_loader():
     # Load dataset
-    if "dataset" in st.session_state:
-        dl = DataLoader(st.session_state["dataset"])
+    if "data_choice" in st.session_state:
+        dl = DataLoader(st.session_state["data_choice"])
     else:
         dl = DataLoader()
 
     # Create RF model
-    rfm = RFmodeller(dl.data, dl.features, dl.target, dl.target_names, n_estimators=100)
+    rfm = RFmodeller(
+        dl.data, dl.features, dl.target_column, dl.target_names, n_estimators=100
+    )
 
     # Create tree dataframe
     df_operator = DataframeOperator(rfm, dl.features)

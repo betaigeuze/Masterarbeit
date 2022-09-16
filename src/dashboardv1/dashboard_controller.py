@@ -60,10 +60,6 @@ class DashboardController:
         """
         Creates the sidebar of the dashboard.
         """
-
-        def _change_data_key(key: str):
-            st.session_state["dataset"] = key
-
         sidebar = st.sidebar
         sidebar.title("Sidebar")
         # Page selection
@@ -73,13 +69,12 @@ class DashboardController:
         # Example selection
         self.data_form = sidebar.form("Data Selection", clear_on_submit=True)
         self.data_form.markdown("## Example Use Cases")
-        data_choice = self.data_form.selectbox(
-            "Choose a dataset:", ["Iris", "Mushrooms"]
+        self.data_form.selectbox(
+            label="Choose a dataset:", options=["Iris", "Digits"], key="data_choice"
         )
         self.data_form.form_submit_button(
             "Run",
             help="On 'run' the selected dataset will be loaded into the dashboard",
-            on_click=_change_data_key(data_choice),
         )
         # Explanation toggle
         sidebar.markdown("## Toggle Explanations")
@@ -97,7 +92,7 @@ class DashboardController:
         )
         sidebar.slider(
             label="Select a value for the DBSCAN parameter 'epsilon':",
-            min_value=0.1,
+            min_value=0.01,
             max_value=0.99,
             step=0.01,
             value=0.3,
