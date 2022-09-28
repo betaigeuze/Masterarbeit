@@ -87,7 +87,7 @@ class DashboardController:
             min_value=2,
             max_value=5,
             step=1,
-            value=3,
+            # value=3,
             key="min_samples",
         )
         sidebar.slider(
@@ -95,7 +95,7 @@ class DashboardController:
             min_value=0.01,
             max_value=0.99,
             step=0.01,
-            value=0.3,
+            # value=0.3,
             key="eps",
         )
         sidebar.slider(
@@ -103,7 +103,7 @@ class DashboardController:
             min_value=1.0,
             max_value=500.0,
             step=1.0,
-            value=100.0,
+            # value=100.0,
             key="learning_rate",
         )
         sidebar.slider(
@@ -111,7 +111,7 @@ class DashboardController:
             min_value=2,
             max_value=100,
             step=1,
-            value=5,
+            # value=5,
             key="perplexity",
         )
         sidebar.slider(
@@ -119,7 +119,7 @@ class DashboardController:
             min_value=2.0,
             max_value=50.0,
             step=1.0,
-            value=4.0,
+            # value=4.0,
             key="early_exaggeration",
         )
 
