@@ -20,24 +20,20 @@ def main():
         dpc.create_standard_page(show_df=False)
 
 
-def base_loader(is_tutorial: bool = False) -> DashboardController:
-    if not is_tutorial:
-        # Load dataset
-        if "data_choice" in st.session_state:
-            dl = DataLoader(st.session_state["data_choice"])
-        else:
-            dl = DataLoader()
-
-        # Create RF model
-        rfm = RFmodeller(dl.data, dl.features, dl.target_column, dl.target_names)
-
-        # Create tree dataframe
-        df_operator = DataframeOperator(rfm, dl.features)
-        # Create dashboard controller
-        dc = DashboardController(dl.data, dl.features, df_operator)
+def base_loader() -> DashboardController:
+    # Load dataset
+    if "data_choice" in st.session_state:
+        dl = DataLoader(st.session_state["data_choice"])
     else:
-        # Create tutorial dashboard controller
-        dc = DashboardController(is_tutorial=is_tutorial)
+        dl = DataLoader()
+
+    # Create RF model
+    rfm = RFmodeller(dl.data, dl.features, dl.target_column, dl.target_names)
+
+    # Create tree dataframe
+    df_operator = DataframeOperator(rfm, dl.features)
+    # Create dashboard controller
+    dc = DashboardController(dl.data, dl.features, df_operator)
 
     return dc
 

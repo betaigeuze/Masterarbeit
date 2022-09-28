@@ -13,53 +13,51 @@ class DashboardController:
 
     def __init__(
         self,
-        dataset: pd.DataFrame = None,  # type: ignore
-        features: list[str] = None,  # type: ignore
-        dfo: DataframeOperator = None,  # type: ignore
-        is_tutorial: bool = False,
+        dataset: pd.DataFrame,
+        features: list[str],
+        dfo: DataframeOperator,
     ):
         self.app_mode = None  # Defined in create_sidebar()
         self.show_explanations = None  # Defined in create_sidebar()
         self.dashboard_sidebar = self.create_sidebar()
         self.dashboard_container = st.container()
         self.dashboard_container.header("RaFoView")
-        if not is_tutorial:
-            self.dataset = dataset
-            self.features = features
-            self.tree_df = dfo.tree_df
-            self.rfm = dfo.rfm
-            self.dfo = dfo
-            self.brush = alt.selection_interval()
-            self.range_ = [
-                "#8e0152",
-                "#c51b7d",
-                "#de77ae",
-                "#f1b6da",
-                "#fde0ef",
-                "#f7f7f7",
-                "#e6f5d0",
-                "#b8e186",
-                "#7fbc41",
-                "#4d9221",
-                "#276419",
-            ]
-            self.scale_color = alt.Scale(range=self.range_)
-            self.color = alt.condition(
-                self.brush,
-                alt.Color(
-                    "Silhouette Score:Q",
-                    scale=self.scale_color,
-                    legend=alt.Legend(
-                        orient="right",
-                        # legendX=210,
-                        # legendY=-40,
-                        direction="vertical",
-                        titleAnchor="start",
-                        title="Silhouette Score",
-                    ),
+        self.dataset = dataset
+        self.features = features
+        self.tree_df = dfo.tree_df
+        self.rfm = dfo.rfm
+        self.dfo = dfo
+        self.brush = alt.selection_interval()
+        self.range_ = [
+            "#8e0152",
+            "#c51b7d",
+            "#de77ae",
+            "#f1b6da",
+            "#fde0ef",
+            "#f7f7f7",
+            "#e6f5d0",
+            "#b8e186",
+            "#7fbc41",
+            "#4d9221",
+            "#276419",
+        ]
+        self.scale_color = alt.Scale(range=self.range_)
+        self.color = alt.condition(
+            self.brush,
+            alt.Color(
+                "Silhouette Score:Q",
+                scale=self.scale_color,
+                legend=alt.Legend(
+                    orient="right",
+                    # legendX=210,
+                    # legendY=-40,
+                    direction="vertical",
+                    titleAnchor="start",
+                    title="Silhouette Score",
                 ),
-                alt.value("lightblue"),
-            )
+            ),
+            alt.value("lightblue"),
+        )
 
     def create_sidebar(self) -> st.sidebar:  # type: ignore
         """
