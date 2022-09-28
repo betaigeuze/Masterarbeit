@@ -12,30 +12,33 @@ def main():
     # https://github.com/microsoft/pylance-release/issues/3210
     dc = base_loader()
     dpc = DashboardPageCreator(dc)
-    if dc.app_mode == "Expert":
-        dpc.create_expert_page(show_df=True)
-    elif dc.app_mode == "Tutorial":
+    if dc.app_mode == "Tutorial":
         dpc.create_tutorial_page()
+    elif dc.app_mode == "Expert":
+        dpc.create_expert_page(show_df=False)
     elif dc.app_mode == "Standard":
         dpc.create_standard_page(show_df=False)
 
 
-def base_loader():
-    # Load dataset
-    if "data_choice" in st.session_state:
-        dl = DataLoader(st.session_state["data_choice"])
+def base_loader(is_tutorial: bool = False) -> DashboardController:
+    if not is_tutorial:
+        # Load dataset
+        if "data_choice" in st.session_state:
+            dl = DataLoader(st.session_state["data_choice"])
+        else:
+            dl = DataLoader()
+
+        # Create RF model
+        rfm = RFmodeller(dl.data, dl.features, dl.target_column, dl.target_names)
+
+        # Create tree dataframe
+        df_operator = DataframeOperator(rfm, dl.features)
+        # Create dashboard controller
+        dc = DashboardController(dl.data, dl.features, df_operator)
     else:
-        dl = DataLoader()
+        # Create tutorial dashboard controller
+        dc = DashboardController(is_tutorial=is_tutorial)
 
-    # Create RF model
-    rfm = RFmodeller(
-        dl.data, dl.features, dl.target_column, dl.target_names, n_estimators=100
-    )
-
-    # Create tree dataframe
-    df_operator = DataframeOperator(rfm, dl.features)
-    # Create dashboard controller
-    dc = DashboardController(dl.data, dl.features, df_operator)
     return dc
 
 

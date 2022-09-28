@@ -12,49 +12,54 @@ class DashboardController:
     """Creates all of the visualizations"""
 
     def __init__(
-        self, dataset: pd.DataFrame, features: list[str], dfo: DataframeOperator
+        self,
+        dataset: pd.DataFrame = None,  # type: ignore
+        features: list[str] = None,  # type: ignore
+        dfo: DataframeOperator = None,  # type: ignore
+        is_tutorial: bool = False,
     ):
         self.app_mode = None  # Defined in create_sidebar()
         self.show_explanations = None  # Defined in create_sidebar()
         self.dashboard_sidebar = self.create_sidebar()
-        self.dashboard = st.container()
-        self.dashboard.header("RaFoView")
-        self.dataset = dataset
-        self.features = features
-        self.tree_df = dfo.tree_df
-        self.rfm = dfo.rfm
-        self.dfo = dfo
-        self.brush = alt.selection_interval()
-        self.range_ = [
-            "#8e0152",
-            "#c51b7d",
-            "#de77ae",
-            "#f1b6da",
-            "#fde0ef",
-            "#f7f7f7",
-            "#e6f5d0",
-            "#b8e186",
-            "#7fbc41",
-            "#4d9221",
-            "#276419",
-        ]
-        self.scale_color = alt.Scale(range=self.range_)
-        self.color = alt.condition(
-            self.brush,
-            alt.Color(
-                "Silhouette Score:Q",
-                scale=self.scale_color,
-                legend=alt.Legend(
-                    orient="right",
-                    # legendX=210,
-                    # legendY=-40,
-                    direction="vertical",
-                    titleAnchor="start",
-                    title="Silhouette Score",
+        self.dashboard_container = st.container()
+        self.dashboard_container.header("RaFoView")
+        if not is_tutorial:
+            self.dataset = dataset
+            self.features = features
+            self.tree_df = dfo.tree_df
+            self.rfm = dfo.rfm
+            self.dfo = dfo
+            self.brush = alt.selection_interval()
+            self.range_ = [
+                "#8e0152",
+                "#c51b7d",
+                "#de77ae",
+                "#f1b6da",
+                "#fde0ef",
+                "#f7f7f7",
+                "#e6f5d0",
+                "#b8e186",
+                "#7fbc41",
+                "#4d9221",
+                "#276419",
+            ]
+            self.scale_color = alt.Scale(range=self.range_)
+            self.color = alt.condition(
+                self.brush,
+                alt.Color(
+                    "Silhouette Score:Q",
+                    scale=self.scale_color,
+                    legend=alt.Legend(
+                        orient="right",
+                        # legendX=210,
+                        # legendY=-40,
+                        direction="vertical",
+                        titleAnchor="start",
+                        title="Silhouette Score",
+                    ),
                 ),
-            ),
-            alt.value("lightblue"),
-        )
+                alt.value("lightblue"),
+            )
 
     def create_sidebar(self) -> st.sidebar:  # type: ignore
         """
@@ -67,21 +72,37 @@ class DashboardController:
             "Select a page to display", ["Expert", "Standard", "Tutorial"]
         )
         # Example selection
-        self.data_form = sidebar.form("Data Selection", clear_on_submit=True)
+        self.data_form = sidebar.form("Data Selection", clear_on_submit=False)
         self.data_form.markdown("## Example Use Cases")
         self.data_form.selectbox(
-            label="Choose a dataset:", options=["Iris", "Digits"], key="data_choice"
+            label="Choose an example use case:",
+            options=["Iris", "Digits"],
+            key="data_choice",
         )
         self.data_form.form_submit_button(
             "Run",
             help="On 'run' the selected dataset will be loaded into the dashboard",
         )
         # Explanation toggle
-        sidebar.markdown("## Toggle Explanations")
         self.show_explanations = sidebar.checkbox(
             label="Show explanations", value=True, key="show_explanations"
         )
         sidebar.markdown("## Algorithm Parameters")
+        sidebar.markdown(
+            "Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a while."
+        )
+        sidebar.markdown("### Random Forest:")
+        sidebar.markdown(
+            "Changing this parameter will take a significant amount of time to calculate!"
+        )
+        sidebar.slider(
+            label="Select a value for the number of trees in the Random Forest:",
+            min_value=20,
+            max_value=500,
+            step=1,
+            key="n_estimators",
+        )
+        sidebar.markdown("### DBSCAN:")
         sidebar.slider(
             label="Select a value for the DBSCAN parameter 'min samples':",
             min_value=2,
@@ -98,6 +119,7 @@ class DashboardController:
             # value=0.3,
             key="eps",
         )
+        sidebar.markdown("### t-SNE:")
         sidebar.slider(
             label="Select a value for the t-SNE parameter 'learning rate':",
             min_value=1.0,
@@ -129,9 +151,9 @@ class DashboardController:
         """
         Creates the base dashboard object.
         """
-        self.dashboard.subheader("Investigating the Random Forest")
+        self.dashboard_container.subheader("Investigating the Random Forest")
         if show_df:
-            self.dashboard.write(self.tree_df)
+            self.dashboard_container.write(self.tree_df)
 
     def create_feature_importance_barchart(
         self, selection: bool = True, flip: bool = False
@@ -344,6 +366,6 @@ class DashboardController:
         be affected by selections in plots.
         """
         if len(charts) == 1:
-            self.dashboard.altair_chart(charts[0], use_container_width=True)
+            self.dashboard_container.altair_chart(charts[0], use_container_width=True)
         else:
-            self.dashboard.altair_chart(alt.vconcat(*charts), use_container_width=True)  # type: ignore
+            self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=True)  # type: ignore

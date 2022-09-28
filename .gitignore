@@ -9,3 +9,4 @@
 myenv/
 __pycache__/
 *.dot
+src/dashboardv1/temp/*

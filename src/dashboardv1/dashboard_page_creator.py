@@ -1,6 +1,5 @@
 """Path enables the reading of files containing the markdown for the dashboard."""
 from pathlib import Path
-from typing import Callable
 import altair as alt
 from dashboard_controller import DashboardController
 
@@ -11,7 +10,7 @@ class DashboardPageCreator:
     Methods include a way to format pages by using the layout dictionary.
     """
 
-    def __init__(self, dashboard_controller: DashboardController):
+    def __init__(self, dashboard_controller: DashboardController = None):  # type: ignore
         self.dashboard_controller = dashboard_controller
 
     def create_tutorial_page(self):
@@ -134,12 +133,14 @@ class DashboardPageCreator:
                 if charts:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
-                self.dashboard_controller.dashboard.markdown(read_md(item["file"]))
+                self.dashboard_controller.dashboard_container.markdown(
+                    read_md(item["file"])
+                )
             elif item["content"] == "image":
                 if charts:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
-                self.dashboard_controller.dashboard.image(read_image(item["file"]))  # type: ignore
+                self.dashboard_controller.dashboard_container.image(read_image(item["file"]))  # type: ignore
             elif item["content"] == "chart":
                 charts.append(item["chart_element"])
         if charts:

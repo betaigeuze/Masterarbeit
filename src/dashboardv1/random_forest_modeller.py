@@ -41,19 +41,22 @@ class RFmodeller:
         feature_list: list[str],
         target_column: list[str],
         target_names: list[str],
-        n_estimators: int = 100,
     ):
         self.data = data
         self.features = feature_list
         self.target_column = target_column
         self.target_names = target_names
+        if "data_choice" in st.session_state:
+            self.data_choice = st.session_state.data_choice
+        else:
+            self.data_choice = "Iris"
         (
             self.model,
             self.X_train,
             self.X_test,
             self.y_train,
             self.y_test,
-        ) = self.train_model(n_estimators)
+        ) = self.train_model()
         self.directed_graphs = self.create_dot_trees()
         self.distance_matrix = self.compute_distance_matrix()
         (
@@ -63,7 +66,7 @@ class RFmodeller:
         (self.tsne_embedding, self.tsne_df) = self.calculate_tsne_embedding()
         self.silhouette_scores_df = self.calculate_silhouette_scores_df()
 
-    def train_model(self, n_estimators=100):
+    def train_model(self):
         """
         Standard RF classification model
         """
@@ -74,9 +77,11 @@ class RFmodeller:
         x_train, x_test, y_train, y_test = train_test_split(
             x.values, y.values, test_size=0.3, random_state=123
         )
-        # 100 estimators and depth of 6 works fine with around 15 secs of processing time.
+        if "n_estimators" not in st.session_state:
+            st.session_state.n_estimators = 100
+
         forest_model = RandomForestClassifier(
-            n_estimators=n_estimators,
+            n_estimators=st.session_state.n_estimators,
             max_depth=10,
             random_state=123,
             oob_score=True,
@@ -166,20 +171,16 @@ class RFmodeller:
         We use graph edit distance as the distance metric.
         """
         # TODO: With the current logic, it is not possible check if the pickle was created with a different version of the random forest model.
-        pickle_path_iris = Path.cwd().joinpath(
-            "src", "dashboardv1", "pickle", "distance_matrix_iris.pickle"
+        pickle_path = Path.cwd().joinpath(
+            "src", "dashboardv1", "pickle", f"distance_matrix_{self.data_choice}.pickle"
         )
-        pickle_path_digits = Path.cwd().joinpath(
-            "src", "dashboardv1", "pickle", "distance_matrix_digits.pickle"
-        )
-        if "data_choice" in st.session_state:
-            pickle_path = (
-                pickle_path_digits
-                if st.session_state.data_choice == "Digits"
-                else pickle_path_iris
+        if self.model.n_estimators != 100:
+            pickle_path = Path.cwd().joinpath(
+                "src",
+                "dashboardv1",
+                "temp",
+                f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
             )
-        else:
-            pickle_path = pickle_path_iris
 
         # Check for existing pickle
         if not exists(pickle_path):
