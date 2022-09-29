@@ -40,7 +40,7 @@ class DataframeOperator:
             # TODO: The column names should be of "featurename_importance" format
             # Otherwise it is very confusing to see feature names in the tree_df
             feature_importances = [
-                (feature, round(importance, 2))
+                (feature + "_importance", round(importance, 2))
                 for feature, importance in zip(features, list(est.feature_importances_))
             ]
             # Add feature importance per feature to the new row
@@ -67,6 +67,7 @@ class DataframeOperator:
             labels=labels,
             target_names=rfm.target_names,
             digits=4,
+            zero_division=0,  # type: ignore
         )
         # Add each feature's classification report dictionary values to the new row
         for metric, value in classific_report.items():  # type: ignore
@@ -87,6 +88,7 @@ class DataframeOperator:
         tree_df["cluster"] = tree_df["cluster"].apply(
             lambda x: "Noise" if x == -1 else x
         )
+        tree_df["cluster"] = tree_df["cluster"].astype("str")
         tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
         tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
         return tree_df

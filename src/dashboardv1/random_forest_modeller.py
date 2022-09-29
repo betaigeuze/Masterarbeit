@@ -80,9 +80,14 @@ class RFmodeller:
         if "n_estimators" not in st.session_state:
             st.session_state.n_estimators = 100
 
+        if self.data_choice == "Digits":
+            max_depth = 5
+        else:
+            max_depth = 10
+
         forest_model = RandomForestClassifier(
             n_estimators=st.session_state.n_estimators,
-            max_depth=10,
+            max_depth=max_depth,
             random_state=123,
             oob_score=True,
             n_jobs=-1,
@@ -227,7 +232,7 @@ class RFmodeller:
         return distance_matrix_unpickled
 
     def calc_dist_matrix_parallel(
-        self, directed_graph: nx.DiGraph
+        self, process_graph: nx.DiGraph
     ) -> dict[int, npt.NDArray[np.float64]]:
         """
         One directed graph will be sent to this method per process.
@@ -239,17 +244,17 @@ class RFmodeller:
         # TODO: Verify how graph_edit_distance works
         # Does it take node labels, split points, etc. into account?
         row_distances = np.zeros(len(self.directed_graphs))
-        dg_index = self.directed_graphs.index(directed_graph)
-        for i, graph1 in enumerate(self.directed_graphs[dg_index:]):
+        dg_index = self.directed_graphs.index(process_graph)
+        for i, di_graph in enumerate(self.directed_graphs[dg_index:]):
             if i == 0:
                 row_distances[i] = 0
             else:
                 # Get this out of the loop and create a dict maybe?
                 # No need to compute this on every loop iteration.
-                root1 = get_root(graph1)
-                root2 = get_root(directed_graph)
+                root1 = get_root(di_graph)
+                root2 = get_root(process_graph)
                 row_distances[i + dg_index] = nx.graph_edit_distance(
-                    graph1, directed_graph, timeout=0.04, roots=(root1, root2)
+                    di_graph, process_graph, timeout=0.5, roots=(root1, root2)
                 )
 
         return {dg_index: row_distances}
@@ -277,6 +282,9 @@ class RFmodeller:
                 columns=["Silhouette Score"],
             )
         except ValueError:
+            print(
+                "RFModeller: Error in calculate_silhouette_scores_df. Probably only one cluster was found."
+            )
             cluster_silhouette_score = -1.0
             silhouette_df = pd.DataFrame(
                 self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]

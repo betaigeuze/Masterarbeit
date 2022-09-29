@@ -21,6 +21,7 @@ def main():
 
 
 def base_loader() -> DashboardController:
+    st.set_page_config(layout="wide")
     # Load dataset
     if "data_choice" in st.session_state:
         dl = DataLoader(st.session_state["data_choice"])
