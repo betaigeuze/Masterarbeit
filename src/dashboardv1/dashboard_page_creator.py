@@ -8,6 +8,20 @@ class DashboardPageCreator:
     """
     Handles the creation of the different dashboard pages.
     Methods include a way to format pages by using the layout dictionary.
+    The layout dictionary is built differently for each page and should allow for a more
+    or less flexible way of creating pages.
+
+    The layout dictionary is a list of dictionaries. Each dictionary contains the following
+    keys:
+    - content: either "markdown", "image" or "chart"
+    Depending on the content, the dictionary should contain the following keys:
+    - file: the name of the file containing the markdown or image
+    - chart_element: the chart element to be displayed, given by a dashboard controller method
+
+    The layout dictionary is passed to the create_page method, which will then create the page.
+
+    The standard and expert pages are also checking if the explanations should be shown and
+    which data set is chosen. This is done by checking with the dashboard controller.
     """
 
     def __init__(self, dashboard_controller: DashboardController = None):  # type: ignore
@@ -17,18 +31,31 @@ class DashboardPageCreator:
         """
         Create a tutorial page with graphics of how a random forest works.
         """
-        layout = [
-            {"content": "markdown", "file": "tutorial1.md"},
-            {"content": "image", "file": "flowers.png"},
-            {"content": "image", "file": "flower_measures.png"},
-            {"content": "markdown", "file": "tutorial2.md"},
-            {"content": "image", "file": "splitting.png"},
-            {"content": "markdown", "file": "tutorial3.md"},
-            {"content": "image", "file": "decision_tree.png"},
-            {"content": "markdown", "file": "tutorial4.md"},
-            {"content": "image", "file": "bagging.png"},
-            {"content": "markdown", "file": "tutorial5.md"},
-        ]
+        if self.dashboard_controller.check_data_choice() == "Iris":
+            layout = [
+                {"content": "markdown", "file": "iris_tutorial1.md"},
+                {"content": "image", "file": "flowers.png"},
+                {"content": "image", "file": "flower_measures.png"},
+                {"content": "markdown", "file": "iris_tutorial2.md"},
+                {"content": "image", "file": "splitting.png"},
+                {"content": "markdown", "file": "iris_tutorial3.md"},
+                {"content": "image", "file": "decision_tree.png"},
+                {"content": "markdown", "file": "iris_tutorial4.md"},
+                {"content": "image", "file": "bagging.png"},
+                {"content": "markdown", "file": "iris_tutorial5.md"},
+            ]
+        else:
+            layout = [
+                {"content": "markdown", "file": "digits_tutorial1.md"},
+                {"content": "image", "file": "digit.png"},
+                {"content": "markdown", "file": "digits_tutorial2.md"},
+                {"content": "image", "file": "splitting.png"},
+                {"content": "markdown", "file": "digits_tutorial3.md"},
+                {"content": "image", "file": "decision_tree.png"},
+                {"content": "markdown", "file": "digits_tutorial4.md"},
+                {"content": "image", "file": "bagging.png"},
+                {"content": "markdown", "file": "digits_tutorial5.md"},
+            ]
         self.create_page(layout)
 
     def create_standard_page(self, show_df: bool = False):
@@ -53,6 +80,10 @@ class DashboardPageCreator:
             },
             {
                 "content": "chart",
+                "chart_element": self.dashboard_controller.create_similarity_matrix(),
+            },
+            {
+                "content": "chart",
                 "chart_element": self.dashboard_controller.create_cluster_comparison_bar_dropdown(),
             },
             {
@@ -66,11 +97,30 @@ class DashboardPageCreator:
                 ),
             },
         ]
+        # Here we insert the explanation markdown files into the layout.
+        # This is done by inserting them at the desired index. Not the most elegant solution tbh.
         if self.dashboard_controller.show_explanations:
-            layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
-            layout.insert(3, {"content": "markdown", "file": "explanation2.md"})
-            layout.insert(5, {"content": "markdown", "file": "explanation3.md"})
-            layout.insert(7, {"content": "markdown", "file": "explanation4.md"})
+            if self.dashboard_controller.check_data_choice() == "Iris":
+                layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
+                layout.insert(
+                    3, {"content": "markdown", "file": "iris_explanation2.md"}
+                )
+                layout.insert(
+                    6, {"content": "markdown", "file": "iris_explanation3.md"}
+                )
+                layout.insert(8, {"content": "markdown", "file": "explanation4.md"})
+                layout.insert(10, {"content": "markdown", "file": "explanation5.md"})
+            else:
+                layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
+                layout.insert(
+                    3, {"content": "markdown", "file": "digits_explanation2.md"}
+                )
+                layout.insert(
+                    6, {"content": "markdown", "file": "digits_explanation3.md"}
+                )
+                layout.insert(8, {"content": "markdown", "file": "explanation4.md"})
+                layout.insert(10, {"content": "markdown", "file": "explanation5.md"})
+                layout.insert(11, {"content": "markdown", "file": "explanation6.md"})
         self.create_page(layout)
 
     def create_expert_page(self, show_df: bool = False):

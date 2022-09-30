@@ -170,7 +170,7 @@ class RFmodeller:
         )
         return clustering, cluster_df
 
-    def compute_distance_matrix(self):
+    def compute_distance_matrix(self) -> npt.NDArray[np.float64]:
         """
         Calculate the pairwise distance matrix for the directed graphs
         We use graph edit distance as the distance metric.

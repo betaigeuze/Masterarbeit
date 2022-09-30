@@ -3,6 +3,7 @@ Pandas handles all of the dataframes in the background.
 Altair is responsible for the charts."""
 import streamlit as st
 import pandas as pd
+import numpy as np
 import altair as alt
 from typing import Union
 from dataframe_operator import DataframeOperator
@@ -71,7 +72,7 @@ class DashboardController:
 
         # Page selection
         self.app_mode = sidebar.radio(
-            "Select a page to display", ["Expert", "Standard", "Tutorial"]
+            "Select a page to display", ["Standard", "Expert", "Tutorial"]
         )
 
         # Explanation toggle
@@ -162,7 +163,10 @@ class DashboardController:
         """
         Creates the base dashboard object.
         """
-        self.dashboard_container.subheader("Investigating the Random Forest")
+        data_choice = self.check_data_choice()
+        self.dashboard_container.subheader(
+            f"Investigating the Random Forest - The *{data_choice}* Dataset"
+        )
         if show_df:
             self.dashboard_container.write(self.tree_df)
 
@@ -307,7 +311,7 @@ class DashboardController:
         This is one of the 2 ways of comparing the clusters of the RF model.
         The other method is create_cluster_comparison_bar_dropdown()
         """
-        if self.check_data_choice():
+        if self.check_data_choice() == "Iris":
             chart = (
                 alt.Chart(self.tree_df)
                 .mark_bar()
@@ -467,6 +471,54 @@ class DashboardController:
                 .transform_filter(sel)
                 .add_selection(sel)
             )
+        return chart
+
+    def create_similarity_matrix(self) -> alt.Chart:
+        distance_matrix = self.rfm.distance_matrix
+        x, y = np.meshgrid(range(0, 100), range(0, 100))
+        source = pd.DataFrame(
+            {
+                "tree_x": x.ravel(),
+                "tree_y": y.ravel(),
+                "distance_value": distance_matrix.ravel(),
+            }
+        )
+        source_with_xcluster_info = source.join(
+            self.rfm.cluster_df.set_index("tree"),
+            on="tree_x",
+        )
+        source_with_cluster_info = source_with_xcluster_info.join(
+            self.rfm.cluster_df.set_index("tree"), on="tree_y", rsuffix="_y"
+        )
+        source_with_cluster_info.rename({"cluster": "cluster_x"}, axis=1, inplace=True)
+        chart = (
+            alt.Chart(source_with_cluster_info)
+            .mark_rect()
+            .encode(
+                x=alt.X(
+                    "tree_x:N",
+                    sort=alt.EncodingSortField(
+                        field="cluster_x", op="min", order="ascending"
+                    ),
+                ),
+                y=alt.Y(
+                    "tree_y:N",
+                    sort=alt.EncodingSortField(
+                        field="cluster_y", op="min", order="ascending"
+                    ),
+                ),
+                color=alt.Color(
+                    "distance_value:Q", scale=alt.Scale(range=self.range_[:-6:-1])
+                ),
+                tooltip=[
+                    "tree_x",
+                    "tree_y",
+                    "distance_value:Q",
+                    "cluster_x",
+                    "cluster_y",
+                ],
+            )
+        )
         return chart
 
     def check_data_choice(self):
