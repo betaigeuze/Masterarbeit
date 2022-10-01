@@ -19,7 +19,7 @@ class DashboardController:
         dfo: DataframeOperator,
     ):
         self.app_mode = None  # Defined in create_sidebar()
-        self.show_explanations = None  # Defined in create_sidebar()
+        # self.show_explanations = None  # Defined in create_sidebar()
         self.dashboard_sidebar = self.create_sidebar()
         self.dashboard_container = st.container()
         self.dashboard_container.header("RaFoView")
@@ -76,9 +76,9 @@ class DashboardController:
         )
 
         # Explanation toggle
-        self.show_explanations = sidebar.checkbox(
-            label="Show explanations", value=True, key="show_explanations"
-        )
+        # self.show_explanations = sidebar.checkbox(
+        #     label="Show explanations", value=True, key="show_explanations"
+        # )
 
         # Example selection
         self.data_form = sidebar.form("Data Selection", clear_on_submit=False)
@@ -106,9 +106,12 @@ class DashboardController:
         algorithm_parameters_form.slider(
             label="Select a value for the number of trees in the Random Forest (Changing this parameter will take a significant amount of time to calculate!):",
             min_value=20,
-            max_value=500,
+            max_value=200,
             step=1,
             key="n_estimators",
+            help="The number of trees in the forest can boost the overall performance of a random forest. However, it can be interesting to set this to a lower\
+            value to see how this affects the clustering and the performance of the tree as a whole.\n\
+            There are more parameters for a Random Forest, than the number of trees, but we will keep it at this for now.",
         )
         algorithm_parameters_form.markdown("### DBSCAN:")
         algorithm_parameters_form.slider(
@@ -116,15 +119,15 @@ class DashboardController:
             min_value=2,
             max_value=5,
             step=1,
-            # value=3,
             key="min_samples",
+            help="The min_samples parameter is used to determine the minimum number of trees in it's neighborhood for it to be considered as a core point.\
+                Reducing this will naturally yield more clusters, while increasing it will yield less clusters.",
         )
         algorithm_parameters_form.slider(
             label="Select a value for the DBSCAN parameter 'epsilon':",
             min_value=0.01,
             max_value=0.99,
             step=0.01,
-            # value=0.3,
             key="eps",
         )
         algorithm_parameters_form.markdown("### t-SNE:")
@@ -133,16 +136,17 @@ class DashboardController:
             min_value=1.0,
             max_value=500.0,
             step=1.0,
-            # value=100.0,
             key="learning_rate",
+            help="The learning rate is used to determine the step size in the gradient descent. Increasing or decreasing this parameter can yield\
+                wildly different results, so I recommend to pick a value that looks interesting and stick with it, when tuning the other 2 t-SNE parameters.",
         )
         algorithm_parameters_form.slider(
             label="Select a value for the t-SNE parameter 'perplexity':",
-            min_value=2,
-            max_value=100,
+            min_value=5,
+            max_value=50,
             step=1,
-            # value=5,
             key="perplexity",
+            help="The perplexity will also change the t-SNE results significantly. Usually, larger values are used for large datasets.",
         )
         algorithm_parameters_form.slider(
             label="Select a value for the t-SNE parameter 'early exaggeration':",
@@ -151,6 +155,7 @@ class DashboardController:
             step=1.0,
             # value=4.0,
             key="early_exaggeration",
+            help="The early exaggeration parameter is used to increase the distance between clusters.",
         )
         algorithm_parameters_form.form_submit_button(
             "Run",
@@ -159,14 +164,10 @@ class DashboardController:
 
         return sidebar
 
-    def create_base_dashboard(self, show_df: bool = False):
+    def show_df(self, show_df: bool = False):
         """
-        Creates the base dashboard object.
+        For dev purposes, the dataframe can be shown on the dashboard.
         """
-        data_choice = self.check_data_choice()
-        self.dashboard_container.subheader(
-            f"Investigating the Random Forest - The *{data_choice}* Dataset"
-        )
         if show_df:
             self.dashboard_container.write(self.tree_df)
 
@@ -379,6 +380,77 @@ class DashboardController:
             )
         return chart
 
+    def create_cluster_comparison_bar_easy(self) -> alt.Chart:
+        """
+        Bar plot displaying the cluster comparison of the RF model
+        This is one of the 2 ways of comparing the clusters of the RF model.
+        The other method is create_cluster_comparison_bar_repeat()
+        """
+        # Reference:
+        # https://github.com/altair-viz/altair/issues/1617
+
+        if self.check_data_choice() == "Iris":
+            columns = [
+                "mean_virginica_f1_score",
+                "mean_versicolor_f1_score",
+                "mean_setosa_f1_score",
+            ]
+            chart = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_virginica_f1_score="mean(virginica_f1-score)",
+                    mean_versicolor_f1_score="mean(versicolor_f1-score)",
+                    mean_setosa_f1_score="mean(setosa_f1-score)",
+                )
+                .transform_fold(columns, as_=["column", "value"])
+                .mark_bar(fill="#4E1E1E")
+                .encode(
+                    x=alt.X("column:N", sort="-y"),
+                    y=alt.Y("value:Q"),
+                    tooltip=[
+                        alt.Tooltip("value:Q", title="Value"),
+                    ],
+                )
+            )
+        else:
+            columns = [
+                "mean_0_f1_score",
+                "mean_1_f1_score",
+                "mean_2_f1_score",
+                "mean_3_f1_score",
+                "mean_4_f1_score",
+                "mean_5_f1_score",
+                "mean_6_f1_score",
+                "mean_7_f1_score",
+                "mean_8_f1_score",
+                "mean_9_f1_score",
+            ]
+            chart = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_0_f1_score="mean(0_f1-score)",
+                    mean_1_f1_score="mean(1_f1-score)",
+                    mean_2_f1_score="mean(2_f1-score)",
+                    mean_3_f1_score="mean(3_f1-score)",
+                    mean_4_f1_score="mean(4_f1-score)",
+                    mean_5_f1_score="mean(5_f1-score)",
+                    mean_6_f1_score="mean(6_f1-score)",
+                    mean_7_f1_score="mean(7_f1-score)",
+                    mean_8_f1_score="mean(8_f1-score)",
+                    mean_9_f1_score="mean(9_f1-score)",
+                )
+                .transform_fold(columns, as_=["column", "value"])
+                .mark_bar(fill="#4E1E1E")
+                .encode(
+                    x=alt.X("column:N", sort="-y"),
+                    y=alt.Y("value:Q"),
+                    tooltip=[
+                        alt.Tooltip("value:Q", title="Value"),
+                    ],
+                )
+            )
+        return chart
+
     def create_cluster_comparison_bar_dropdown(self) -> alt.Chart:
         """
         Bar plot displaying the cluster comparison of the RF model
@@ -421,6 +493,22 @@ class DashboardController:
                 )
                 .transform_filter(sel)
                 .add_selection(sel)
+            )
+            average_line = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_virginica_f1_score="mean(virginica_f1-score)",
+                    mean_versicolor_f1_score="mean(versicolor_f1-score)",
+                    mean_setosa_f1_score="mean(setosa_f1-score)",
+                )
+                .transform_fold(columns, as_=["column", "value"])
+                .mark_rule()
+                .encode(
+                    y=alt.Y("value:Q"),
+                    color=alt.value("#7fbc41"),
+                    tooltip=["value:Q"],
+                )
+                .transform_filter(sel)
             )
         else:
             # CHANGE TO DIGITS USE CASE
@@ -471,9 +559,33 @@ class DashboardController:
                 .transform_filter(sel)
                 .add_selection(sel)
             )
-        return chart
+            average_line = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_0_f1_score="mean(0_f1-score)",
+                    mean_1_f1_score="mean(1_f1-score)",
+                    mean_2_f1_score="mean(2_f1-score)",
+                    mean_3_f1_score="mean(3_f1-score)",
+                    mean_4_f1_score="mean(4_f1-score)",
+                    mean_5_f1_score="mean(5_f1-score)",
+                    mean_6_f1_score="mean(6_f1-score)",
+                    mean_7_f1_score="mean(7_f1-score)",
+                    mean_8_f1_score="mean(8_f1-score)",
+                    mean_9_f1_score="mean(9_f1-score)",
+                )
+                .transform_fold(columns, as_=["column", "value"])
+                .mark_rule()
+                .encode(
+                    y=alt.Y("value:Q"),
+                    color=alt.value("#7fbc41"),
+                    tooltip=["value:Q"],
+                )
+                .transform_filter(sel)
+            )
+        return alt.layer(chart, average_line)  # type: ignore
 
     def create_similarity_matrix(self) -> alt.Chart:
+        # Turn the similarity matrix into a dataframe that we can display with altair
         distance_matrix = self.rfm.distance_matrix
         x, y = np.meshgrid(
             range(0, distance_matrix.shape[0]), range(0, distance_matrix.shape[0])
@@ -493,6 +605,7 @@ class DashboardController:
             self.rfm.cluster_df.set_index("tree"), on="tree_y", rsuffix="_y"
         )
         source_with_cluster_info.rename({"cluster": "cluster_x"}, axis=1, inplace=True)
+        # Build the chart
         chart = (
             alt.Chart(source_with_cluster_info)
             .mark_rect()
@@ -502,12 +615,14 @@ class DashboardController:
                     sort=alt.EncodingSortField(
                         field="cluster_x", op="min", order="ascending"
                     ),
+                    axis=None,
                 ),
                 y=alt.Y(
                     "tree_y:N",
                     sort=alt.EncodingSortField(
                         field="cluster_y", op="min", order="ascending"
                     ),
+                    axis=None,
                 ),
                 color=alt.Color(
                     "distance_value:Q", scale=alt.Scale(range=self.range_[:-6:-1])
@@ -516,10 +631,9 @@ class DashboardController:
                     "tree_x",
                     "tree_y",
                     "distance_value:Q",
-                    "cluster_x",
-                    "cluster_y",
                 ],
             )
+            .properties(width=800, height=800)
         )
         return chart
 

@@ -14,8 +14,6 @@ def main():
     dpc = DashboardPageCreator(dc)
     if dc.app_mode == "Tutorial":
         dpc.create_tutorial_page()
-    # elif dc.app_mode == "Expert":
-    #     dpc.create_expert_page(show_df=False)
     elif dc.app_mode == "Dashboard":
         dpc.create_dashboard_page(show_df=False)
 

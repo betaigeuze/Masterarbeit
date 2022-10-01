@@ -1,2 +1,3 @@
 ## Tutorial on Random Forests:
-Imagine you had a number of flowers, that you wanted to distinguish into 3 groups, we'll call them *classes*. For each flower, you have measurements of their petal and sepal lengths and widths.
+For this use case, we will use the [iris dataset](http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html#sklearn.datasets.load_iris) from scikit-learn. This dataset contains measurements of flowers with 50 data points for 3 different types of flowers (setosa, virginica and versicolor). Each data point consists of 4 different measurements of the petal and sepal length and width.
+Now imagine that you wanted to take this dataset and distinguish the individual data points into their 3 different archetypes. In machine learning we call these archetypes *classes*. For each flower, you have measurements of their petal and sepal lengths and widths.
