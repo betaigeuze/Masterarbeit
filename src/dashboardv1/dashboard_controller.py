@@ -625,7 +625,8 @@ class DashboardController:
                     axis=None,
                 ),
                 color=alt.Color(
-                    "distance_value:Q", scale=alt.Scale(range=self.range_[:-6:-1])
+                    "distance_value:Q",
+                    scale=alt.Scale(range=self.range_[:-6:-1], domain=[0, 120]),
                 ),
                 tooltip=[
                     "tree_x",

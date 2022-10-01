@@ -249,12 +249,8 @@ class RFmodeller:
             if i == 0:
                 row_distances[i] = 0
             else:
-                # Get this out of the loop and create a dict maybe?
-                # No need to compute this on every loop iteration.
-                root1 = get_root(di_graph)
-                root2 = get_root(process_graph)
                 row_distances[i + dg_index] = nx.graph_edit_distance(
-                    di_graph, process_graph, timeout=0.5, roots=(root1, root2)
+                    di_graph, process_graph, timeout=0.5, roots=("0", "0")
                 )
 
         return {dg_index: row_distances}
@@ -308,8 +304,3 @@ def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:
     square_max = pow(np.nanmax(distance_matrix), 2)
     distance_matrix = np.nan_to_num(distance_matrix, nan=square_max)
     return distance_matrix
-
-
-def get_root(graph: nx.DiGraph) -> str:
-    # TODO: check if this is really no problem and if in_degree is always > 0
-    return [n for n, d in graph.in_degree() if d == 0][0]  # type: ignore
