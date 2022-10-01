@@ -72,7 +72,7 @@ class DashboardController:
 
         # Page selection
         self.app_mode = sidebar.radio(
-            "Select a page to display", ["Standard", "Expert", "Tutorial"]
+            "Select a page to display", ["Tutorial", "Dashboard"]
         )
 
         # Explanation toggle
@@ -475,7 +475,9 @@ class DashboardController:
 
     def create_similarity_matrix(self) -> alt.Chart:
         distance_matrix = self.rfm.distance_matrix
-        x, y = np.meshgrid(range(0, 100), range(0, 100))
+        x, y = np.meshgrid(
+            range(0, distance_matrix.shape[0]), range(0, distance_matrix.shape[0])
+        )
         source = pd.DataFrame(
             {
                 "tree_x": x.ravel(),
@@ -536,6 +538,6 @@ class DashboardController:
         be affected by selections in plots.
         """
         if len(charts) == 1:
-            self.dashboard_container.altair_chart(charts[0], use_container_width=True)
+            self.dashboard_container.altair_chart(charts[0], use_container_width=False)
         else:
-            self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=True)  # type: ignore
+            self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=False)  # type: ignore

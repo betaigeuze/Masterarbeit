@@ -20,7 +20,7 @@ class DashboardPageCreator:
 
     The layout dictionary is passed to the create_page method, which will then create the page.
 
-    The standard and expert pages are also checking if the explanations should be shown and
+    The Dashboard and expert pages are also checking if the explanations should be shown and
     which data set is chosen. This is done by checking with the dashboard controller.
     """
 
@@ -58,100 +58,122 @@ class DashboardPageCreator:
             ]
         self.create_page(layout)
 
-    def create_standard_page(self, show_df: bool = False):
+    def create_dashboard_page(self, show_df: bool = False):
         """
-        Create the standard dashboard according to the layout dictionary.
+        Create the dashboard according to the layout dictionary.
         Explanations will be toggled on by default.
         """
         self.dashboard_controller.create_base_dashboard(show_df=show_df)
-        layout = [
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.basic_scatter(
-                    color=alt.value("#4E1E1E"),  # type: ignore
-                    selection=False,
-                ),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_feature_importance_barchart(
-                    selection=False
-                ),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_similarity_matrix(),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_cluster_comparison_bar_dropdown(),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_tsne_scatter(),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_tsne_scatter(
-                    importance=True
-                ),
-            },
-        ]
-        # Here we insert the explanation markdown files into the layout.
-        # This is done by inserting them at the desired index. Not the most elegant solution tbh.
-        if self.dashboard_controller.show_explanations:
-            if self.dashboard_controller.check_data_choice() == "Iris":
-                layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
-                layout.insert(
-                    3, {"content": "markdown", "file": "iris_explanation2.md"}
-                )
-                layout.insert(
-                    6, {"content": "markdown", "file": "iris_explanation3.md"}
-                )
-                layout.insert(8, {"content": "markdown", "file": "explanation4.md"})
-                layout.insert(10, {"content": "markdown", "file": "explanation5.md"})
-            else:
-                layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
-                layout.insert(
-                    3, {"content": "markdown", "file": "digits_explanation2.md"}
-                )
-                layout.insert(
-                    6, {"content": "markdown", "file": "digits_explanation3.md"}
-                )
-                layout.insert(8, {"content": "markdown", "file": "explanation4.md"})
-                layout.insert(10, {"content": "markdown", "file": "explanation5.md"})
-                layout.insert(11, {"content": "markdown", "file": "explanation6.md"})
+        if self.dashboard_controller.check_data_choice() == "Iris":
+            layout = [
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.basic_scatter(
+                        color=alt.value("#4E1E1E"),  # type: ignore
+                        selection=False,
+                    ),
+                },
+                {"content": "markdown", "file": "explanation1.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_feature_importance_barchart(
+                        selection=False
+                    ),
+                },
+                {"content": "markdown", "file": "iris_explanation2.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_similarity_matrix(),
+                },
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_cluster_comparison_bar_dropdown(),
+                },
+                {"content": "markdown", "file": "iris_explanation3.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_tsne_scatter(),
+                },
+                {"content": "markdown", "file": "explanation4.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_tsne_scatter(
+                        importance=True
+                    ),
+                },
+                {"content": "markdown", "file": "explanation5.md"},
+            ]
+        else:
+            layout = [
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.basic_scatter(
+                        color=alt.value("#4E1E1E"),  # type: ignore
+                        selection=False,
+                    ),
+                },
+                {"content": "markdown", "file": "explanation1.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_feature_importance_barchart(
+                        selection=False
+                    ),
+                },
+                {"content": "markdown", "file": "digits_explanation2.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_similarity_matrix(),
+                },
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_cluster_comparison_bar_dropdown(),
+                },
+                {"content": "markdown", "file": "digits_explanation3.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_tsne_scatter(),
+                },
+                {"content": "markdown", "file": "explanation4.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_tsne_scatter(
+                        importance=True
+                    ),
+                },
+                {"content": "markdown", "file": "explanation5.md"},
+                {"content": "markdown", "file": "explanation6.md"},
+            ]
         self.create_page(layout)
 
-    def create_expert_page(self, show_df: bool = False):
-        """
-        Create the expert dashboard according to the layout dictionary.
-        """
-        self.dashboard_controller.create_base_dashboard(show_df=show_df)
-        layout = [
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.basic_scatter(
-                    self.dashboard_controller.color
-                ),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_cluster_comparison_bar_repeat(),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_tsne_scatter(),
-            },
-            {
-                "content": "chart",
-                "chart_element": self.dashboard_controller.create_feature_importance_barchart(),
-            },
-        ]
-        if self.dashboard_controller.show_explanations:
-            layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
+    # def create_expert_page(self, show_df: bool = False):
+    #     """
+    #     Create the expert dashboard according to the layout dictionary.
+    #     """
+    #     self.dashboard_controller.create_base_dashboard(show_df=show_df)
+    #     layout = [
+    #         {
+    #             "content": "chart",
+    #             "chart_element": self.dashboard_controller.basic_scatter(
+    #                 self.dashboard_controller.color
+    #             ),
+    #         },
+    #         {
+    #             "content": "chart",
+    #             "chart_element": self.dashboard_controller.create_cluster_comparison_bar_repeat(),
+    #         },
+    #         {
+    #             "content": "chart",
+    #             "chart_element": self.dashboard_controller.create_tsne_scatter(),
+    #         },
+    #         {
+    #             "content": "chart",
+    #             "chart_element": self.dashboard_controller.create_feature_importance_barchart(),
+    #         },
+    #     ]
+    #     if self.dashboard_controller.show_explanations:
+    #         layout.insert(1, {"content": "markdown", "file": "explanation1.md"})
 
-        self.create_page(layout)
+    #     self.create_page(layout)
 
     def create_page(self, layout: list[dict]):
         """
@@ -179,7 +201,10 @@ class DashboardPageCreator:
         # the first non-chart element or at the end of the loop.
         charts = []
         for item in layout:
-            if item["content"] == "markdown":
+            if (
+                item["content"] == "markdown"
+                and self.dashboard_controller.show_explanations
+            ):
                 if charts:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
