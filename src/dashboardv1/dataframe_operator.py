@@ -35,10 +35,7 @@ class DataframeOperator:
         tree_df = pd.DataFrame(columns=["n_leaves", "depth"])
         for est in rfm.model.estimators_:
             new_row = {"n_leaves": est.get_n_leaves(), "depth": est.get_depth()}
-
             # List of tuples with variable and importance
-            # TODO: The column names should be of "featurename_importance" format
-            # Otherwise it is very confusing to see feature names in the tree_df
             feature_importances = [
                 (feature + "_importance", round(importance, 2))
                 for feature, importance in zip(features, list(est.feature_importances_))

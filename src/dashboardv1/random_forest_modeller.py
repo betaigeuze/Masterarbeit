@@ -99,10 +99,6 @@ class RFmodeller:
         """
         Transform the sklearn estimators of Tree class to nxDiGraphs
         """
-        # TODO:
-        # Not a priority!
-        # Changed to avoid using .dot files
-        # Need a to verify that information is preserved.
         directed_graphs = []
         for estimator in self.model.estimators_:
             pgv_tree_string = tree.export_graphviz(
@@ -173,9 +169,15 @@ class RFmodeller:
     def compute_distance_matrix(self) -> npt.NDArray[np.float64]:
         """
         Calculate the pairwise distance matrix for the directed graphs
+        If possible, a pickle file is loaded, otherwise the distance matrix is
+        calculated and saved to a pickle file.
+        The pickle files for the iris and digits datasets are included in the repo
+        for random forest size 100. For every other random forest size, the distance
+        matrix is calculated on clicking "run" in the dashboard.
+        However, after calculating any distance matrix, it is saved to a pickle file
+        as well and can be loaded from there.
         We use graph edit distance as the distance metric.
         """
-        # TODO: With the current logic, it is not possible check if the pickle was created with a different version of the random forest model.
         pickle_path = Path.cwd().joinpath(
             "src", "dashboardv1", "pickle", f"distance_matrix_{self.data_choice}.pickle"
         )
@@ -240,9 +242,6 @@ class RFmodeller:
         Each row is then collected by the multiprocessing pool, which results in the
         distance matrix.
         """
-        # This is the smart version of the above method.
-        # TODO: Verify how graph_edit_distance works
-        # Does it take node labels, split points, etc. into account?
         row_distances = np.zeros(len(self.directed_graphs))
         dg_index = self.directed_graphs.index(process_graph)
         for i, di_graph in enumerate(self.directed_graphs[dg_index:]):
