@@ -21,6 +21,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn.cluster import DBSCAN
 from sklearn.manifold import TSNE
+from sklearn.preprocessing import MinMaxScaler
 from os.path import exists
 import pandas as pd
 import networkx as nx
@@ -143,7 +144,7 @@ class RFmodeller:
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
         return tsne_embedding, tsne_df
 
-    def calculate_tree_clusters(self, eps: float = 0.3, min_samples: int = 3):
+    def calculate_tree_clusters(self, eps: float = 0.09, min_samples: int = 3):
         slider_parameters = ["eps", "min_samples"]
         for parameter in slider_parameters:
             if parameter not in st.session_state:
@@ -214,6 +215,8 @@ class RFmodeller:
                 distance_matrix + distance_matrix.T - np.diag(np.diag(distance_matrix))
             )
             distance_matrix = remove_possible_nans(distance_matrix)
+            scaler = MinMaxScaler()
+            distance_matrix = scaler.fit_transform(distance_matrix)
             if not self.dist_matr_shape_ok(distance_matrix):
                 raise ValueError(
                     "RFModeller: Error after calculating distance matrix. Distance matrix shape is not correct."
@@ -261,10 +264,20 @@ class RFmodeller:
         )
 
     def calculate_silhouette_scores_df(self):
+        no_noise_tree_list = self.cluster_df.loc[self.cluster_df["cluster"] > -1][
+            "tree"
+        ].to_list()
+        no_noise_cluster_df = self.cluster_df.loc[self.cluster_df["cluster"] > -1]
+        distance_matrix_rows_filtered = np.take(
+            self.distance_matrix, no_noise_tree_list, axis=0
+        )
+        distance_matrix_no_noise = np.take(
+            distance_matrix_rows_filtered, no_noise_tree_list, axis=1
+        )
         try:
             cluster_silhouette_score = silhouette_score(
-                X=self.distance_matrix,
-                labels=self.cluster_df["cluster"],
+                X=distance_matrix_no_noise,
+                labels=no_noise_cluster_df["cluster"],
                 metric="precomputed",
                 sample_size=None,
             )
@@ -276,7 +289,8 @@ class RFmodeller:
                 ),
                 columns=["Silhouette Score"],
             )
-        except ValueError:
+        except ValueError as e:
+            print(e)
             print(
                 "RFModeller: Error in calculate_silhouette_scores_df. Probably only one cluster was found."
             )

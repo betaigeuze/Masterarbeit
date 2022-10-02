@@ -117,7 +117,7 @@ class DashboardController:
         algorithm_parameters_form.slider(
             label="Select a value for the DBSCAN parameter 'min samples':",
             min_value=2,
-            max_value=5,
+            max_value=10,
             step=1,
             key="min_samples",
             help="The min_samples parameter is used to determine the minimum number of trees in it's neighborhood for it to be considered as a core point.\
@@ -626,7 +626,7 @@ class DashboardController:
                 ),
                 color=alt.Color(
                     "distance_value:Q",
-                    scale=alt.Scale(range=self.range_[:-6:-1], domain=[0, 120]),
+                    scale=alt.Scale(range=self.range_[:-6:-1]),
                 ),
                 tooltip=[
                     "tree_x",

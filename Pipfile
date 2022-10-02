@@ -8,6 +8,7 @@ streamlit = "*"
 scikit-learn = "*"
 pygraphviz = "*"
 networkx = "*"
+nose = "*"
 
 [dev-packages]
 black = "*"
