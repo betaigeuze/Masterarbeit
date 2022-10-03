@@ -20,6 +20,9 @@ class DashboardController:
     ):
         self.app_mode = None  # Defined in create_sidebar()
         # self.show_explanations = None  # Defined in create_sidebar()
+        self.rfm = dfo.rfm
+        self.tree_df = dfo.tree_df
+        self.dfo = dfo
         self.dashboard_sidebar = self.create_sidebar()
         self.dashboard_container = st.container()
         self.dashboard_container.header("RaFoView")
@@ -28,9 +31,6 @@ class DashboardController:
         self.feature_names_plus_importance = [
             feature + "_importance" for feature in self.features
         ]
-        self.tree_df = dfo.tree_df
-        self.rfm = dfo.rfm
-        self.dfo = dfo
         self.brush = alt.selection_interval()
         self.range_ = [
             "#8e0152",
@@ -93,76 +93,83 @@ class DashboardController:
             help="On 'run' the selected dataset will be loaded into the dashboard",
         )
 
-        # Algorithm parameter form
-        algorithm_parameters_form = sidebar.form(
-            "algorithm_parameters", clear_on_submit=False
-        )
-        algorithm_parameters_form.markdown("## Algorithm Parameters")
+        if self.app_mode == "Dashboard":
+            # Algorithm parameter form
+            algorithm_parameters_form = sidebar.form(
+                "algorithm_parameters", clear_on_submit=False
+            )
+            algorithm_parameters_form.markdown("## Algorithm Parameters")
 
-        algorithm_parameters_form.markdown(
-            "Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a while."
-        )
-        algorithm_parameters_form.markdown("### Random Forest:")
-        algorithm_parameters_form.slider(
-            label="Select a value for the number of trees in the Random Forest (Changing this parameter will take a significant amount of time to calculate!):",
-            min_value=20,
-            max_value=200,
-            step=1,
-            key="n_estimators",
-            help="The number of trees in the forest can boost the overall performance of a random forest. However, it can be interesting to set this to a lower\
-            value to see how this affects the clustering and the performance of the tree as a whole.\n\
-            There are more parameters for a Random Forest, than the number of trees, but we will keep it at this for now.",
-        )
-        algorithm_parameters_form.markdown("### DBSCAN:")
-        algorithm_parameters_form.slider(
-            label="Select a value for the DBSCAN parameter 'min samples':",
-            min_value=2,
-            max_value=10,
-            step=1,
-            key="min_samples",
-            help="The min_samples parameter is used to determine the minimum number of trees in it's neighborhood for it to be considered as a core point.\
-                Reducing this will naturally yield more clusters, while increasing it will yield less clusters.",
-        )
-        algorithm_parameters_form.slider(
-            label="Select a value for the DBSCAN parameter 'epsilon':",
-            min_value=0.01,
-            max_value=0.99,
-            step=0.01,
-            key="eps",
-            help="The eps parameter determines the maximum distance between two samples to be considered as in the neighborhood of each other.\
-                In turn, this implies that cluster sizes are even across the dataset which is not necessarily the case.",
-        )
-        algorithm_parameters_form.markdown("### t-SNE:")
-        algorithm_parameters_form.slider(
-            label="Select a value for the t-SNE parameter 'learning rate':",
-            min_value=1.0,
-            max_value=500.0,
-            step=1.0,
-            key="learning_rate",
-            help="The learning rate is used to determine the step size in the gradient descent. Increasing or decreasing this parameter can yield\
-                wildly different results, so I recommend to pick a value that looks interesting and stick with it, when tuning the other 2 t-SNE parameters.",
-        )
-        algorithm_parameters_form.slider(
-            label="Select a value for the t-SNE parameter 'perplexity':",
-            min_value=5,
-            max_value=50,
-            step=1,
-            key="perplexity",
-            help="The perplexity will also change the t-SNE results significantly. Usually, larger values are used for large datasets.",
-        )
-        algorithm_parameters_form.slider(
-            label="Select a value for the t-SNE parameter 'early exaggeration':",
-            min_value=2.0,
-            max_value=50.0,
-            step=1.0,
-            # value=4.0,
-            key="early_exaggeration",
-            help="The early exaggeration parameter is used to increase the distance between clusters.",
-        )
-        algorithm_parameters_form.form_submit_button(
-            "Run",
-            help="On 'run' the selected dataset will be loaded into the dashboard",
-        )
+            algorithm_parameters_form.markdown(
+                "Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a while."
+            )
+            algorithm_parameters_form.markdown("### Random Forest:")
+            algorithm_parameters_form.slider(
+                label="Select a value for the number of trees in the Random Forest (Changing this parameter will take a significant amount of time to calculate!):",
+                min_value=20,
+                max_value=200,
+                step=1,
+                key="n_estimators",
+                help="The number of trees in the forest can boost the overall performance of a random forest. However, it can be interesting to set this to a lower\
+                value to see how this affects the clustering and the performance of the tree as a whole.\n\
+                There are more parameters for a Random Forest, than the number of trees, but we will keep it at this for now.",
+            )
+            algorithm_parameters_form.markdown("### DBSCAN:")
+            algorithm_parameters_form.metric(
+                label="Silhouette Score",
+                value=np.round(self.rfm.silhouette_score, decimals=2),
+                help="The Silhouette Score, as computed here, is an average of all Silhouette Scores\
+                    of the individual datapoints, averaged together. Note, that the points classified as noise are excluded from this calculation.",
+            )
+
+            algorithm_parameters_form.slider(
+                label="Select a value for the DBSCAN parameter 'min samples':",
+                min_value=2,
+                max_value=10,
+                step=1,
+                key="min_samples",
+                help="The min_samples parameter is used to determine the minimum number of trees in it's neighborhood for it to be considered as a core point.\
+                    Reducing this will naturally yield more clusters, while increasing it will yield less clusters.",
+            )
+            algorithm_parameters_form.slider(
+                label="Select a value for the DBSCAN parameter 'epsilon':",
+                min_value=0.01,
+                max_value=0.99,
+                step=0.01,
+                key="eps",
+                help="The eps parameter determines the maximum distance between two samples to be considered as in the neighborhood of each other.\
+                    In turn, this implies that cluster sizes are even across the dataset which is not necessarily the case.",
+            )
+            algorithm_parameters_form.markdown("### t-SNE:")
+            algorithm_parameters_form.slider(
+                label="Select a value for the t-SNE parameter 'learning rate':",
+                min_value=1.0,
+                max_value=500.0,
+                step=1.0,
+                key="learning_rate",
+                help="The learning rate is used to determine the step size in the gradient descent. Increasing or decreasing this parameter can yield\
+                    wildly different results, so I recommend to pick a value that looks interesting and stick with it, when tuning the other 2 t-SNE parameters.",
+            )
+            algorithm_parameters_form.slider(
+                label="Select a value for the t-SNE parameter 'perplexity':",
+                min_value=5,
+                max_value=50,
+                step=1,
+                key="perplexity",
+                help="The perplexity will also change the t-SNE results significantly. Usually, larger values are used for large datasets.",
+            )
+            algorithm_parameters_form.slider(
+                label="Select a value for the t-SNE parameter 'early exaggeration':",
+                min_value=2.0,
+                max_value=50.0,
+                step=1.0,
+                key="early_exaggeration",
+                help="The early exaggeration parameter is used to increase the distance between clusters.",
+            )
+            algorithm_parameters_form.form_submit_button(
+                "Run",
+                help="On 'run' the selected dataset will be loaded into the dashboard",
+            )
 
         return sidebar
 
@@ -193,6 +200,13 @@ class DashboardController:
                 y=alt.Y("feature:N", stack=None, sort="-x"),
             )
         )
+        if self.check_data_choice() == "Digits":
+            text = chart.mark_text(
+                align="left",
+                baseline="middle",
+                dx=3,  # Nudges text to right so it doesn't appear on top of the bar
+            ).encode(text="mean(importance):Q")
+            chart = chart + text
         if selection:
             chart = chart.transform_filter(self.brush)
         if flip:
@@ -300,6 +314,7 @@ class DashboardController:
                 column=alt.Row("cluster:N", sort="descending", title="Cluster"),
                 spacing=0.4,
             )
+            .transform_filter(alt.datum.cluster != "Noise")
             .resolve_scale(x="independent")
         )
         # Not pretty at all, but autosizing does not work with faceted charts (yet)
@@ -407,8 +422,8 @@ class DashboardController:
                 .transform_fold(columns, as_=["column", "value"])
                 .mark_bar(fill="#4E1E1E")
                 .encode(
-                    x=alt.X("column:N", sort="-y"),
-                    y=alt.Y("value:Q"),
+                    x=alt.Y("value:Q"),
+                    y=alt.X("column:N", sort="-x"),
                     tooltip=[
                         alt.Tooltip("value:Q", title="Value"),
                     ],

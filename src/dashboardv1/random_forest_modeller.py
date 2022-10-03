@@ -65,7 +65,10 @@ class RFmodeller:
             self.cluster_df,
         ) = self.calculate_tree_clusters()
         (self.tsne_embedding, self.tsne_df) = self.calculate_tsne_embedding()
-        self.silhouette_scores_df = self.calculate_silhouette_scores_df()
+        (
+            self.silhouette_scores_df,
+            self.silhouette_score,
+        ) = self.calculate_silhouette_scores_df()
 
     def train_model(self):
         """
@@ -299,7 +302,7 @@ class RFmodeller:
                 self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]
             )
         print(f"Silhouette score: {cluster_silhouette_score}")
-        return silhouette_df
+        return silhouette_df, cluster_silhouette_score
 
 
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:

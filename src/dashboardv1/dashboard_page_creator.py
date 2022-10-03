@@ -128,7 +128,7 @@ class DashboardPageCreator:
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_feature_importance_barchart(
-                        selection=False
+                        selection=False, flip=True
                     ),
                 },
                 {"content": "markdown", "file": "digits_explanation2.md"},
