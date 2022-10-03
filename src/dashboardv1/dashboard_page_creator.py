@@ -1,6 +1,5 @@
 """Path enables the reading of files containing the markdown for the dashboard."""
 from pathlib import Path
-import altair as alt
 from dashboard_controller import DashboardController
 
 
