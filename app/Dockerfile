@@ -12,6 +12,12 @@ RUN apt-get update && apt-get install -y \
 
 RUN git clone https://github.com/betaigeuze/Masterarbeit.git .
 
-RUN pip3 install -r requirements.txt
+RUN apt-get update
 
-ENTRYPOINT ["streamlit", "run", "st_dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
+RUN apt-get install -y graphviz graphviz-dev
+
+COPY requirements.txt /tmp/requirements.txt
+
+RUN pip3 install -r /tmp/requirements.txt
+
+ENTRYPOINT ["streamlit", "run", "/app/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=http://172.21.102.175"]
