@@ -13,7 +13,7 @@
             "justMyCode": true,
             "args": [
                 "run",
-                "/home/betaigeuze/Masterarbeit/src/dashboardv1/st_dashboard.py"
+                "/home/betaigeuze/Masterarbeit/app/src/dashboardv1/st_dashboard.py"
             ]
         }
     ]

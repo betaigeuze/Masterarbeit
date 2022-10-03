@@ -183,10 +183,15 @@ class RFmodeller:
         We use graph edit distance as the distance metric.
         """
         pickle_path = Path.cwd().joinpath(
-            "src", "dashboardv1", "pickle", f"distance_matrix_{self.data_choice}.pickle"
+            "app",
+            "src",
+            "dashboardv1",
+            "pickle",
+            f"distance_matrix_{self.data_choice}.pickle",
         )
         if self.model.n_estimators != 100:
             pickle_path = Path.cwd().joinpath(
+                "app",
                 "src",
                 "dashboardv1",
                 "temp",

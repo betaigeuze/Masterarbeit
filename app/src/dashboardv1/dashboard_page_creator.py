@@ -170,14 +170,14 @@ class DashboardPageCreator:
         def read_md(file_name: str) -> str:
             return (
                 Path.cwd()
-                .joinpath("src", "dashboardv1", "text", file_name)
+                .joinpath("app", "src", "dashboardv1", "text", file_name)
                 .read_text(encoding="utf-8")
             )
 
         def read_image(file_name: str) -> bytes:
             return (
                 Path.cwd()
-                .joinpath("src", "dashboardv1", "images", file_name)
+                .joinpath("app", "src", "dashboardv1", "images", file_name)
                 .read_bytes()
             )
 
