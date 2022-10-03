@@ -129,6 +129,8 @@ class DashboardController:
             max_value=0.99,
             step=0.01,
             key="eps",
+            help="The eps parameter determines the maximum distance between two samples to be considered as in the neighborhood of each other.\
+                In turn, this implies that cluster sizes are even across the dataset which is not necessarily the case.",
         )
         algorithm_parameters_form.markdown("### t-SNE:")
         algorithm_parameters_form.slider(
