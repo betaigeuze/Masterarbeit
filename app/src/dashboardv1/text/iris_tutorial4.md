@@ -1,6 +1,7 @@
-This part of the process is called *training* the decision tree. The resulting figure is a decision tree and each of it's leaves is a mostly uniform group of just one class. And you can even traverse the tree in order to understand what's happening!  
+<p class="text-font">
+This part of the process is called <i>training</i> the decision tree. The resulting figure is a decision tree and each of it's leaves is a mostly uniform group of just one class. And you can even traverse the tree in order to understand what's happening!  
 Now that you have your trained decision tree, you could use this tree to make predictions on a whole different set of flowers with the same classes and features. The problem is, that it would most likely classify perform rather poorly. That's what's called overfitting!  
 
-
-Now one of the ways to avoid this to happen would be to use a **Random Forest**. A Random Forest is a collection of decision trees, where each tree was trained on a slightly different data set and built with a marginally different process. Let's look at this closely:  
-Each tree performs something called *bagging*. Bagging is the process of randomly picking parts of the training data set, with the possibility of picking the same parts multiple times. Assume each of your data points was a ball in a bowl. Now you pick one of the data points out of the bowl, write it down and then put the ball back in the bowl, shuffle it around and pick again. Do this for the amount of total data points and for each tree seperately.
+<p class="text-font">
+Now one of the ways to avoid this to happen would be to use a <b>Random Forest</b>. A Random Forest is a collection of decision trees, where each tree was trained on a slightly different data set and built with a marginally different process. Let's look at this closely:  
+Each tree performs something called <i>bagging</i>. Bagging is the process of randomly picking parts of the training data set, with the possibility of picking the same parts multiple times. Assume each of your data points was a ball in a bowl. Now you pick one of the data points out of the bowl, write it down and then put the ball back in the bowl, shuffle it around and pick again. Do this for the amount of total data points and for each tree seperately.

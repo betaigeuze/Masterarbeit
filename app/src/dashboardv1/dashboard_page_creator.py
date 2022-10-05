@@ -69,13 +69,6 @@ class DashboardPageCreator:
             layout = [
                 {"content": "markdown", "file": "welcome.md"},
                 {"content": "markdown", "file": "iris_header.md"},
-                # {
-                #     "content": "chart",
-                #     "chart_element": self.dashboard_controller.basic_scatter(
-                #         color=alt.value("#4E1E1E"),  # type: ignore
-                #         selection=False,
-                #     ),
-                # },
                 {"content": "markdown", "file": "explanation1.md"},
                 {
                     "content": "chart",
@@ -116,13 +109,6 @@ class DashboardPageCreator:
             layout = [
                 {"content": "markdown", "file": "welcome.md"},
                 {"content": "markdown", "file": "digits_header.md"},
-                # {
-                #     "content": "chart",
-                #     "chart_element": self.dashboard_controller.basic_scatter(
-                #         color=alt.value("#4E1E1E"),  # type: ignore
-                #         selection=False,
-                #     ),
-                # },
                 {"content": "markdown", "file": "explanation1.md"},
                 {
                     "content": "chart",
@@ -167,6 +153,36 @@ class DashboardPageCreator:
         Creates a page with according to the passed layout.
         """
 
+        def setup_font_sizes():
+            self.dashboard_controller.dashboard_container.markdown(
+                """
+                <style>
+                .text-font {
+                    font-size:20px !important;
+                }
+                .sidebar-font {
+                    font-size:18px !important;
+                }
+
+                .stRadio label {
+                font-size: 20px;
+                }
+                .stRadio div {
+                font-size: 18px;
+                }
+
+                .stSelectbox label {
+                font-size: 18px;
+                }
+
+                .stSlider label {
+                    font-size: 18px;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+
         def read_md(file_name: str) -> str:
             return (
                 Path.cwd()
@@ -186,6 +202,7 @@ class DashboardPageCreator:
         # If it was and the current element is not, we can just display it.
         # Otherwise the list of charts grows and gets displayed either with
         # the first non-chart element or at the end of the loop.
+        setup_font_sizes()
         charts = []
         for item in layout:
             if (
@@ -197,7 +214,7 @@ class DashboardPageCreator:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
                 self.dashboard_controller.dashboard_container.markdown(
-                    read_md(item["file"])
+                    read_md(item["file"]), unsafe_allow_html=True
                 )
             elif item["content"] == "image":
                 if charts:

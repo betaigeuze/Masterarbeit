@@ -1,3 +1,4 @@
-## Tutorial on Random Forests:
-For this use case, we will use the [digits dataset](http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html#sklearn.datasets.load_digits) from scikit-learn. This dataset contains 1797 8x8 images of hand-written digits. Each image is represented as a 64-dimensional vector. For each number, you have brightness values of the 64 Pixels that they are made of. You can see an example image shown below.
-Imagine you wanted to distinguish these pictures into which number each picture represents. In machine learning, we call these distinct groups *classes*.
+<h3>Tutorial on Random Forests:</h3>
+<p class="text-font">
+For this use case, we will use the <a href="http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html#sklearn.datasets.load_digits"> Digits dataset </a> from scikit-learn. This dataset contains 1797 8x8 images of hand-written digits. Each image is represented as a 64-dimensional vector. For each number, you have brightness values of the 64 Pixels that they are made of. You can see an example image shown below.
+Imagine you wanted to distinguish these pictures into which number each picture represents. In machine learning, we call these distinct groups <i>classes</i>.

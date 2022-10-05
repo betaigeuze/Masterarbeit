@@ -1,2 +1,3 @@
+<p class="text-font">
 Say, you were to seperate all of the flowers with a petal width of over 3 cm, into one group and all of the others, into another. You can now proceed on to the next important feature and do the exact same thing for both of the two new groups you just created. Then you go on to the resulting 4 groups and do the same with them...
-You get the idea. The splitting point (in our example, the 3 cm) is called the *threshhold*.
+You get the idea. The splitting point (in our example, the 3 cm) is called the <i>threshhold</i>.

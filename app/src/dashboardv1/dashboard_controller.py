@@ -101,7 +101,11 @@ class DashboardController:
             algorithm_parameters_form.markdown("## Algorithm Parameters")
 
             algorithm_parameters_form.markdown(
-                "Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a while."
+                """
+                <p class="sidebar-font">
+                Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a while.
+                """,
+                unsafe_allow_html=True,
             )
             algorithm_parameters_form.markdown("### Random Forest:")
             algorithm_parameters_form.slider(
@@ -643,7 +647,7 @@ class DashboardController:
                 ),
                 color=alt.Color(
                     "distance_value:Q",
-                    scale=alt.Scale(range=self.range_[:-6:-1]),
+                    scale=alt.Scale(scheme="greys", reverse=True),
                 ),
                 tooltip=[
                     "tree_x",
