@@ -52,7 +52,7 @@ class DashboardController:
                 "Silhouette Score:Q",
                 scale=self.scale_color,
                 legend=alt.Legend(
-                    orient="right",
+                    orient="left",
                     # legendX=210,
                     # legendY=-40,
                     direction="vertical",
@@ -277,7 +277,7 @@ class DashboardController:
             if self.check_data_choice() == "Iris":
                 return alt.hconcat(
                     tsne_chart,
-                    self.create_feature_importance_barchart(selection=True, flip=True),
+                    self.create_feature_importance_barchart(selection=True, flip=False),
                 )  # type: ignore
             else:
                 return alt.hconcat(
@@ -523,10 +523,10 @@ class DashboardController:
                     mean_setosa_f1_score="mean(setosa_f1-score)",
                 )
                 .transform_fold(columns, as_=["column", "value"])
-                .mark_rule()
+                .mark_rule(size=3, strokeDash=[6, 2])
                 .encode(
                     y=alt.Y("value:Q"),
-                    color=alt.value("#7fbc41"),
+                    color=alt.value("blue"),
                     tooltip=["value:Q"],
                 )
                 .transform_filter(sel)
