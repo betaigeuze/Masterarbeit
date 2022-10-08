@@ -19,7 +19,6 @@ class DashboardController:
         dfo: DataframeOperator,
     ):
         self.app_mode = None  # Defined in create_sidebar()
-        # self.show_explanations = None  # Defined in create_sidebar()
         self.rfm = dfo.rfm
         self.tree_df = dfo.tree_df
         self.dfo = dfo
@@ -53,8 +52,6 @@ class DashboardController:
                 scale=self.scale_color,
                 legend=alt.Legend(
                     orient="left",
-                    # legendX=210,
-                    # legendY=-40,
                     direction="vertical",
                     titleAnchor="start",
                     title="Silhouette Score",
@@ -81,11 +78,6 @@ class DashboardController:
         self.app_mode = sidebar.radio(
             "Select a page to display", ["Tutorial", "Dashboard"]
         )
-
-        # Explanation toggle
-        # self.show_explanations = sidebar.checkbox(
-        #     label="Show explanations", value=True, key="show_explanations"
-        # )
 
         # Example selection
         self.data_form = sidebar.form("Data Selection", clear_on_submit=False)
@@ -205,26 +197,54 @@ class DashboardController:
         their selections.
         flip, if True, swaps the x and y axis.
         """
-        chart = (
-            alt.Chart(self.tree_df)
-            .transform_fold(
-                self.feature_names_plus_importance, as_=["feature", "importance"]
-            )
-            .mark_bar(fill="#7B3514")
-            .encode(
-                x=alt.X("mean_importance:Q", scale=alt.Scale(domain=(0, 1))),
-                y=alt.Y(
-                    "feature:N",
-                    sort=alt.EncodingSortField(
-                        field="mean_importance", op="mean", order="descending"
+        if top_k:
+            chart = (
+                alt.Chart(self.tree_df)
+                .transform_fold(
+                    self.feature_names_plus_importance, as_=["feature", "importance"]
+                )
+                .mark_bar(fill="#7B3514")
+                .encode(
+                    x=alt.X("mean_importance:Q", scale=alt.Scale(domain=(0, 1))),
+                    y=alt.Y(
+                        "feature:N",
+                        sort=alt.EncodingSortField(
+                            field="mean_importance", op="mean", order="descending"
+                        ),
                     ),
-                ),
+                )
+                .transform_aggregate(
+                    mean_importance="mean(importance)",
+                    groupby=["feature"],
+                )
+                .transform_window(
+                    rank="rank(mean_importance)",
+                    sort=[alt.SortField("mean_importance", order="descending")],
+                    frame=[None, None],
+                )
+                .transform_filter(alt.datum.rank < top_k)
             )
-            .transform_aggregate(
-                mean_importance="mean(importance)",
-                groupby=["feature"],
+        else:
+            chart = (
+                alt.Chart(self.tree_df)
+                .transform_fold(
+                    self.feature_names_plus_importance, as_=["feature", "importance"]
+                )
+                .mark_bar(fill="#7B3514")
+                .encode(
+                    x=alt.X("mean_importance:Q", scale=alt.Scale(domain=(0, 1))),
+                    y=alt.Y(
+                        "feature:N",
+                        sort=alt.EncodingSortField(
+                            field="mean_importance", op="mean", order="descending"
+                        ),
+                    ),
+                )
+                .transform_aggregate(
+                    mean_importance="mean(importance)",
+                    groupby=["feature"],
+                )
             )
-        )
         if self.check_data_choice() == "Digits":
             text = chart.mark_text(
                 align="left",
@@ -244,12 +264,6 @@ class DashboardController:
             chart.encoding.y = (
                 alt.Y("mean_importance:Q", scale=alt.Scale(domain=(0, 1))),
             )
-        if top_k:
-            chart = chart.transform_window(
-                rank="rank(mean_importance)",
-                sort=[alt.SortField("mean_importance", order="descending")],
-                frame=[None, None],
-            ).transform_filter((alt.datum.rank < top_k))
         chart = self.add_title(chart, title, subtitle)
         return chart.properties(width=1000, height=700)
 
