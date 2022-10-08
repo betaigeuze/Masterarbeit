@@ -212,7 +212,7 @@ class DashboardController:
             )
             .mark_bar(fill="#7B3514")
             .encode(
-                x=alt.X("mean_importance:Q"),
+                x=alt.X("mean_importance:Q", scale=alt.Scale(domain=(0, 1))),
                 y=alt.Y(
                     "feature:N",
                     sort=alt.EncodingSortField(
@@ -241,7 +241,9 @@ class DashboardController:
                     field="mean_importance", op="mean", order="descending"
                 ),
             )
-            chart.encoding.y = alt.Y("mean_importance:Q")
+            chart.encoding.y = (
+                alt.Y("mean_importance:Q", scale=alt.Scale(domain=(0, 1))),
+            )
         if top_k:
             chart = chart.transform_window(
                 rank="rank(mean_importance)",
@@ -249,7 +251,7 @@ class DashboardController:
                 frame=[None, None],
             ).transform_filter((alt.datum.rank < top_k))
         chart = self.add_title(chart, title, subtitle)
-        return chart
+        return chart.properties(width=1000, height=700)
 
     def basic_scatter(
         self,
@@ -301,7 +303,7 @@ class DashboardController:
         """
         tsne_chart = (
             alt.Chart(self.tree_df)
-            .mark_circle(stroke="#7B3514", strokeWidth=1)
+            .mark_circle(stroke="#7B3514", strokeWidth=1, size=100)
             .encode(
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
                 y=alt.Y("Component 2:Q", scale=alt.Scale(zero=False)),
@@ -312,7 +314,7 @@ class DashboardController:
                 ],
             )
             .add_selection(self.brush)
-        )
+        ).properties(width=700, height=700)
         if importance:
             if self.check_data_choice() == "Iris":
                 chart = alt.hconcat(
@@ -361,22 +363,25 @@ class DashboardController:
                     alt.Tooltip("Silhouette Score:Q", title="Silhouette Score"),
                 ],
             )
+            .properties(width=80, height=700)
             .facet(
-                column=alt.Row(
+                column=alt.Column(
                     "cluster:N",
                     sort="descending",
                     title="Cluster",
-                    header=alt.Header(orient="bottom"),
+                    header=alt.Header(
+                        orient="bottom",
+                        labelFont="serif",
+                        labelFontSize=12,
+                        titleFont="serif",
+                        titleFontSize=12,
+                    ),
                 ),
-                spacing=0.4,
+                spacing=10,
             )
             .transform_filter(alt.datum.cluster != "Noise")
             .resolve_scale(x="independent")
         )
-        # Not pretty at all, but autosizing does not work with faceted charts (yet)
-        # see: https://github.com/vega/vega-lite/pull/6672
-        chart.spec.width = 20
-
         return chart
 
     def create_cluster_comparison_bar_repeat(
@@ -409,7 +414,7 @@ class DashboardController:
                     count_tree="count(tree)",
                     groupby=["cluster"],
                 )
-            )
+            ).properties(width=300, height=700)
             average_line = (
                 alt.Chart(self.tree_df)
                 .transform_aggregate(
@@ -444,7 +449,11 @@ class DashboardController:
                 .encode(
                     x=alt.X("cluster:N", sort="-y", axis=alt.Axis(labelAngle=0)),
                     y=alt.Y(alt.repeat("column"), type="quantitative"),
-                    color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
+                    color=alt.Color(
+                        "mean_silhouette_score:Q",
+                        scale=self.scale_color,
+                        legend=alt.Legend(orient="left", title="Mean Silhouette Score"),
+                    ),
                     tooltip=[alt.Tooltip("count_tree:Q", title="Number of Trees")],
                 )
                 .transform_aggregate(
@@ -462,7 +471,7 @@ class DashboardController:
                     count_tree="count(tree)",
                     groupby=["cluster"],
                 )
-            )
+            ).properties(width=170, height=700)
             average_line = (
                 alt.Chart(self.tree_df)
                 .transform_aggregate(
@@ -503,17 +512,18 @@ class DashboardController:
                 )
                 .resolve_scale(y="shared")
             )
-        chart = self.add_title(chart, title, subtitle)
-        return chart
+        return self.add_title(chart, title, subtitle)
 
-    def create_class_comparison_bar_easy(self, title: str, subtitle: str) -> alt.Chart:
+    def create_class_performance_comparison_bar_easy(
+        self, title: str, subtitle: str
+    ) -> alt.Chart:
         """
-        Bar plot displaying the cluster comparison of the RF model
+        Bar plot displaying the class comparison of the RF model
         """
         # Reference:
         # https://github.com/altair-viz/altair/issues/1617
         if self.check_data_choice() == "Iris":
-            columns = [
+            mean_f1_score = [
                 "mean_virginica_f1_score",
                 "mean_versicolor_f1_score",
                 "mean_setosa_f1_score",
@@ -525,18 +535,18 @@ class DashboardController:
                     mean_versicolor_f1_score="mean(versicolor_f1-score)",
                     mean_setosa_f1_score="mean(setosa_f1-score)",
                 )
-                .transform_fold(columns, as_=["column", "value"])
+                .transform_fold(mean_f1_score, as_=["Mean F1 Score", "value"])
                 .mark_bar(fill="#7B3514")
                 .encode(
-                    x=alt.Y("value:Q"),
-                    y=alt.X("column:N", sort="-x"),
+                    x=alt.X("Mean F1 Score:N", sort="-y", axis=alt.Axis(labelAngle=0)),
+                    y=alt.Y("value:Q"),
                     tooltip=[
                         alt.Tooltip("value:Q", title="Value"),
                     ],
                 )
             )
         else:
-            columns = [
+            mean_f1_score = [
                 "mean_0_f1_score",
                 "mean_1_f1_score",
                 "mean_2_f1_score",
@@ -562,18 +572,18 @@ class DashboardController:
                     mean_8_f1_score="mean(8_f1-score)",
                     mean_9_f1_score="mean(9_f1-score)",
                 )
-                .transform_fold(columns, as_=["column", "value"])
+                .transform_fold(mean_f1_score, as_=["Mean F1 Score", "value"])
                 .mark_bar(fill="#7B3514")
                 .encode(
-                    x=alt.X("value:Q"),
-                    y=alt.Y("column:N", sort="-x"),
+                    x=alt.X("Mean F1 Score:N", sort="-y", axis=alt.Axis(labelAngle=45)),
+                    y=alt.Y("value:Q"),
                     tooltip=[
                         alt.Tooltip("value:Q", title="Value"),
                     ],
                 )
             )
         chart = self.add_title(chart, title, subtitle)
-        return chart
+        return chart.properties(width=1000, height=900)
 
     def create_cluster_comparison_bar_dropdown(self) -> alt.Chart:
         """
@@ -786,4 +796,5 @@ class DashboardController:
         if len(charts) == 1:
             self.dashboard_container.altair_chart(charts[0], use_container_width=False)
         else:
+            # at the current iteration of the dashboard, this is never reached
             self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=False)  # type: ignore

@@ -81,7 +81,7 @@ class DashboardPageCreator:
                 {"content": "markdown", "file": "iris_explanation2.md"},
                 {
                     "content": "chart",
-                    "chart_element": self.dashboard_controller.create_class_comparison_bar_easy(
+                    "chart_element": self.dashboard_controller.create_class_performance_comparison_bar_easy(
                         title="Class performance comparison",
                         subtitle="Figure 2: A comparison of the different F1-Scores per class.",
                     ),
@@ -149,7 +149,7 @@ class DashboardPageCreator:
                 {"content": "markdown", "file": "digits_explanation2.md"},
                 {
                     "content": "chart",
-                    "chart_element": self.dashboard_controller.create_class_comparison_bar_easy(
+                    "chart_element": self.dashboard_controller.create_class_performance_comparison_bar_easy(
                         title="Class performance comparison",
                         subtitle="A comparison of the different F1-Scores per class.",
                     ),
