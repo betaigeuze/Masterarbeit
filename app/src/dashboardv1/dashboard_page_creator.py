@@ -34,27 +34,27 @@ class DashboardPageCreator:
             layout = [
                 {"content": "markdown", "file": "welcome.md"},
                 {"content": "markdown", "file": "iris_tutorial1.md"},
-                {"content": "image", "file": "flowers.png"},
-                {"content": "image", "file": "flower_measures.png"},
+                {"content": "image", "file": "flowers.PNG"},
+                {"content": "image", "file": "flower_measures.PNG"},
                 {"content": "markdown", "file": "iris_tutorial2.md"},
-                {"content": "image", "file": "splitting.png"},
+                {"content": "image", "file": "splitting_flowers.PNG"},
                 {"content": "markdown", "file": "iris_tutorial3.md"},
-                {"content": "image", "file": "decision_tree.png"},
+                {"content": "image", "file": "decision_tree_flowers.PNG"},
                 {"content": "markdown", "file": "iris_tutorial4.md"},
-                {"content": "image", "file": "bagging.png"},
+                {"content": "image", "file": "bagging.PNG"},
                 {"content": "markdown", "file": "iris_tutorial5.md"},
             ]
         else:
             layout = [
                 {"content": "markdown", "file": "welcome.md"},
                 {"content": "markdown", "file": "digits_tutorial1.md"},
-                {"content": "image", "file": "digit.png"},
+                {"content": "image", "file": "digit.PNG"},
                 {"content": "markdown", "file": "digits_tutorial2.md"},
-                {"content": "image", "file": "splitting.png"},
+                {"content": "image", "file": "splitting_digits.PNG"},
                 {"content": "markdown", "file": "digits_tutorial3.md"},
-                {"content": "image", "file": "decision_tree.png"},
+                {"content": "image", "file": "decision_tree_digits.PNG"},
                 {"content": "markdown", "file": "digits_tutorial4.md"},
-                {"content": "image", "file": "bagging.png"},
+                {"content": "image", "file": "bagging.PNG"},
                 {"content": "markdown", "file": "digits_tutorial5.md"},
             ]
         self.create_page(layout)
