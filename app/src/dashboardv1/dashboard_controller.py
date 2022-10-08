@@ -62,6 +62,13 @@ class DashboardController:
             ),
             alt.value("lightblue"),
         )
+        self.title_format_dict = {
+            "anchor": "start",
+            "fontSize": 22,
+            "font": "serif",
+            "subtitleFontSize": 18,
+            "subtitleFont": "serif",
+        }
 
     def create_sidebar(self) -> st.sidebar:  # type: ignore
         """
@@ -185,7 +192,12 @@ class DashboardController:
             self.dashboard_container.write(self.tree_df)
 
     def create_feature_importance_barchart(
-        self, selection: bool = True, flip: bool = False
+        self,
+        title: str,
+        subtitle: str,
+        top_k: int = None,  # type: ignore
+        selection: bool = True,
+        flip: bool = False,
     ) -> alt.Chart:
         """
         Create a barchart of the feature importances of the random forest.
@@ -198,10 +210,19 @@ class DashboardController:
             .transform_fold(
                 self.feature_names_plus_importance, as_=["feature", "importance"]
             )
-            .mark_bar(fill="#4E1E1E")
+            .mark_bar(fill="#7B3514")
             .encode(
-                x=alt.X("mean(importance):Q"),
-                y=alt.Y("feature:N", stack=None, sort="-x"),
+                x=alt.X("mean_importance:Q"),
+                y=alt.Y(
+                    "feature:N",
+                    sort=alt.EncodingSortField(
+                        field="mean_importance", op="mean", order="descending"
+                    ),
+                ),
+            )
+            .transform_aggregate(
+                mean_importance="mean(importance)",
+                groupby=["feature"],
             )
         )
         if self.check_data_choice() == "Digits":
@@ -209,17 +230,33 @@ class DashboardController:
                 align="left",
                 baseline="middle",
                 dx=3,  # Nudges text to right so it doesn't appear on top of the bar
-            ).encode(text="mean(importance):Q")
+            ).encode(text="mean_importance:Q")
             chart = chart + text
         if selection:
             chart = chart.transform_filter(self.brush)
         if flip:
-            chart.encoding.x = alt.X("feature:N", stack=None, sort="-x")
-            chart.encoding.y = alt.Y("mean(importance):Q")
+            chart.encoding.x = alt.X(
+                "feature:N",
+                sort=alt.EncodingSortField(
+                    field="mean_importance", op="mean", order="descending"
+                ),
+            )
+            chart.encoding.y = alt.Y("mean_importance:Q")
+        if top_k:
+            chart = chart.transform_window(
+                rank="rank(mean_importance)",
+                sort=[alt.SortField("mean_importance", order="descending")],
+                frame=[None, None],
+            ).transform_filter((alt.datum.rank < top_k))
+        chart = self.add_title(chart, title, subtitle)
         return chart
 
     def basic_scatter(
-        self, color: Union[dict, alt.SchemaBase, list], selection: bool = True
+        self,
+        title: str,
+        subtitle: str,
+        color: Union[dict, alt.SchemaBase, list],
+        selection: bool = True,
     ) -> alt.Chart:
         """
         Scatterplot displaying all estimators of the RF model
@@ -228,7 +265,7 @@ class DashboardController:
         """
         chart = (
             alt.Chart(self.tree_df)
-            .mark_circle(stroke="#4E1E1E", strokeWidth=1)
+            .mark_circle(stroke="#7B3514", strokeWidth=1)
             .encode(
                 x=alt.X(
                     "grid_x:N",
@@ -250,9 +287,12 @@ class DashboardController:
         )
         if selection:
             chart = chart.add_selection(self.brush)
+        chart = self.add_title(chart, title, subtitle)
         return chart
 
-    def create_tsne_scatter(self, importance: bool = False) -> alt.Chart:
+    def create_tsne_scatter(
+        self, title: str, subtitle: str, importance: bool = False
+    ) -> alt.Chart:
         """
         Scatterplot displaying the t-SNE embedding of the RF model
         importance, if True, displays the feature importance bar chart instead
@@ -261,7 +301,7 @@ class DashboardController:
         """
         tsne_chart = (
             alt.Chart(self.tree_df)
-            .mark_circle(stroke="#4E1E1E", strokeWidth=1)
+            .mark_circle(stroke="#7B3514", strokeWidth=1)
             .encode(
                 x=alt.X("Component 1:Q", scale=alt.Scale(zero=False)),
                 y=alt.Y("Component 2:Q", scale=alt.Scale(zero=False)),
@@ -275,17 +315,24 @@ class DashboardController:
         )
         if importance:
             if self.check_data_choice() == "Iris":
-                return alt.hconcat(
+                chart = alt.hconcat(
                     tsne_chart,
-                    self.create_feature_importance_barchart(selection=True, flip=False),
+                    self.create_feature_importance_barchart(
+                        title="", subtitle="", selection=True, flip=False  # type: ignore
+                    ),
                 )  # type: ignore
+                return self.add_title(chart, title, subtitle)  # type: ignore
             else:
-                return alt.hconcat(
+                chart = alt.hconcat(
                     tsne_chart,
-                    self.create_feature_importance_barchart(selection=True, flip=False),
+                    self.create_feature_importance_barchart(
+                        title="", subtitle="", selection=True, flip=False  # type: ignore
+                    ),
                 )  # type: ignore
+                return self.add_title(chart, title, subtitle)  # type: ignore
         else:
-            return alt.hconcat(tsne_chart, self.create_silhouette_plot())  # type: ignore
+            chart = alt.hconcat(tsne_chart, self.create_silhouette_plot())
+            return self.add_title(chart, title, subtitle)  # type: ignore
 
     def create_silhouette_plot(self) -> alt.Chart:
         """
@@ -315,7 +362,12 @@ class DashboardController:
                 ],
             )
             .facet(
-                column=alt.Row("cluster:N", sort="descending", title="Cluster"),
+                column=alt.Row(
+                    "cluster:N",
+                    sort="descending",
+                    title="Cluster",
+                    header=alt.Header(orient="bottom"),
+                ),
                 spacing=0.4,
             )
             .transform_filter(alt.datum.cluster != "Noise")
@@ -327,7 +379,9 @@ class DashboardController:
 
         return chart
 
-    def create_cluster_comparison_bar_repeat(self) -> alt.Chart:
+    def create_cluster_comparison_bar_repeat(
+        self, title: str, subtitle: str
+    ) -> alt.Chart:
         """
         Bar plot displaying the cluster comparison of the RF model
         This is one of the 2 ways of comparing the clusters of the RF model.
@@ -340,7 +394,11 @@ class DashboardController:
                 .encode(
                     x=alt.X("cluster:N", sort="-y", axis=alt.Axis(labelAngle=0)),
                     y=alt.Y(alt.repeat("column"), type="quantitative"),
-                    color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
+                    color=alt.Color(
+                        "mean_silhouette_score:Q",
+                        scale=self.scale_color,
+                        legend=alt.Legend(orient="left", title="Mean Silhouette Score"),
+                    ),
                     tooltip=[alt.Tooltip("count_tree:Q", title="Number of Trees")],
                 )
                 .transform_aggregate(
@@ -351,6 +409,25 @@ class DashboardController:
                     count_tree="count(tree)",
                     groupby=["cluster"],
                 )
+            )
+            average_line = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_virginica_f1_score="mean(virginica_f1-score)",
+                    mean_versicolor_f1_score="mean(versicolor_f1-score)",
+                    mean_setosa_f1_score="mean(setosa_f1-score)",
+                    mean_silhouette_score="mean(Silhouette Score)",
+                    count_tree="count(tree)",
+                )
+                .mark_rule(size=3, strokeDash=[6, 2])
+                .encode(
+                    y=alt.Y(alt.repeat("column"), type="quantitative"),
+                    color=alt.value("#3CA6D0"),
+                    tooltip=alt.Y(alt.repeat("column"), type="quantitative"),
+                )
+            )
+            chart = (
+                (chart + average_line)
                 .repeat(
                     column=[
                         "mean_virginica_f1_score",
@@ -358,6 +435,7 @@ class DashboardController:
                         "mean_setosa_f1_score",
                     ]
                 )
+                .resolve_scale(y="shared")
             )
         else:
             chart = (
@@ -384,6 +462,31 @@ class DashboardController:
                     count_tree="count(tree)",
                     groupby=["cluster"],
                 )
+            )
+            average_line = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_0_f1_score="mean(0_f1-score)",
+                    mean_1_f1_score="mean(1_f1-score)",
+                    mean_2_f1_score="mean(2_f1-score)",
+                    mean_3_f1_score="mean(3_f1-score)",
+                    mean_4_f1_score="mean(4_f1-score)",
+                    mean_5_f1_score="mean(5_f1-score)",
+                    mean_6_f1_score="mean(6_f1-score)",
+                    mean_7_f1_score="mean(7_f1-score)",
+                    mean_8_f1_score="mean(8_f1-score)",
+                    mean_9_f1_score="mean(9_f1-score)",
+                )
+                .mark_rule(size=3, strokeDash=[6, 2])
+                .encode(
+                    y=alt.Y(alt.repeat("column"), type="quantitative"),
+                    color=alt.value("#3CA6D0"),
+                    tooltip=alt.Y(alt.repeat("column"), type="quantitative"),
+                )
+            )
+            average_line.encoding.tooltip.title = "Forest Average F1-Score"
+            chart = (
+                (chart + average_line)
                 .repeat(
                     column=[
                         "mean_0_f1_score",
@@ -398,18 +501,17 @@ class DashboardController:
                         "mean_9_f1_score",
                     ]
                 )
+                .resolve_scale(y="shared")
             )
+        chart = self.add_title(chart, title, subtitle)
         return chart
 
-    def create_cluster_comparison_bar_easy(self) -> alt.Chart:
+    def create_class_comparison_bar_easy(self, title: str, subtitle: str) -> alt.Chart:
         """
         Bar plot displaying the cluster comparison of the RF model
-        This is one of the 2 ways of comparing the clusters of the RF model.
-        The other method is create_cluster_comparison_bar_repeat()
         """
         # Reference:
         # https://github.com/altair-viz/altair/issues/1617
-
         if self.check_data_choice() == "Iris":
             columns = [
                 "mean_virginica_f1_score",
@@ -424,7 +526,7 @@ class DashboardController:
                     mean_setosa_f1_score="mean(setosa_f1-score)",
                 )
                 .transform_fold(columns, as_=["column", "value"])
-                .mark_bar(fill="#4E1E1E")
+                .mark_bar(fill="#7B3514")
                 .encode(
                     x=alt.Y("value:Q"),
                     y=alt.X("column:N", sort="-x"),
@@ -461,15 +563,16 @@ class DashboardController:
                     mean_9_f1_score="mean(9_f1-score)",
                 )
                 .transform_fold(columns, as_=["column", "value"])
-                .mark_bar(fill="#4E1E1E")
+                .mark_bar(fill="#7B3514")
                 .encode(
-                    x=alt.X("column:N", sort="-y"),
-                    y=alt.Y("value:Q"),
+                    x=alt.X("value:Q"),
+                    y=alt.Y("column:N", sort="-x"),
                     tooltip=[
                         alt.Tooltip("value:Q", title="Value"),
                     ],
                 )
             )
+        chart = self.add_title(chart, title, subtitle)
         return chart
 
     def create_cluster_comparison_bar_dropdown(self) -> alt.Chart:
@@ -503,14 +606,13 @@ class DashboardController:
                     groupby=["cluster"],
                 )
                 .transform_fold(columns, as_=["column", "value"])
-                .mark_bar(fill="#4E1E1E")
+                .mark_bar(fill="#7B3514")
                 .encode(
                     x=alt.X("cluster:N", sort="-y"),
                     y=alt.Y("value:Q"),
                     tooltip=[
                         alt.Tooltip("value:Q", title="Value"),
                     ],
-                    # color=alt.Color("mean_silhouette_score:Q", scale=self.scale_color),
                 )
                 .transform_filter(sel)
                 .add_selection(sel)
@@ -526,13 +628,12 @@ class DashboardController:
                 .mark_rule(size=3, strokeDash=[6, 2])
                 .encode(
                     y=alt.Y("value:Q"),
-                    color=alt.value("blue"),
+                    color=alt.value("#3CA6D0"),
                     tooltip=["value:Q"],
                 )
                 .transform_filter(sel)
             )
         else:
-            # CHANGE TO DIGITS USE CASE
             columns = [
                 "mean_0_f1_score",
                 "mean_1_f1_score",
@@ -568,7 +669,7 @@ class DashboardController:
                     groupby=["cluster"],
                 )
                 .transform_fold(columns, as_=["column", "value"])
-                .mark_bar(fill="#4E1E1E")
+                .mark_bar(fill="#7B3514")
                 .encode(
                     x=alt.X("cluster:N", sort="-y"),
                     y=alt.Y("value:Q"),
@@ -598,14 +699,14 @@ class DashboardController:
                 .mark_rule()
                 .encode(
                     y=alt.Y("value:Q"),
-                    color=alt.value("#7fbc41"),
+                    color=alt.value("#22607C"),
                     tooltip=["value:Q"],
                 )
                 .transform_filter(sel)
             )
         return alt.layer(chart, average_line)  # type: ignore
 
-    def create_similarity_matrix(self) -> alt.Chart:
+    def create_similarity_matrix(self, title: str, subtitle: str) -> alt.Chart:
         # Turn the similarity matrix into a dataframe that we can display with altair
         distance_matrix = self.rfm.distance_matrix
         x, y = np.meshgrid(
@@ -657,7 +758,7 @@ class DashboardController:
             )
             .properties(width=800, height=800)
         )
-        return chart
+        return self.add_title(chart, title, subtitle)
 
     def check_data_choice(self):
         if "data_choice" in st.session_state:
@@ -665,6 +766,15 @@ class DashboardController:
         else:
             data_choice = "Iris"
         return data_choice
+
+    def add_title(self, chart: alt.Chart, title: str, subtitle: str) -> alt.Chart:
+        """
+        Add title and subtitle to chart
+        """
+        title_dict = self.title_format_dict.copy()
+        title_dict.update({"text": [title], "subtitle": [subtitle]})
+        chart = chart.properties(title=title_dict)
+        return chart
 
     def display_charts(self, charts: list[alt.Chart]):
         """
