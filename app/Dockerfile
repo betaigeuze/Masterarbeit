@@ -10,7 +10,11 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/betaigeuze/Masterarbeit.git .
+RUN apt-get update && apt-get -y install git
+
+RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+RUN --mount=type=ssh git clone git@github.com:betaigeuze/Masterarbeit.git Masterarbeit
 
 RUN apt-get update
 
@@ -20,4 +24,4 @@ COPY requirements.txt /tmp/requirements.txt
 
 RUN pip3 install -r /tmp/requirements.txt
 
-ENTRYPOINT ["streamlit", "run", "/app/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=http://172.21.102.175"]
+ENTRYPOINT ["streamlit", "run", "Masterarbeit/app/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=localhost"]
