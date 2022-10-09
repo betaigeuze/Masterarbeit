@@ -91,7 +91,7 @@ class DashboardPageCreator:
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_similarity_matrix(
                         title="Pairwise Distance Matrix",
-                        subtitle="Distance matrix, using the graph edit distance, as the distance metric.",
+                        subtitle="Distance matrix, using the graph edit distance (GED), as the distance metric.",
                     ),
                 },
                 {"content": "markdown", "file": "distance_matrix_explanation.md"},

@@ -567,6 +567,22 @@ class DashboardController:
                     ],
                 )
             )
+            average_line = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_virginica_f1_score="mean(virginica_f1-score)",
+                    mean_versicolor_f1_score="mean(versicolor_f1-score)",
+                    mean_setosa_f1_score="mean(setosa_f1-score)",
+                )
+                .transform_fold(mean_f1_score, as_=["Mean F1 Score", "value"])
+                .mark_rule(size=3, strokeDash=[6, 2])
+                .encode(
+                    y=alt.Y("mean(value)", type="quantitative"),
+                    color=alt.value("#3CA6D0"),
+                    tooltip=alt.Y("mean(value)", type="quantitative"),
+                )
+            )
+            chart = (chart + average_line).resolve_scale(y="shared")
         else:
             mean_f1_score = [
                 "mean_0_f1_score",
@@ -604,6 +620,29 @@ class DashboardController:
                     ],
                 )
             )
+            average_line = (
+                alt.Chart(self.tree_df)
+                .transform_aggregate(
+                    mean_0_f1_score="mean(0_f1-score)",
+                    mean_1_f1_score="mean(1_f1-score)",
+                    mean_2_f1_score="mean(2_f1-score)",
+                    mean_3_f1_score="mean(3_f1-score)",
+                    mean_4_f1_score="mean(4_f1-score)",
+                    mean_5_f1_score="mean(5_f1-score)",
+                    mean_6_f1_score="mean(6_f1-score)",
+                    mean_7_f1_score="mean(7_f1-score)",
+                    mean_8_f1_score="mean(8_f1-score)",
+                    mean_9_f1_score="mean(9_f1-score)",
+                )
+                .transform_fold(mean_f1_score, as_=["Mean F1 Score", "value"])
+                .mark_rule(size=3, strokeDash=[6, 2])
+                .encode(
+                    y=alt.Y("mean(value)", type="quantitative"),
+                    color=alt.value("#3CA6D0"),
+                    tooltip=alt.Y("mean(value)", type="quantitative"),
+                )
+            )
+            chart = (chart + average_line).resolve_scale(y="shared")
         chart = self.add_title(chart, title, subtitle)
         return chart.properties(width=1000, height=900)
 
@@ -781,6 +820,7 @@ class DashboardController:
                 color=alt.Color(
                     "distance_value:Q",
                     scale=alt.Scale(scheme="greys", reverse=True),
+                    legend=alt.Legend(title="Normalized GED", orient="left"),
                 ),
                 tooltip=[
                     "tree_x",
