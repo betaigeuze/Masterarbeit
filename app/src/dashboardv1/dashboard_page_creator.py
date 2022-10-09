@@ -26,7 +26,7 @@ class DashboardPageCreator:
     def __init__(self, dashboard_controller: DashboardController = None):  # type: ignore
         self.dashboard_controller = dashboard_controller
 
-    def create_tutorial_page(self):
+    def create_tutorial_page_layout(self):
         """
         Create a tutorial page with graphics of how a random forest works.
         """
@@ -59,7 +59,7 @@ class DashboardPageCreator:
             ]
         self.create_page(layout)
 
-    def create_dashboard_page(self, show_df: bool = False):
+    def create_dashboard_page_layout(self, show_df: bool = False):
         """
         Create the dashboard according to the layout dictionary.
         Explanations will be toggled on by default.
@@ -246,14 +246,12 @@ class DashboardPageCreator:
         # If it was and the current element is not, we can just display it.
         # Otherwise the list of charts grows and gets displayed either with
         # the first non-chart element or at the end of the loop.
+        # This was necessary in an earlier version of the dashboard, but
+        # is not necessary anymore. Kept here though, if it's necessary again.
         setup_font_sizes()
         charts = []
         for item in layout:
-            if (
-                item["content"]
-                == "markdown"
-                # and self.dashboard_controller.show_explanations
-            ):
+            if item["content"] == "markdown":
                 if charts:
                     self.dashboard_controller.display_charts(charts)
                     charts = []
@@ -269,3 +267,4 @@ class DashboardPageCreator:
                 charts.append(item["chart_element"])
         if charts:
             self.dashboard_controller.display_charts(charts)
+        self.dashboard_controller.scroll_up_on_data_change()

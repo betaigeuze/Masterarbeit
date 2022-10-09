@@ -10,12 +10,16 @@ import streamlit as st
 def main():
     # Pylance pull request regarding altair change
     # https://github.com/microsoft/pylance-release/issues/3210
+    if "counter" not in st.session_state:
+        st.session_state.counter = 0
+    else:
+        st.session_state.counter += 1
     dc = base_loader()
     dpc = DashboardPageCreator(dc)
     if dc.app_mode == "Tutorial":
-        dpc.create_tutorial_page()
+        dpc.create_tutorial_page_layout()
     elif dc.app_mode == "Dashboard":
-        dpc.create_dashboard_page(show_df=False)
+        dpc.create_dashboard_page_layout(show_df=False)
 
 
 def base_loader() -> DashboardController:
