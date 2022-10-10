@@ -187,12 +187,13 @@ class RFmodeller:
             "pickle",
             f"distance_matrix_{self.data_choice}.pickle",
         )
+        print(dashboardv1_absolute)
+        print(pickle_path)
         if self.model.n_estimators != 100:
             pickle_path = dashboardv1_absolute.joinpath(
                 "temp",
                 f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
             )
-        print(pickle_path)
         # Check for existing pickle
         if not exists(pickle_path):
             st.spinner()
