@@ -182,29 +182,13 @@ class RFmodeller:
         as well and can be loaded from there.
         We use graph edit distance as the distance metric.
         """
-        pickle_path = Path.cwd().joinpath(
-            "app",
-            "src",
-            "dashboardv1",
+        dashboardv1_absolute = Path(__file__).resolve().parent
+        pickle_path = dashboardv1_absolute.joinpath(
             "pickle",
             f"distance_matrix_{self.data_choice}.pickle",
         )
-        # If we're in the docker container, this will be the path to the pickle file
-        if not exists(pickle_path):
-            pickle_path = Path.cwd().joinpath(
-                "src",
-                "dashboardv1",
-                "pickle",
-                f"distance_matrix_{self.data_choice}.pickle",
-            )
-        print(Path.cwd())
-        print(Path.home())
-        print(pickle_path)
         if self.model.n_estimators != 100:
-            pickle_path = Path.cwd().joinpath(
-                "app",
-                "src",
-                "dashboardv1",
+            pickle_path = dashboardv1_absolute.joinpath(
                 "temp",
                 f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
             )
