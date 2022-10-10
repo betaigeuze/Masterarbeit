@@ -197,7 +197,9 @@ class RFmodeller:
                 "pickle",
                 f"distance_matrix_{self.data_choice}.pickle",
             )
-
+        print(Path.cwd())
+        print(Path.home())
+        print(pickle_path)
         if self.model.n_estimators != 100:
             pickle_path = Path.cwd().joinpath(
                 "app",
