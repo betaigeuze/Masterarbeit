@@ -20,8 +20,10 @@ RUN apt-get update
 
 RUN apt-get install -y graphviz graphviz-dev
 
+COPY .streamlit/config.toml /root/.streamlit/config.toml
+
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip3 install -r /tmp/requirements.txt
 
-ENTRYPOINT ["streamlit", "run", "Masterarbeit/app/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit", "run", "Masterarbeit/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
