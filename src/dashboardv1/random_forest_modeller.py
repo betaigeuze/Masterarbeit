@@ -192,7 +192,7 @@ class RFmodeller:
                 "temp",
                 f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
             )
-
+        print(pickle_path)
         # Check for existing pickle
         if not exists(pickle_path):
             st.spinner()
