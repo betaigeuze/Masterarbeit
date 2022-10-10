@@ -228,18 +228,14 @@ class DashboardPageCreator:
             )
 
         def read_md(file_name: str) -> str:
-            return (
-                Path.cwd()
-                .joinpath("src", "dashboardv1", "text", file_name)
-                .read_text(encoding="utf-8")
+            dashboardv1_absolute = Path(__file__).resolve().parent
+            return dashboardv1_absolute.joinpath("text", file_name).read_text(
+                encoding="utf-8"
             )
 
         def read_image(file_name: str) -> bytes:
-            return (
-                Path.cwd()
-                .joinpath("src", "dashboardv1", "images", file_name)
-                .read_bytes()
-            )
+            dashboardv1_absolute = Path(__file__).resolve().parent
+            return dashboardv1_absolute.joinpath("images", file_name).read_bytes()
 
         # In order to have concatenated charts between markdown elements,
         # we need to check if the previous element of the loop was a chart.

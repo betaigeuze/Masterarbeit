@@ -1,0 +1,6 @@
+version: 'version 1.0'
+services:
+  masterarbeit:
+    build: .
+    ports:
+      - "8501:8501"
