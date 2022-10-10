@@ -189,6 +189,15 @@ class RFmodeller:
             "pickle",
             f"distance_matrix_{self.data_choice}.pickle",
         )
+        # If we're in the docker container, this will be the path to the pickle file
+        if not pickle_path.exists():
+            pickle_path = Path.cwd().joinpath(
+                "src",
+                "dashboardv1",
+                "pickle",
+                f"distance_matrix_{self.data_choice}.pickle",
+            )
+
         if self.model.n_estimators != 100:
             pickle_path = Path.cwd().joinpath(
                 "app",

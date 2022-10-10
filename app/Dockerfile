@@ -24,4 +24,4 @@ COPY requirements.txt /tmp/requirements.txt
 
 RUN pip3 install -r /tmp/requirements.txt
 
-ENTRYPOINT ["streamlit", "run", "Masterarbeit/app/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=localhost"]
+ENTRYPOINT ["streamlit", "run", "Masterarbeit/app/src/dashboardv1/st_dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
