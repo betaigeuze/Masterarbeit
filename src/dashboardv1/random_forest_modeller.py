@@ -231,6 +231,9 @@ class RFmodeller:
             )
 
             # Serialize
+            pickle_path.touch(
+                exist_ok=True
+            )  # will create file, if it exists will do nothing
             with open(pickle_path, "wb") as outfile:
                 pickle.dump(distance_matrix, outfile)
 
