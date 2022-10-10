@@ -189,7 +189,7 @@ class RFmodeller:
         )
         if self.model.n_estimators != 100:
             pickle_path = dashboardv1_absolute.joinpath(
-                "pickle_temp",
+                "runtime_pickle",
                 f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
             )
         # Check for existing pickle
