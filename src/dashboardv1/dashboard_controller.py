@@ -130,7 +130,7 @@ class DashboardController:
                 label="Silhouette Score",
                 value=np.round(self.rfm.silhouette_score, decimals=2),
                 help="The Silhouette Score, as computed here, is an average of all Silhouette Scores\
-                    of the individual datapoints, averaged together. Note, that the points classified as noise are excluded from this calculation.",
+                    of the individual data points, averaged together. Note, that the points classified as noise are excluded from this calculation.",
             )
 
             algorithm_parameters_form.slider(
@@ -200,7 +200,7 @@ class DashboardController:
         flip: bool = False,
     ) -> alt.Chart:
         """
-        Create a barchart of the feature importances of the random forest.
+        Create a bar chart of the feature importances of the random forest.
         selection allows to concatenate the chart with others and interact with
         their selections.
         flip, if True, swaps the x and y axis.

@@ -1,10 +1,19 @@
 {
     "python.formatting.provider": "black",
     "cSpell.words": [
+        "clusterings",
         "Cython",
+        "dataframe",
+        "DBSCAN",
+        "explorative",
         "Graphviz",
+        "importances",
         "interpretability",
+        "overfitting",
         "scikit",
-        "Streamlit"
+        "setosa",
+        "Streamlit",
+        "TSNE",
+        "virginica"
     ]
 }

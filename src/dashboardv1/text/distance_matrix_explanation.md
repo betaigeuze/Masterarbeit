@@ -1,5 +1,5 @@
 <p class="text-font">
-Now <b>this</b> is a plot, isn't it? What you see here is a <i>heatmap</i> of the <i>parwise distances</i> between the trees of the forest. In the background, our Python code calculated how similar each tree is to each other tree in the forest. The darker, the more similar 2 trees are. Hover over the plot to see how similar the trees were exactly.
+Now <b>this</b> is a plot, isn't it? What you see here is a <i>heatmap</i> of the <i>pairwise distances</i> between the trees of the forest. In the background, our Python code calculated how similar each tree is to each other tree in the forest. The darker, the more similar 2 trees are. Hover over the plot to see how similar the trees were exactly.
 The similarity measure we're using here is called the <i>graph edit distance</i>. In short, in counts how many operations are needed to transform one tree into the other. So the lower the score, the more similar the 2 trees are to each other.
 But would we do that, you might ask? Well, what we have here, is a so-called <i>similarity</i> or <i>distance matrix</i>. We can use this similarity matrix and run it through a clustering algorithm. We can then identify groups of trees in the forest that are especially alike. Take your time to inspect the plot on your own.  
 
