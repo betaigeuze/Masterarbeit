@@ -80,7 +80,7 @@ class DashboardController:
         Creates the sidebar of the dashboard.
         """
         sidebar = st.sidebar
-        sidebar.title("Sidebar")
+        sidebar.title("Navigation")
 
         # Page selection
         self.app_mode = sidebar.radio(

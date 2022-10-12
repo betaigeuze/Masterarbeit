@@ -283,11 +283,21 @@ The only available parameter for
 the RF is the number of trees, which ranges between 20 and 200. These boundaries were chosen, because
 a random forest with less than 20 trees is less likely to be used in practice and values over 200
 would take the matrix calculation excessively long to complete. Following the number of trees, the
-\textit{DBSCAN} parameters \textit{'min samples'} and \textit{'eps'} can be adjusted.
+\textit{DBSCAN} parameters \textit{'min samples'} and \textit{'eps'} and below that
+the parameters \textit{learning rate}, \textit{perplexity} and \textit{early exaggeration} for the
+\textit{t-SNE} embedding can be adjusted.
 Unfortunately, the size of the sidebar is only adjustable by the user and there is currently no
 official way to set the standard size of the sidebar to a fixed value.
-After introducing the user to the RF with some basic information, the first graph is shown
-below.
+After introducing the user to the RF with some basic information, the first graph and its' explanation
+are shown below. Starting with a simple bar chart, displaying the feature importances of the RF,
+the user is introduced to the concept of feature importances. This is the most common graph in the
+context of RFs and gives the user a first impression of the inner workings of the RF. The next graph
+covers the F1-score of the RF for each class. A blue line indicates the average \textit{F1-score} of the RF to
+put this measure into context. Showing the discrepancies between classes can give users a hint of
+certain classes, that might be harder to predict than others. An explanation accompanies the graph
+and gives a brief explanation of the \textit{F1 score}. \newline
+The following chart is \textit{pairwise distance matrix} of all trees. This was constructed by
+calculating the graph edit distance between all trees with the goal to show
 
 
 
