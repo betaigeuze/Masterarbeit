@@ -5,6 +5,7 @@
         "Cython",
         "dataframe",
         "DBSCAN",
+        "decorrelated",
         "explorative",
         "Graphviz",
         "importances",
