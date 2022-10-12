@@ -159,8 +159,9 @@ beginners, while still providing some more advanced configurations if necessary.
 For this work, both the \textit{RandomForestClassifier} and the \textit{DecisionTreeClassifier}
 are a main part of the processes in the background. The two example use cases, discussed in this
 work are based on the data provided by the \textit{scikit-Learn} library, specifically the
-\textit{Iris} and the \textit{Digits} dataset. Additionally, the \textit{DBSCAN} and
-\textit{t-SNE} algorithms are used as provided by the package.
+\textit{Iris} and the \textit{Digits} dataset. Additionally, the \textit{DBSCAN}
+\cite{ester1996density} and \textit{t-SNE} \cite{JMLR:v9:vandermaaten08a} algorithms are used as
+provided by the package.
 
 \subsubsection{Streamlit}
 \textit{Streamlit 1.13.0} provides users with an incredibly easy entry point to transferring Python
@@ -295,10 +296,53 @@ context of RFs and gives the user a first impression of the inner workings of th
 covers the F1-score of the RF for each class. A blue line indicates the average \textit{F1-score} of the RF to
 put this measure into context. Showing the discrepancies between classes can give users a hint of
 certain classes, that might be harder to predict than others. An explanation accompanies the graph
-and gives a brief explanation of the \textit{F1 score}. \newline
-The following chart is \textit{pairwise distance matrix} of all trees. This was constructed by
-calculating the graph edit distance between all trees with the goal to show
-
+and gives a brief explanation of the \textit{F1 score}.
+From an analytical perspective it is interesting to see that the RF performs especially well on the
+\textit{Iris} dataset, and achieves an \textit{F1 score} of almost 1 for the \textit{setosa} class.
+\newline
+The following chart is a heatmap showing the \textit{pairwise distance matrix} of all trees.
+This was constructed by calculating the graph edit distance between all trees with the goal to show
+how similar the trees are to each other. The idea behind this, was to exploratively be able to discover
+groups of similar trees in the forest and further inspect them. The darker spots in the heat map are
+where trees are especially similar to each other. Since this is sorted by the \textit{DBSCAN} clustering,
+the user can already see some of these cluster patterns in the heatmap. What follows is a more
+elaborate explanation of this idea. It is crucial for the user to understand this concept, as the
+subsequent charts are based on this idea. \newline
+The text also briefly explains the \textit{DBSCAN} algorithm as well as the concept behind the
+\textit{Silhouette Score} so that the user is able to interpret the following charts.
+The successive chart combines the bar plot shown before, comparing the \textit{F1-score} over the
+different classes, but this time discerning between the different clusters. With this, the user can
+see which clusters are better or worse at predicting certain classes. Again, a blue line indicates
+the average \textit{F1-score} of the RF for the respective class. Additionally, the bars are color
+coded according to the \textit{Silhouette Score} of their respective cluster.
+It is important to note here, that the \textit{Silhouette Score} is not originally meant to be used
+with clusters that identify outliers. The data points classified as \textit{noise} by the algorithm,
+are therefore automatically assigned a value of -1. This visually separates the \textit{noise} bars
+from the others, while also giving the user a hint, that the \textit{noise} cluster should not be
+viewed as a uniform cluster, like the others. \newline
+As noted before, especially the \textit{setosa} class performances are very good, but across the
+classes and clusters, it is clear that some forests perform better than others.
+\newline
+The \textit{t-SNE} embedding is the last major chart for the user to explore. It shows a two-dimensional
+representation of the trees as a scatter plot. The trees are colored according to their respective
+\textit{Silhouette Score}. Next to the plot is the \textit{Silhouette Plot} showing how well each
+cluster was identified by the \textit{DBSCAN} algorithm. This step is important for the user to
+have a second look at the clustering with this two dimensional embedding. If both algorithms align
+on the clusters, chances are that the parameters were chosen correctly. The \textit{t-SNE} algorithm
+is not explained in detail at this point, as this would be too much information at this point.
+This is the first plot, where brushing comes into play. The user can select a group of points on the
+left to see them highlighted in the plot on the right. This gives the user the opportunity to more
+deeply explore the trees. \newline
+The last chart repeats two of the charts that the user already knows from before, but put into a new
+and interactive context. With the \textit{t-SNE} plot on the left, the user can again select a group
+of trees, but this time the bar chart on the right will show the feature importances of the selected
+trees. From here, the user is free to explore the trees of the forest in the regards to their
+feature importances and it is possible to see, that certain classes prefer certain features over
+others. This is especially interesting for further analysis and combining it with the knowledge of
+the preceding charts, that already showed that some clusters are better or worse at predicting certain
+classes. \newline
+The user is then invited to explore the parameters and the other use case through the sidebar to see
+how the different parameters affect the clustering results.
 
 
 \clearpage
