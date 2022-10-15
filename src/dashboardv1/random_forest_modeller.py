@@ -11,6 +11,8 @@ pygraphviz is used to convert the sklearn tree to pygraph and then networkx
 from pathlib import Path
 import warnings
 import pickle
+import re
+import ast
 from timeit import default_timer as timer
 from datetime import timedelta
 from collections import ChainMap
@@ -69,6 +71,9 @@ class RFmodeller:
             self.silhouette_scores_df,
             self.silhouette_score,
         ) = self.calculate_silhouette_scores_df()
+        self.percentage_trees_in_clusters = (
+            self.calculate_percentage_trees_in_clusters()
+        )
 
     def train_model(self):
         """
@@ -117,9 +122,9 @@ class RFmodeller:
 
     def calculate_tsne_embedding(
         self,
-        learning_rate: float = 100.0,
+        learning_rate: float = 73.0,
         perplexity: int = 5,
-        early_exaggeration: float = 4.0,
+        early_exaggeration: float = 35.0,
     ):
         """
         Calculate the tsne embedding of the distance matrix.
@@ -147,7 +152,7 @@ class RFmodeller:
         tsne_df = pd.DataFrame(tsne_embedding, columns=["Component 1", "Component 2"])
         return tsne_embedding, tsne_df
 
-    def calculate_tree_clusters(self, eps: float = 0.09, min_samples: int = 3):
+    def calculate_tree_clusters(self, eps: float = 0.12, min_samples: int = 2):
         slider_parameters = ["eps", "min_samples"]
         for parameter in slider_parameters:
             if parameter not in st.session_state:
@@ -257,7 +262,11 @@ class RFmodeller:
                 row_distances[i] = 0
             else:
                 row_distances[i + dg_index] = nx.graph_edit_distance(
-                    di_graph, process_graph, timeout=0.5, roots=("0", "0")
+                    di_graph,
+                    process_graph,
+                    node_match=self.check_node_label_equality,
+                    timeout=0.5,
+                    roots=("0", "0"),
                 )
 
         return {dg_index: row_distances}
@@ -267,6 +276,36 @@ class RFmodeller:
             len(self.directed_graphs),
             len(self.directed_graphs),
         )
+
+    def check_node_label_equality(self, n1: dict, n2: dict) -> bool:
+        n1_label = re.split(r"\\", n1["label"])
+        n2_label = re.split(r"\\", n2["label"])
+        if len(n1_label) == len(n2_label):
+            if len(n1_label) == 3:
+                n1_nvalues_string_list = n1_label[len(n1_label) - 1].split(" = ")[1]
+                n2_nvalues_string_list = n2_label[len(n2_label) - 1].split(" = ")[1]
+                n1_nvalues_true_list = ast.literal_eval(n1_nvalues_string_list)
+                n2_nvalues_true_list = ast.literal_eval(n2_nvalues_string_list)
+                return np.argmax(n1_nvalues_true_list) == np.argmax(
+                    n2_nvalues_true_list
+                )
+            elif len(n2_label) == 4:
+                n1_feature_label = n1_label[0].split(" <= ")[0]
+                n2_feature_label = n2_label[0].split(" <= ")[0]
+                return n1_feature_label == n2_feature_label
+            else:
+                raise ValueError()
+        else:
+            return False
+
+    def calculate_percentage_trees_in_clusters(self):
+        if -1 in self.cluster_df["cluster"].values:
+            return (
+                1
+                - self.cluster_df["cluster"].value_counts(normalize=True).to_dict()[-1]
+            ) * 100
+        else:
+            return 100
 
     def calculate_silhouette_scores_df(self):
         no_noise_tree_list = self.cluster_df.loc[self.cluster_df["cluster"] > -1][

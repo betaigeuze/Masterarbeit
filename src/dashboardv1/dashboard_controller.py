@@ -132,6 +132,13 @@ class DashboardController:
                 help="The Silhouette Score, as computed here, is an average of all Silhouette Scores\
                     of the individual data points, averaged together. Note, that the points classified as noise are excluded from this calculation.",
             )
+            algorithm_parameters_form.metric(
+                label="Trees in Clusters",
+                value=str(np.round(self.rfm.percentage_trees_in_clusters, decimals=2))
+                + "%",
+                help="This shows the percentage of trees currently assigned to a cluster. Optimally, this is high, when the Silhouette Score is\
+                    also high.",
+            )
 
             algorithm_parameters_form.slider(
                 label="Select a value for the DBSCAN parameter 'min samples':",
