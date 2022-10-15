@@ -53,6 +53,7 @@ class RFmodeller:
             self.data_choice = st.session_state.data_choice
         else:
             self.data_choice = "Iris"
+        self.update_load_history()
         (
             self.model,
             self.X_train,
@@ -120,6 +121,28 @@ class RFmodeller:
             directed_graphs.append(nx_digraph)
         return directed_graphs
 
+    def slider_session_state_update(
+        self, sliders: list, default_values: dict, selection_changed: bool
+    ) -> tuple:
+        """
+        Retrieves the right values for tSNE and DBSCAN.
+        If the data selection changed, default values will be returned and the slides
+        will be reset accordingly.
+        """
+        slider_values = []
+        if selection_changed:
+            for slider_name in sliders:
+                st.session_state[slider_name] = default_values[slider_name]
+                slider_values.append(default_values[slider_name])
+        else:
+            for slider_name in sliders:
+                if slider_name in st.session_state:
+                    slider_values.append(st.session_state[slider_name])
+                else:
+                    st.session_state[slider_name] = default_values[slider_name]
+                    slider_values.append(default_values[slider_name])
+        return tuple(slider_values)
+
     def calculate_tsne_embedding(
         self,
         learning_rate: float = 73.0,
@@ -132,28 +155,28 @@ class RFmodeller:
         Do not be confused by the "unused" arguments, as they are simply not directly
         adressed, but are used in the for loop below via "locals()[parameter]".
         """
-        if self.check_for_data_selection_change():
-            if self.data_choice == "Digits":
-                learning_rate = 40.0
-                perplexity = 47
-                early_exaggeration = 6.0
-            else:
-                learning_rate = 73.0
-                perplexity = 5
-                early_exaggeration = 35.0
-
-        if "learning_rate" not in st.session_state:
-            st.session_state["learning_rate"] = learning_rate
-        else:
-            st.session_state.learning_rate = learning_rate
-        if "perplexity" not in st.session_state:
-            st.session_state["perplexity"] = perplexity
-        else:
-            st.session_state.perplexity = perplexity
-        if "early_exaggeration" not in st.session_state:
-            st.session_state["early_exaggeration"] = early_exaggeration
-        else:
-            st.session_state.early_exaggeration = early_exaggeration
+        default_value_dict = {
+            "Digits": {
+                "learning_rate": 40.0,
+                "perplexity": 47,
+                "early_exaggeration": 6.0,
+            },
+            "Iris": {
+                "learning_rate": 73.0,
+                "perplexity": 5,
+                "early_exaggeration": 35.0,
+            },
+        }
+        sliders = ["learning_rate", "perplexity", "early_exaggeration"]
+        (
+            learning_rate,
+            perplexity,
+            early_exaggeration,
+        ) = self.slider_session_state_update(
+            sliders,
+            default_value_dict[self.data_choice],
+            self.check_for_data_selection_change(),
+        )
 
         tsne = TSNE(
             n_components=2,
@@ -171,22 +194,22 @@ class RFmodeller:
         return tsne_embedding, tsne_df
 
     def calculate_tree_clusters(self, eps: float = 0.12, min_samples: int = 2):
-        if self.check_for_data_selection_change():
-            if self.data_choice == "Digits":
-                eps = 0.75
-                min_samples = 6
-            else:
-                eps = 0.12
-                min_samples = 2
-
-        if "eps" not in st.session_state:
-            st.session_state["eps"] = eps
-        else:
-            st.session_state.eps = eps
-        if "min_samples" not in st.session_state:
-            st.session_state["min_samples"] = min_samples
-        else:
-            st.session_state.min_samples = min_samples
+        default_value_dict = {
+            "Digits": {
+                "eps": 0.75,
+                "min_samples": 6,
+            },
+            "Iris": {
+                "eps": 0.12,
+                "min_samples": 2,
+            },
+        }
+        sliders = ["eps", "min_samples"]
+        (eps, min_samples,) = self.slider_session_state_update(
+            sliders,  # type: ignore
+            default_value_dict[self.data_choice],
+            self.check_for_data_selection_change(),
+        )
 
         clustering = DBSCAN(
             eps=eps,
@@ -375,24 +398,18 @@ class RFmodeller:
         print(f"Silhouette score: {cluster_silhouette_score}")
         return silhouette_df, cluster_silhouette_score
 
-    def check_for_data_selection_change(self):
+    def update_load_history(self):
+        if "load_history" in st.session_state:
+            st.session_state.load_history.append(self.data_choice)
+        else:
+            st.session_state["load_history"] = ["Iris"]
+
+    def check_for_data_selection_change(self) -> bool:
         counter = st.session_state.counter
-        if counter > 0:
-            try:
-                if (
-                    st.session_state.load_history[counter]
-                    != st.session_state.load_history[counter - 1]
-                ):
-                    return True
-            except IndexError:
-                st.session_state.counter = len(st.session_state.load_history) - 1
-                counter = st.session_state.counter
-                if (
-                    st.session_state.load_history[counter]
-                    != st.session_state.load_history[counter - 1]
-                ):
-                    return True
-        return False
+        if self.data_choice != st.session_state.load_history[counter - 1]:
+            return True
+        else:
+            return False
 
 
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:

@@ -28,7 +28,6 @@ class DashboardController:
         self.dashboard_container.header("RaFoView")
         self.dataset = dataset
         self.features = features
-        self.update_load_history()
         self.feature_names_plus_importance = [
             feature + "_importance" for feature in self.features
         ]
@@ -68,12 +67,6 @@ class DashboardController:
             "subtitleFontSize": 18,
             "subtitleFont": "serif",
         }
-
-    def update_load_history(self):
-        if "load_history" in st.session_state:
-            st.session_state.load_history.append(self.check_data_choice())
-        else:
-            st.session_state["load_history"] = ["Iris"]
 
     def create_sidebar(self) -> st.sidebar:  # type: ignore
         """
@@ -868,7 +861,7 @@ class DashboardController:
             self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=False)  # type: ignore
 
     def scroll_up_on_data_change(self):
-        if self.check_for_data_selection_change():
+        if self.rfm.check_for_data_selection_change():
             components.html(
                 f"""
                     <script>
@@ -877,21 +870,3 @@ class DashboardController:
                 """,
                 height=0,
             )
-
-    def check_for_data_selection_change(self):
-        counter = st.session_state.counter
-        if counter > 0:
-            try:
-                if (
-                    st.session_state.load_history[counter]
-                    != st.session_state.load_history[counter - 1]
-                ):
-                    return True
-            except IndexError:
-                st.session_state.counter = len(st.session_state.load_history) - 1
-                if (
-                    st.session_state.load_history[counter]
-                    != st.session_state.load_history[counter - 1]
-                ):
-                    return True
-        return False
