@@ -132,16 +132,34 @@ class RFmodeller:
         Do not be confused by the "unused" arguments, as they are simply not directly
         adressed, but are used in the for loop below via "locals()[parameter]".
         """
-        slider_parameters = ["learning_rate", "perplexity", "early_exaggeration"]
-        for parameter in slider_parameters:
-            if parameter not in st.session_state:
-                st.session_state[parameter] = locals()[parameter]
+        if self.check_for_data_selection_change():
+            if self.data_choice == "Digits":
+                learning_rate = 40.0
+                perplexity = 47
+                early_exaggeration = 6.0
+            else:
+                learning_rate = 73.0
+                perplexity = 5
+                early_exaggeration = 35.0
+
+        if "learning_rate" not in st.session_state:
+            st.session_state["learning_rate"] = learning_rate
+        else:
+            st.session_state.learning_rate = learning_rate
+        if "perplexity" not in st.session_state:
+            st.session_state["perplexity"] = perplexity
+        else:
+            st.session_state.perplexity = perplexity
+        if "early_exaggeration" not in st.session_state:
+            st.session_state["early_exaggeration"] = early_exaggeration
+        else:
+            st.session_state.early_exaggeration = early_exaggeration
 
         tsne = TSNE(
             n_components=2,
-            perplexity=st.session_state.perplexity,
-            early_exaggeration=st.session_state.early_exaggeration,
-            learning_rate=st.session_state.learning_rate,
+            perplexity=perplexity,
+            early_exaggeration=early_exaggeration,
+            learning_rate=learning_rate,  # type: ignore
             n_iter=1000,
             random_state=123,
             metric="precomputed",
@@ -153,14 +171,26 @@ class RFmodeller:
         return tsne_embedding, tsne_df
 
     def calculate_tree_clusters(self, eps: float = 0.12, min_samples: int = 2):
-        slider_parameters = ["eps", "min_samples"]
-        for parameter in slider_parameters:
-            if parameter not in st.session_state:
-                st.session_state[parameter] = locals()[parameter]
+        if self.check_for_data_selection_change():
+            if self.data_choice == "Digits":
+                eps = 0.75
+                min_samples = 6
+            else:
+                eps = 0.12
+                min_samples = 2
+
+        if "eps" not in st.session_state:
+            st.session_state["eps"] = eps
+        else:
+            st.session_state.eps = eps
+        if "min_samples" not in st.session_state:
+            st.session_state["min_samples"] = min_samples
+        else:
+            st.session_state.min_samples = min_samples
 
         clustering = DBSCAN(
-            eps=st.session_state.eps,
-            min_samples=st.session_state.min_samples,
+            eps=eps,
+            min_samples=min_samples,
             metric="precomputed",
             n_jobs=-1,
             algorithm="brute",
@@ -344,6 +374,25 @@ class RFmodeller:
             )
         print(f"Silhouette score: {cluster_silhouette_score}")
         return silhouette_df, cluster_silhouette_score
+
+    def check_for_data_selection_change(self):
+        counter = st.session_state.counter
+        if counter > 0:
+            try:
+                if (
+                    st.session_state.load_history[counter]
+                    != st.session_state.load_history[counter - 1]
+                ):
+                    return True
+            except IndexError:
+                st.session_state.counter = len(st.session_state.load_history) - 1
+                counter = st.session_state.counter
+                if (
+                    st.session_state.load_history[counter]
+                    != st.session_state.load_history[counter - 1]
+                ):
+                    return True
+        return False
 
 
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:

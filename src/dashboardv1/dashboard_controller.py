@@ -125,7 +125,6 @@ class DashboardController:
                 value to see how this affects the clustering and the performance of the tree as a whole.\n\
                 There are more parameters for a Random Forest, than the number of trees, but we will keep it at this for now.",
             )
-            algorithm_parameters_form.markdown("### DBSCAN:")
             algorithm_parameters_form.metric(
                 label="Silhouette Score",
                 value=np.round(self.rfm.silhouette_score, decimals=2),
@@ -139,7 +138,7 @@ class DashboardController:
                 help="This shows the percentage of trees currently assigned to a cluster. Optimally, this is high, when the Silhouette Score is\
                     also high.",
             )
-
+            algorithm_parameters_form.markdown("### DBSCAN:")
             algorithm_parameters_form.slider(
                 label="Select a value for the DBSCAN parameter 'min samples':",
                 min_value=2,
@@ -869,17 +868,30 @@ class DashboardController:
             self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=False)  # type: ignore
 
     def scroll_up_on_data_change(self):
+        if self.check_for_data_selection_change():
+            components.html(
+                f"""
+                    <script>
+                        window.parent.document.querySelector('section.main').scrollTo(0, 0);
+                    </script>
+                """,
+                height=0,
+            )
+
+    def check_for_data_selection_change(self):
         counter = st.session_state.counter
         if counter > 0:
-            if (
-                st.session_state.load_history[counter]
-                != st.session_state.load_history[counter - 1]
-            ):
-                components.html(
-                    f"""
-                        <script>
-                            window.parent.document.querySelector('section.main').scrollTo(0, 0);
-                        </script>
-                    """,
-                    height=0,
-                )
+            try:
+                if (
+                    st.session_state.load_history[counter]
+                    != st.session_state.load_history[counter - 1]
+                ):
+                    return True
+            except IndexError:
+                st.session_state.counter = len(st.session_state.load_history) - 1
+                if (
+                    st.session_state.load_history[counter]
+                    != st.session_state.load_history[counter - 1]
+                ):
+                    return True
+        return False
