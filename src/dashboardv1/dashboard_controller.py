@@ -56,6 +56,7 @@ class DashboardController:
                     direction="vertical",
                     titleAnchor="start",
                     title="Silhouette Score",
+                    titleFontSize=16,
                 ),
             ),
             alt.value("lightblue"),
@@ -252,13 +253,13 @@ class DashboardController:
                     groupby=["feature"],
                 )
             )
-        if self.check_data_choice() == "Digits":
-            text = chart.mark_text(
-                align="left",
-                baseline="middle",
-                dx=3,  # Nudges text to right so it doesn't appear on top of the bar
-            ).encode(text="mean_importance:Q")
-            chart = chart + text
+
+        text = chart.mark_text(
+            align="left",
+            baseline="middle",
+            dx=3,  # Nudges text to right so it doesn't appear on top of the bar
+        ).encode(text="mean_importance:Q")
+        chart = chart + text
         if selection:
             chart = chart.transform_filter(self.brush)
         if flip:
@@ -423,7 +424,11 @@ class DashboardController:
                     color=alt.Color(
                         "mean_silhouette_score:Q",
                         scale=self.scale_color,
-                        legend=alt.Legend(orient="left", title="Mean Silhouette Score"),
+                        legend=alt.Legend(
+                            orient="left",
+                            title="Mean Silhouette Score",
+                            titleFontSize=16,
+                        ),
                     ),
                     tooltip=[alt.Tooltip("count_tree:Q", title="Number of Trees")],
                 )
@@ -819,7 +824,9 @@ class DashboardController:
                 color=alt.Color(
                     "distance_value:Q",
                     scale=alt.Scale(scheme="greys", reverse=True),
-                    legend=alt.Legend(title="Normalized GED", orient="left"),
+                    legend=alt.Legend(
+                        title="Normalized GED", orient="left", titleFontSize=14
+                    ),
                 ),
                 tooltip=[
                     "tree_x",
@@ -855,7 +862,10 @@ class DashboardController:
         be affected by selections in plots.
         """
         if len(charts) == 1:
-            self.dashboard_container.altair_chart(charts[0], use_container_width=False)
+            self.dashboard_container.altair_chart(
+                charts[0].configure_axis(labelFontSize=13, titleFontSize=16),
+                use_container_width=False,
+            )
         else:
             # at the current iteration of the dashboard, this is never reached
             self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=False)  # type: ignore
