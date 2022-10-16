@@ -135,12 +135,12 @@ Using Python also opens up the possibility to further extend this work in the fu
 the libraries and possibilities of Python keep improving and expanding.
 Some of the libraries used in this work make use of \textit{Cython} \cite{behnel2011cython} to
 speed up the execution of certain functions. This was particularly relevant for this work, as will
-be elaborated in a later section. \newline
+be elaborated in a later section. \par
 The built-in \textit{pickle} module contains functionalities to serialize and deserialize
 \textit{Python} objects.
 Since some of the computations made by the backend of this work are quite intensive, the repository
 contains \textit{pickle} files of the pre-computed results of a matrix computation. This allows
-for a quick display of the two example use cases. \newline
+for a quick display of the two example use cases. \par
 Another built-in module used was the \textit{multiprocessing} module. It allows for parallel
 execution of methods on multiple CPU cores. As the necessary matrix computations scale with the
 number of trees in the forest, it was crucial to speed them up significantly, which was achieved
@@ -149,13 +149,13 @@ by using the \textit{Pool} method of the module.
 \subsubsection{pandas}
 The \textit{pandas} library offers a powerful data structure called \textit{DataFrame}, which in
 essence is just a table. Its' implementation is made so convenient and efficient though, that it
-allows for both intuitive and performant data manipulation. \newline
+allows for both intuitive and performant data manipulation. \par
 In this work, \textit{pandas 1.5.0} is used as a backbone throughout the entire lifecycle of the
 visualization.
 
 \subsubsection{scikit-Learn}
 With the \textit{scikit-Learn 1.1.2} library, machine learning is made easily accessible, even to
-beginners, while still providing some more advanced configurations if necessary. \newline
+beginners, while still providing some more advanced configurations if necessary. \par
 For this work, both the \textit{RandomForestClassifier} and the \textit{DecisionTreeClassifier}
 are a main part of the processes in the background. The two example use cases, discussed in this
 work are based on the data provided by the \textit{scikit-Learn} library, specifically the
@@ -167,7 +167,7 @@ provided by the package.
 \textit{Streamlit 1.13.0} provides users with an incredibly easy entry point to transferring Python
 visualizations into the web browser. With a simple \textit{"st.write()"} command, any text,
 visual or even {DataFrame} can be displayed in the browser. While the package certainly has its'
-limits, it is a great tool for a fast development of dashboards and visualizations. \newline
+limits, it is a great tool for a fast development of dashboards and visualizations. \par
 \textit{Streamlit} was used in this work to handle the web application and the user interface
 that enables interactions with the visualizations and algorithms. The \textit{Form} class was
 particularly useful for creating the sidebar that the user can interact with. Many sliders, paired
@@ -188,7 +188,7 @@ on top of \textit{Vega-Lite} \cite{Satyanarayan2017}, which is a declarative gra
 the JSON standard for building graphs, that are then rendered using the \textit{Vega-Lite}
 compiler. \textit{Vega-Altair}, or \textit{Altair} for short, is especially unique in its'
 way of constructing graph, by using \textit{encodings} for each visual element. This syntax
-is very intuitive to use makes the library both powerful and easy to use. \newline
+is very intuitive to use makes the library both powerful and easy to use. \par
 Every chart in this work is created using \textit{Altair}, which in turn allows the use of
 \textit{Altair's} interactive capabilities like brushing and linking. Some of the charts in the
 dashboard offer the user the ability to highlight sections and see the corresponding data changes
@@ -197,41 +197,161 @@ in a different chart right next to it.
 \subsubsection{NetworkX}
 \textit{NetworkX 2.8.7} \cite{SciPyProceedings_11} is one of the most popular libraries for
 manipulating graphs in Python. It contains many useful functions for traversing, building
-and analyzing graphs. \newline
+and analyzing graphs. \par
 Decision Trees are essentially binary trees, which can be represented as graphs. As such,
 \textit{NetworkX} was used for some particular graph operations like the graph edit distance.
 In order to transform the \textit{DecisionTreeClassifier} into a graph, \textit{PyGraphviz}
 was used as an intermediate step.
 
-\subsection{Decision Trees and Random Forests}
+\subsection{Algorithms}
+
+\subsubsection{Decision Trees and Random Forests}
 A RF, as described earlier, is an ensemble method combining multiple decision trees into a
 single classifier. By combining multiple decorrelated trees, the tree's performance can be
 much better than a single tree, while avoiding overfitting.
-\newline
+\par
 Decision trees are one of the most intuitive machine learning approaches, because they
 provide an interpretable path for their decisions. They are built recursively by splitting
 the training data into subsets based on a threshold value, computed by a predefined measure
 like \textit{impurity} or \textit{entropy}. This process is deterministic and can lead to
 very high performing models. Unfortunately, they are prone to overfitting the training data,
 which makes them less useful in the real world. Pruning and the use of larger training
-sets can usually negate this only to a degree. \newline
+sets can usually negate this only to a degree. \par
 
 The idea of RFs is to make use of this overfitting problem and turn it into an advantage.
 Through a process called \textit{bagging}, each tree is trained on a different subset of the
 training data. Additionally, by choosing the splitting feature at each recursive step
 randomly, the trees are decorrelated and result in heterogenous set of trees. The most
 common way of combining the trees is a majority vote, in the case of classification, or a
-mean of the predictions, in the case of regression. \newline
+mean of the predictions, in the case of regression. \par
 
 Their good performance is not their only strength though. Through libraries like
 \textit{scikit-Learn}, RFs can be set up with just a few lines of code. Depending on the size
 of the training data, even the training process can be done in a matter of seconds. As
 displayed in the dashboard developed in this work, this can deliver extremely high performing
 models with very little background knowledge or further tuning from the user. This makes them
-a very attractive tool for domain experts. \newline
+a very attractive tool for domain experts. \par
+
 The main downside is the lack of interpretability of RFs. While it would be possible to inspect
 individual trees and every single decision they make, it is hard to interpret their impact on
 the decisions of the global model.
+
+\subsubsection{Graph Edit Distance}
+A crucial algorithm used in the backend of the dashboard is the \textit{graph edit distance}
+\cite{sanfeliu1983distance}. It is a basic measure of similarity between two graphs, working in
+a similar way as the \textit{Levenshtein Distance} \cite{levenshtein1966binary}, but for graph
+structures. It considers two graphs and computes the operations needed to transform one into the
+other. Each operation can have a cost attributed to it, which is then summed up to get the final
+distance. \par
+
+In this dashboard the metric serves as the central measure of similarity between two trees. The
+\textit{NetworkX} implementation of the algorithm allows to specify cost functions for each
+operation individually, but uses the same cost for all operations if nothing else is specified.
+The default configuration of the \textit{graph edit distance} method does not take into account
+the node labels, which is why a custom cost function was used, to ensure that not only the
+morphology of the trees is considered, but also the labels. It was also vital to pass the root
+nodes of the two trees to the method in order to improve calculation performance. \par
+
+Calculating the \textit{graph edit distance} between two trees is a very expensive operation,
+which is why the method was configured to utilize the \textit{timeout} parameter with 0.5 seconds.
+The method will then return the best result it could find within the given time. This was tested
+and deemed to resemble the best compromise between performance and accuracy. \par
+
+While other metrics exist to compute the similarity between two trees, the \textit{graph edit
+    distance} was chosen, because it is intuitive to understand and easy to implement. Since the
+basic graph structure in this use case will always be a binary tree, more elaborate metrics
+are not necessary.
+
+\subsubsection{Pairwise Distance Matrix Calculation}
+The assembly of the pairwise distance matrix was a crucial part of the backend code to get its'
+performance up to par. Since the matrix is symmetric, it is only necessary to calculate half of
+it. The metric used in calculating each pairwise distance is the aforementioned \textit{graph
+    edit distance}, each individual calculation is expensive on its' own. It was therefore critical
+to have a fast implementation of the matrix computation overall and to avoid unnecessary
+calculations as much as possible. \par
+
+As described in the \textit{Python} subsection, the \textit{multiprocessing Pool} class was
+essential in speeding up the computation. It is written in such a way, that the calculating method
+expects only a single tree which is compared against all other trees, minus the ones that
+have already been compared. This is done through the \textit{map} method, which receives a list
+of all the trees and the method to be applied to each of them. This resulted in a significant
+speedup and allowed to set the \textit{timeout} parameter of the \textit{graph edit distance}
+to a higher value and in turn have more accurate results. The iterative calculation could only
+handle timeouts in the milisecond range, which still resulted in calculation times of over 10
+minutes, while the current implementation, running on an \textit{AMD Ryzen 5 5600X} 6-Core
+Processor with 12 threads, takes about 5 minutes. \par
+
+Obviously, this is still not a fast enough implementation for a user to be run on the fly, which
+is why the pairwise distance matrix is only calculated once and then stored in a \textit{pickle}
+file. For the two example use cases these initial calculations have already been computed for the
+RFs with 100 trees and the \textit{pickle} files are included in the repository, so that the user
+will not have to wait for the calculations on startup. \par
+% IF ANYTHING MORE GETS PRELOADED, TALK ABOUT IT HERE
+After the calculation, the results are normalized, using a \textit{MinMaxScaler}, also from the
+\textit{scikit-Learn} library. This is necessary, because the \textit{graph edit distance} can
+result in larger values for larger trees, as each operation has a cost associated with it. To
+retain the distribution of the distance values as best as possible, the \textit{MinMaxScaler}
+was considered appropriate, considering that the resulting distance values have to be positive
+and the distribution is not necessarily gaussian.
+
+\subsubsection{DBSCAN}
+The main algorithm used in this work to cluster the trees is the \textit{Density-based spatial
+    clustering of applications with noise} or \textit{DBSCAN} algorithm. It is
+a density-based cluster algorithm, which is capable of finding clusters in high dimensional data.
+A clear advantage of the DBSCAN algorithm is that the amount of clusters is not defined as a
+hyperparameter, but is determined by the algorithm itself. It is also capable of defining data
+points as noise, which makes sense for the given use case, as it is quite possible that a
+considerable amount of trees is not associated to any cluster at all. The idea to use the
+\textit{DBSCAN} in this context was considered intuitive, as trees can share similar features
+starting from their root node and will differ more and more as they grow deeper. Since the
+algorithm assumes \textit{core points}, trees with these shared features would be expected to
+be in a cluster together and form core-points, while trees with different labels on their first
+few levels would be assigned to a different cluster. \par
+
+As described in the previous section, the distance calculation between two trees is computationally
+expensive and recalculations should be avoided. The \textit{DBSCAN} algorithm is therefore
+implemented by making use of the \textit{precomputed} parameter of the \textit{sklearn}
+implementation. The \textit{pairwise distance matrix} is passed to the algorithm as computed
+earlier. Which results in a significant speedup, as the distance calculation is the most time
+consuming part of the algorithm. The two example use cases have both been configured with default
+parameters in order to show a certain behaviour. The results of which will be discussed in the
+\textit{Analysis} section. \par
+
+\subsubsection{t-SNE}
+The \textit{t-distributed stochastic neighbor embedding} or \textit{t-SNE} algorithm is based on
+the \textit{stochastic neighbor embedding} or \textit{SNE} \cite{hinton2002stochastic} algorithm
+and is used to visualize high dimensional data in lower dimensional space. By going through two
+phases, the algorithm first computes pairwise probability distributions between points, usually
+using the euclidian distance. In this case, the \textit{pairwise distance matrix} provides the
+results for the \textit{graph edit distance} for this phase. In the second phase, the
+\textit{Kullback-Leibler divergence} \cite{csiszar1975divergence} is minimized between every pair
+of probability distributions in the low dimensional space. The number of components in the low
+dimensional space can also be specified and was set to two for this work.
+\textit{t-SNE} is a non-deterministic algorithm, which means that the results will vary slightly
+each time it is run. We avoid this in the dashboard by using the \textit{random state} parameter,
+which is set to a fixed value. \par
+For our use case, the \textit{t-SNE} algorithm is used with the \textit{precomputed} parameter,
+just as the \textit{DBSCAN} algorithm before to avoid unnecessary calculations.
+The \textit{t-SNE} results are a double edged sword however, because the algorithm will always
+output some kind of embedding. This can make it hard to evaluate the output, as the problem is
+high dimensional and there is no way to know the \textit{true} cluster assignment.
+By presenting the user with both, the \textit{t-SNE} and the \textit{DBSCAN} results, it puts the
+resulting cluster assignments into context.
+
+\subsection{Target Audience}
+The goal of this work was to provide a tool that is easy to use and has a low barrier of entry.
+As the target audience, domain experts with little experience with data science were considered.
+Since a RF is not something used by anyone in their daily life, it was expected, that the user
+would have at least a basic understanding of statistics and machine learning, but has not yet
+been in contact with the concept of a RF. \par
+Given this premise, the dashboard has an educational aspiration and is in its' current state
+not intended to be used as a tool for data scientists. As such, all graphs are accompanied by
+explanations and the user is introduced to concepts one step at a time. Some of the graphs and
+and explanations simplify concepts or just briefly touch certain aspects. This is intentional
+and has the purpose of not overwhelming the user with too much information at once. The contents
+discussed in the dashboard are already quite complex, so every introduction of new concepts
+or more elaborate explanations were carefully weighed between the benefit of the explanation
+and the risk of overloaded information. \par
 
 \subsection{The Dashboard}
 \subsubsection{Backend}
@@ -242,9 +362,9 @@ dashboard pages. By separating the layers in this way, further development of th
 made easier, as a change in one layer will not affect the other layers. As stated in the
 previous section, the two datasets \textit{Iris} and \textit{Digits} from the
 \textit{sci-kit Learn} library are used for the example use cases. It was therefore not
-necessary to implement any elaborate data loading process. \newline
+necessary to implement any elaborate data loading process. \par
 The data layer as it exists now, mostly loads the respective dataset into a
-\textit{pandas Dataframe} and performs some basic preprocessing. \newline
+\textit{pandas Dataframe} and performs some basic preprocessing. \par
 The RF training and all other computations are happening in the logic layer. It
 contains the code for training the Random Forest, computing feature importances and the calculation
 of a distance matrix required for the \textit{DBSCAN} clustering and a\textit{ t-SNE} embedding
@@ -264,7 +384,6 @@ in the respective class and a \textit{*.toml} file, where the theme of the dashb
 On the left side is a sidebar, containing navigation options for the user. Radio buttons allow to
 switch between the different pages, while a dropdown menu offers the option to select between the
 two different use cases. The initial use case presented is the \textit{Iris} dataset.
-\newline
 The first page shown to the user is the \textit{Tutorial} page, containing a short welcome message,
 explaining what the dashboard is about. What follows is an explanation of the currently selected use
 case, decision trees and random forests, supported by some explanatory pictograms.
@@ -272,7 +391,7 @@ The goal of this page was to make sure, that anyone accessing the dashboard coul
 idea of what the dashboard is about and have a basic understanding of the topic. Each use case has
 a short description of the dataset and also the explanation of the decision tree is altered slightly
 to fit the respective dataset.
-\newline
+\par
 The second page is the \textit{Dashboard}, where the user is introduced to the use case application
 of the RF. When changing to this page, the \textit{Algorithm Parameters} appears in the sidebar. This
 section starts with a short warning about the fact, that the dashboard will be reloaded upon pressing
@@ -283,10 +402,27 @@ the user is given some basic idea for what a change of the parameter would do.
 The only available parameter for
 the RF is the number of trees, which ranges between 20 and 200. These boundaries were chosen, because
 a random forest with less than 20 trees is less likely to be used in practice and values over 200
-would take the matrix calculation excessively long to complete. Following the number of trees, the
+would take the matrix calculation excessively long to complete.
+Below this slider inside two \textit{streamlit metric} widgets, the user can see the current
+\textit{Silhouette Score} \cite{rousseeuw1987silhouettes} of the clustering and the amount of trees that
+are currently assigned to a cluster. The \textit{Silhouette Score} gives an indiciation of how well each
+point is assigned to its cluster. The score ranges from -1 to 1, with 1 being the best possible score.
+It can be computed for each point, as shown in later plots, but also as an average over all points, or
+trees in this case. It is important to note at this point, that the Silhouette Score is not optimally
+suited to be used for a DBSCAN clustering, as it also classifies points as \textit{noise}. Factoring
+these points into the score would artificially decrease the score depending on the amount of noise
+detected. This is solved here by not including the noise points in the calculation of the score.
+Since this in turn artificially increases the score, especially for clusterings with a large amount of
+noise, the user sees the amount of trees currently assigned to a cluster in a metric widget right next
+to the \textit{Silhouette Score} metric widget. This puts the score into perspective and the user is
+made aware of the fact that the score should not be taken at face value, which is additionally supported
+by the explanatory text boxes sourounding the metric widgets and \textit{Silhouette Score} text elements.
+\par
+Following these metrics, the
 \textit{DBSCAN} parameters \textit{'min samples'} and \textit{'eps'} and below that
 the parameters \textit{learning rate}, \textit{perplexity} and \textit{early exaggeration} for the
 \textit{t-SNE} embedding can be adjusted.
+Each parameter has a help text next to it, to explain its' basic behaviour to the user.
 Unfortunately, the size of the sidebar is only adjustable by the user and there is currently no
 official way to set the standard size of the sidebar to a fixed value.
 After introducing the user to the RF with some basic information, the first graph and its' explanation
@@ -299,7 +435,7 @@ certain classes, that might be harder to predict than others. An explanation acc
 and gives a brief explanation of the \textit{F1 score}.
 From an analytical perspective it is interesting to see that the RF performs especially well on the
 \textit{Iris} dataset, and achieves an \textit{F1 score} of almost 1 for the \textit{setosa} class.
-\newline
+\par
 The following chart is a heatmap showing the \textit{pairwise distance matrix} of all trees.
 This was constructed by calculating the graph edit distance between all trees with the goal to show
 how similar the trees are to each other. The idea behind this, was to exploratively be able to discover
@@ -307,7 +443,7 @@ groups of similar trees in the forest and further inspect them. The darker spots
 where trees are especially similar to each other. Since this is sorted by the \textit{DBSCAN} clustering,
 the user can already see some of these cluster patterns in the heatmap. What follows is a more
 elaborate explanation of this idea. It is crucial for the user to understand this concept, as the
-subsequent charts are based on this idea. \newline
+subsequent charts are based on this idea. \par
 The text also briefly explains the \textit{DBSCAN} algorithm as well as the concept behind the
 \textit{Silhouette Score} so that the user is able to interpret the following charts.
 The successive chart combines the bar plot shown before, comparing the \textit{F1-score} over the
@@ -319,20 +455,20 @@ It is important to note here, that the \textit{Silhouette Score} is not original
 with clusters that identify outliers. The data points classified as \textit{noise} by the algorithm,
 are therefore automatically assigned a value of -1. This visually separates the \textit{noise} bars
 from the others, while also giving the user a hint, that the \textit{noise} cluster should not be
-viewed as a uniform cluster, like the others. \newline
+viewed as a uniform cluster, like the others.
 As noted before, especially the \textit{setosa} class performances are very good, but across the
-classes and clusters, it is clear that some forests perform better than others.
-\newline
+classes and clusters, it is clear that some trees perform better than others.
+\par
 The \textit{t-SNE} embedding is the last major chart for the user to explore. It shows a two-dimensional
 representation of the trees as a scatter plot. The trees are colored according to their respective
 \textit{Silhouette Score}. Next to the plot is the \textit{Silhouette Plot} showing how well each
-cluster was identified by the \textit{DBSCAN} algorithm. This step is important for the user to
-have a second look at the clustering with this two dimensional embedding. If both algorithms align
+cluster was identified by the \textit{DBSCAN} algorithm. With this two dimensional embedding the user
+can have a second look at the clustering. If both algorithms align
 on the clusters, chances are that the parameters were chosen correctly. The \textit{t-SNE} algorithm
-is not explained in detail at this point, as this would be too much information at this point.
+is not explained in detail, as this would be too much information at this point.
 This is the first plot, where brushing comes into play. The user can select a group of points on the
 left to see them highlighted in the plot on the right. This gives the user the opportunity to more
-deeply explore the trees. \newline
+deeply explore the trees. \par
 The last chart repeats two of the charts that the user already knows from before, but put into a new
 and interactive context. With the \textit{t-SNE} plot on the left, the user can again select a group
 of trees, but this time the bar chart on the right will show the feature importances of the selected
@@ -340,10 +476,28 @@ trees. From here, the user is free to explore the trees of the forest in the reg
 feature importances and it is possible to see, that certain classes prefer certain features over
 others. This is especially interesting for further analysis and combining it with the knowledge of
 the preceding charts, that already showed that some clusters are better or worse at predicting certain
-classes. \newline
+classes. \par
 The user is then invited to explore the parameters and the other use case through the sidebar to see
 how the different parameters affect the clustering results.
 
+\section{Analysis}
+\subsection{Random Forest}
+RFs performen sehr gut auf Iris, auf Digit immer noch decent ohne viel tuning
+Noch was zu feature importances sagen
+
+\subsection{Class Performance Comparison}
+
+\subsection{Pairwise Distance Matrix}
+
+\subsection{DBSCAN}
+
+\subsection{t-SNE}
+
+\section{Conclusions}
+
+\subsection{Future Work}
+
+\section{Statement of Independent Work}
 
 \clearpage
 \bibliographystyle{apacite}
