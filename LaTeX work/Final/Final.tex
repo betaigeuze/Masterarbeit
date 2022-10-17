@@ -277,7 +277,7 @@ have already been compared. This is done through the \textit{map} method, which 
 of all the trees and the method to be applied to each of them. This resulted in a significant
 speedup and allowed to set the \textit{timeout} parameter of the \textit{graph edit distance}
 to a higher value and in turn have more accurate results. The iterative calculation could only
-handle timeouts in the milisecond range, which still resulted in calculation times of over 10
+handle timeouts in the millisecond range, which still resulted in calculation times of over 10
 minutes, while the current implementation, running on an \textit{AMD Ryzen 5 5600X} 6-Core
 Processor with 12 threads, takes about 5 minutes. \par
 
@@ -287,6 +287,15 @@ file. For the two example use cases these initial calculations have already been
 RFs with 100 trees and the \textit{pickle} files are included in the repository, so that the user
 will not have to wait for the calculations on startup. \par
 % IF ANYTHING MORE GETS PRELOADED, TALK ABOUT IT HERE
+
+As a preparation step, \textit{NaNs} had to be removed from the resulting matrix, as the
+\textit{graph edit distance} returns \textit{NaN} if it can not find a solution within the given
+timeout. A safety check was implemented to warn the user, if the matrix contains \textit{NaNs}
+too many \textit{NaNs}. This is a rare case, but could happen with low \textit{timeout} values.
+The \textit{NaNs} are replaced by the squared maximum value of the matrix to indicate, that these
+trees are apparently very different. This is an arbitrary choice and could be optimized to a
+more meaningful value in the future. \par
+
 After the calculation, the results are normalized, using a \textit{MinMaxScaler}, also from the
 \textit{scikit-Learn} library. This is necessary, because the \textit{graph edit distance} can
 result in larger values for larger trees, as each operation has a cost associated with it. To
@@ -310,11 +319,11 @@ few levels would be assigned to a different cluster. \par
 
 As described in the previous section, the distance calculation between two trees is computationally
 expensive and recalculations should be avoided. The \textit{DBSCAN} algorithm is therefore
-implemented by making use of the \textit{precomputed} parameter of the \textit{sklearn}
+implemented by making use of the \textit{precomputed} parameter of the \textit{scikit-Learn}
 implementation. The \textit{pairwise distance matrix} is passed to the algorithm as computed
 earlier. Which results in a significant speedup, as the distance calculation is the most time
 consuming part of the algorithm. The two example use cases have both been configured with default
-parameters in order to show a certain behaviour. The results of which will be discussed in the
+parameters in order to show a certain behavior. The results of which will be discussed in the
 \textit{Analysis} section. \par
 
 \subsubsection{t-SNE}
@@ -405,7 +414,7 @@ a random forest with less than 20 trees is less likely to be used in practice an
 would take the matrix calculation excessively long to complete.
 Below this slider inside two \textit{streamlit metric} widgets, the user can see the current
 \textit{Silhouette Score} \cite{rousseeuw1987silhouettes} of the clustering and the amount of trees that
-are currently assigned to a cluster. The \textit{Silhouette Score} gives an indiciation of how well each
+are currently assigned to a cluster. The \textit{Silhouette Score} gives an indication of how well each
 point is assigned to its cluster. The score ranges from -1 to 1, with 1 being the best possible score.
 It can be computed for each point, as shown in later plots, but also as an average over all points, or
 trees in this case. It is important to note at this point, that the Silhouette Score is not optimally
@@ -416,23 +425,27 @@ Since this in turn artificially increases the score, especially for clusterings 
 noise, the user sees the amount of trees currently assigned to a cluster in a metric widget right next
 to the \textit{Silhouette Score} metric widget. This puts the score into perspective and the user is
 made aware of the fact that the score should not be taken at face value, which is additionally supported
-by the explanatory text boxes sourounding the metric widgets and \textit{Silhouette Score} text elements.
+by the explanatory text boxes surrounding the metric widgets and \textit{Silhouette Score} text elements.
 \par
 Following these metrics, the
 \textit{DBSCAN} parameters \textit{'min samples'} and \textit{'eps'} and below that
 the parameters \textit{learning rate}, \textit{perplexity} and \textit{early exaggeration} for the
 \textit{t-SNE} embedding can be adjusted.
-Each parameter has a help text next to it, to explain its' basic behaviour to the user.
+Each parameter has a help text next to it, to explain its' basic behavior to the user.
 Unfortunately, the size of the sidebar is only adjustable by the user and there is currently no
 official way to set the standard size of the sidebar to a fixed value.
 After introducing the user to the RF with some basic information, the first graph and its' explanation
 are shown below. Starting with a simple bar chart, displaying the feature importances of the RF,
 the user is introduced to the concept of feature importances. This is the most common graph in the
-context of RFs and gives the user a first impression of the inner workings of the RF. The next graph
-covers the F1-score of the RF for each class. A blue line indicates the average \textit{F1-score} of the RF to
-put this measure into context. Showing the discrepancies between classes can give users a hint of
-certain classes, that might be harder to predict than others. An explanation accompanies the graph
-and gives a brief explanation of the \textit{F1 score}.
+context of RFs and gives the user a first impression of the inner workings of the RF. This is the only
+plot that differs between the two use cases, since the amount of features of for the \textit{Iris} dataset
+is only 4, while the \textit{Digits} dataset has 64 features. Because of that, the dashboard focuses on the
+top 10 features for the \textit{Digits} dataset first, explains the discrepancy and only then dives into the
+plot, showing all of the features.
+The next graph covers the F1-score of the RF for each class. A blue line indicates the average
+\textit{F1-score} of the RF to put this measure into context. Showing the discrepancies between classes can
+give users a hint of certain classes, that might be harder to predict than others. An explanation accompanies
+the graph and gives a brief explanation of the \textit{F1 score}.
 From an analytical perspective it is interesting to see that the RF performs especially well on the
 \textit{Iris} dataset, and achieves an \textit{F1 score} of almost 1 for the \textit{setosa} class.
 \par
@@ -480,14 +493,73 @@ classes. \par
 The user is then invited to explore the parameters and the other use case through the sidebar to see
 how the different parameters affect the clustering results.
 
+\subsubsection{General Design Considerations}
+Due to the nature of the target audience, certain design decisions were made in order to make the
+dashboard more intuitive and avoid confusion. Consistency between the different charts was one of
+consideration kept in mind. This is why the feature importance bar charts are always oriented
+horizontally, while the bar charts containing \textit{F1-scores} are always oriented vertically.
+Color coding was used in such a way, that encodings did not change between charts. While the brown
+color of the bar charts was chosen as the \textit{neutral} color, the heat map has a gray scale.
+Beneath those, both the \textit{t-SNE} plot and the \textit{Silhouette Plot} use the same diverging
+color scheme for the \textit{Silhouette Score}, reaching from pink to green. The color palette is
+colorblind safe and was constructed using the \textit{ColorBrewer2} \cite{brewer1994guidelines}
+online tool \cite{harrower2003colorbrewer}.
+
 \section{Analysis}
 \subsection{Random Forest}
-RFs performen sehr gut auf Iris, auf Digit immer noch decent ohne viel tuning
-Noch was zu feature importances sagen
+As mentioned in an earlier section, the \textit{Random Forest}, as implemented in the
+\textit{scikit-learn} library, performs very well on the \textit{Iris} dataset with no hyperparameter
+tuning. This makes the \textit{Iris} dataset a good example to inspect the RF as to how it achieves
+such high \textit{F1-scores} on this dataset. \par
+As a contrast, the RF's performance on the \textit{Digits} dataset is considerably worse if no further
+tuning is applied. A part of this is due to the fact, that both the sample and feature space of the
+\textit{Digits} dataset is much larger, while training a RF with much smaller trees of a
+\textit{maximum depth} of 5, compared to the \textit{maximum depth} of 10 for the \textit{Iris} dataset.
+The reasons for this choice were simply the computational effort required to calculate the
+\textit{pairwise distance matrix}, which takes up to 45 minutes on the same system, with an equal
+\textit{timeout} value. \par
+This did however not hurt its' comparative value as a use case, since the purpose of the two was not to
+compare their performance, but to show how the dashboard would show two very different kinds of RFs.
+Including the \textit{Digits} dataset allows to show the dashboard's ability to handle a much larger
+feature space, as well as further investigating the idea of clustering the trees in the forest.
+It was theorized that for a dataset with a feature space close to, or even larger than the number of
+trees in the forest, it would be hard or even impossible to find clusters in the forest. The coming
+sections will go into more detail on this. \par
+
+\subsection{Feature Importances}
+The feature importances for the \textit{Iris} dataset indicate that the RF does not use all features
+equally. While the \textit{petal length} and \textit{petal width} are almost equally important,
+the \textit{sepal length} and \textit{sepal width} are seemingly negligible across the RF. \par
+
+For the \textit{Digits} dataset, the feature importances are more evenly distributed, but for this use
+case, the lower feature importances even reach 0. Apparently there are areas of the drawing that do not
+contain any information for the RF to interpret a number from. \par
 
 \subsection{Class Performance Comparison}
+Comparing the performances of the RF across the different classes is an imperative step of a better
+understanding for the RF. It contextualizes the overall \textit{F1-score}, one would usually see
+for the entire forest, much better, as it shows the granularity of the RF's performance.
+This can already be an interesting insight for domain experts towards their use case. In the example
+use cases, the \textit{Iris} dataset is less interesting, since the RF performs exceptional on all
+classes and the differences are marginal. The \textit{Digits} dataset however, presents a very different
+picture. The digit 8, seems to be particularly hard for the RF to classify, while the digit 0 has the most
+accurate predictions. While the digit 9 has a slightly higher \textit{F1-score} than the digit 8, digit 6
+is the has the second highest rating. One might think, that these should be hardest to discern from each
+other, as they have very similar shapes, with circular shapes on the top and bottom, but the random forest
+seems to have a way of distinguishing them quite comfortably. \par
+
+This dashboard simplifies by focusing on the \textit{F1-score} as the only indicator of the RF's
+performance. While this is not recommended for a more in-depth analysis, due to its' primary educational
+purpose of discovering a RF, exploring a number of different performance metrics was not a priority.
+Thanks to the balanced constitution of the two example datasets, the \textit{F1-score} is a good enough
+indicator for performance in the scope of this dashboard. \par
 
 \subsection{Pairwise Distance Matrix}
+In this part of the analysis we want to discuss the results and the theory behind clustering the RF trees.
+While the exact correlation between classifier diversity and model performance is not fully understood
+\cite{kuncheva2003measures},The investigation of the trees' pairwise distances is a way of further exploring
+the idea of ensemble diversity and develop its' results into a clustering.
+
 
 \subsection{DBSCAN}
 

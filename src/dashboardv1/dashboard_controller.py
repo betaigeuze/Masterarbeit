@@ -122,8 +122,10 @@ class DashboardController:
             algorithm_parameters_form.metric(
                 label="Silhouette Score",
                 value=np.round(self.rfm.silhouette_score, decimals=2),
-                help="The Silhouette Score, as computed here, is an average of all Silhouette Scores\
-                    of the individual data points, averaged together. Note, that the points classified as noise are excluded from this calculation.",
+                help="The Silhouette Score indicates how similar each point is to the points in its' cluster,\
+                    versus how dissimilar it is to the points outside of its' cluster. \n\
+                    The value shown here is an average of all points' Silhouette Scores averaged together.\
+                    Note, that the points classified as noise are excluded from this calculation.",
             )
             algorithm_parameters_form.metric(
                 label="Trees in Clusters",

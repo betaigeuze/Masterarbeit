@@ -395,7 +395,6 @@ class RFmodeller:
             silhouette_df = pd.DataFrame(
                 self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]
             )
-        print(f"Silhouette score: {cluster_silhouette_score}")
         return silhouette_df, cluster_silhouette_score
 
     def update_load_history(self):
