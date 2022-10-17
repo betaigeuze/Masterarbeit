@@ -557,13 +557,58 @@ indicator for performance in the scope of this dashboard. \par
 \subsection{Pairwise Distance Matrix}
 In this part of the analysis we want to discuss the results and the theory behind clustering the RF trees.
 While the exact correlation between classifier diversity and model performance is not fully understood
-\cite{kuncheva2003measures},The investigation of the trees' pairwise distances is a way of further exploring
-the idea of ensemble diversity and develop its' results into a clustering.
+\cite{kuncheva2003measures}, the investigation of the trees' pairwise distances is a way of further exploring
+the idea of ensemble diversity and develop its' results into a clustering. \par
+As explained in the \textit{Algorithms} section, the pairwise distance matrix is calculated using the graph
+edit distance. The results in the Iris example use case indicate, that approximately 40\% of the trees in the
+forest share similarities with other trees, while the remaining 60\% have enough unique features to not be
+considered a cluster. Since the heatmap is sorted by the cluster labels, this plot is already influenced by
+the following clustering algorithm. There are certainly more than 40\% of trees that share similarities with
+others and as a result, have low distance values.
 
+DIGITS FEHLT NOCH
 
 \subsection{DBSCAN}
+By applying the \textit{DBSCAN} algorithm on the pairwise distance matrix, neighborhoods of trees are evaluated
+and the suspicion of clusters in the RF is further explored. Evaluation of the \textit{DBSCAN} result is done
+best by looking at the \textit{Silhouette Plot} and taking into account the two metrics displayed in the
+Sidebar. While the \textit{Silhouette Score} gives a good first impression, it is by no means sufficient to
+evaluate the clustering results. As stated in the \textit{Algorithms} section it does not take into account the
+points classified as \textit{noise} and hence has to be evaluated together with the \textit{Trees in Clusters}
+metric. The initial configuration of the dashboard shows a decent clustering, as the Silhouette Score is 0.47
+with 40\% of trees assigned to dedicated clusters. A higher \textit{Silhouette Score} can certainly be achieved
+by reducing the amount of clustered trees, but this was found to be the best trade-off between the two. It has
+to be noted that the \textit{Silhouette Score} is not to be mistaken as an absolute value, but merely a
+comparative metric. Additionally supporting the argument of a decent clustering is the \textit{Silhouette Plot},
+Which shows that the clusters contain between 2 and 7 trees, while 60 of the 100 trees are classified as
+\textit{noise}. Most of the clusters in this example have rather high individual \textit{Silhouette Scores},
+with only some outliers. \par
+An important note here is that the points classified as \textit{noise} does not hold any information about their
+classification performance. It is purely a statement about their similarity towards other trees and as such an
+implicit statement about the RF's diversity.
+
+DIGITS FEHLT NOCH
 
 \subsection{t-SNE}
+Considering that the \textit{DBSCAN} results suggest that the RF contains clusters of trees, the t-SNE algorithm
+is supposed to test this theory by applying yet another explorative algorithm upon the pairwise distance matrix.
+With some tweaking of the hyperparameters, it was possible to achieve a result that does seem to support the
+clustering results. Areas of the plot that are densely populated with points, correlate with the cluster
+assignments found by the \textit{DBSCAN} algorithm. Though both use the same pairwise distance matrix, the
+algorithms vary wildly. Both coming to comparable results is a good indication that supports the idea of clusters
+in the RF. \par
+Connecting the \textit{t-SNE} plot with the feature importances from earlier, one can inspect how different
+clusters weigh the features differently. It is also interesting to compare the feature importances of the
+clustered trees with those, classified as noise, as there are notable differences.
+
+DIGITS FEHLT NOCH
+
+\subsection{Cluster Performance Comparison}
+For a domain expert, this could be the most valuable part of the dashboard. It allows to compare the different
+clusters in how they perform across the different classes. While some clusters perform better than the forest
+average across all classes, some of them are unusually strong at classifying one specific class.
+
+DIGITS FEHLT NOCH
 
 \section{Conclusions}
 
