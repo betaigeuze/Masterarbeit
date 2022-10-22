@@ -197,7 +197,7 @@ class RFmodeller:
         default_value_dict = {
             "Digits": {
                 "eps": 0.75,
-                "min_samples": 6,
+                "min_samples": 2,
             },
             "Iris": {
                 "eps": 0.12,

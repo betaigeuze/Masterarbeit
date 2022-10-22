@@ -1,3 +1,3 @@
 <p class="text-font">
-The digits dataset is especially interesting for this task. Watch what happens, when you turn down the number of trees, below 64...!
+The digits dataset is especially challenging for this task. Try your luck in finding a configuration that identifies some meaningful clusters.
 <br>

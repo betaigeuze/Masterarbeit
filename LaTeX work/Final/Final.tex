@@ -558,15 +558,21 @@ indicator for performance in the scope of this dashboard. \par
 In this part of the analysis we want to discuss the results and the theory behind clustering the RF trees.
 While the exact correlation between classifier diversity and model performance is not fully understood
 \cite{kuncheva2003measures}, the investigation of the trees' pairwise distances is a way of further exploring
-the idea of ensemble diversity and develop its' results into a clustering. \par
+the idea of ensemble diversity and develop its' results into a clustering.
 As explained in the \textit{Algorithms} section, the pairwise distance matrix is calculated using the graph
-edit distance. The results in the Iris example use case indicate, that approximately 40\% of the trees in the
+edit distance. An extensive explanations follows, to make sure that the user knows how to interpret the
+results. \par
+
+The results in the \textit{Iris} example use case indicate, that approximately 40\% of the trees in the
 forest share similarities with other trees, while the remaining 60\% have enough unique features to not be
 considered a cluster. Since the heatmap is sorted by the cluster labels, this plot is already influenced by
-the following clustering algorithm. There are certainly more than 40\% of trees that share similarities with
-others and as a result, have low distance values.
+the following clustering algorithm. Sorting the heatmap by the cluster labels does however result in a more
+intuitive visualization and gives the user an overview of the current clustering results. For the untrained
+eye, this is a comprehensive way of showing a clustering result without going too much into detail of how
+to assign each tree to a cluster. \par
 
-DIGITS FEHLT NOCH
+In the \textit{Digits} example, the user is presented a very different picture.
+
 
 \subsection{DBSCAN}
 By applying the \textit{DBSCAN} algorithm on the pairwise distance matrix, neighborhoods of trees are evaluated

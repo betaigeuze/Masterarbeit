@@ -1,0 +1,4 @@
+<p class="text-font">
+In figure 7 we want to revisit the performance metric of the F1-score again and combine it with what we know about the clusters in the forest. What we can see here is how different clusters perform across the different classes. In the chart, the F-score is an average value of the specific cluster.
+Notice how some clusters of trees are better or worse at predicting certain classes. The blue line indicates the model average for the class. Some of our clusters are better than the model, some are worse. Depending on your screen size, you might have to scroll to the right, to see all of the classes
+Again, take some time to analyze the graphs and try to interpret what you see.

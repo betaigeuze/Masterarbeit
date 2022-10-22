@@ -74,7 +74,7 @@ class DashboardPageCreator:
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_feature_importance_barchart(
                         title="Feature importances",
-                        subtitle="Comparing the feature importances of the Random Forest.",
+                        subtitle="Figure 1: Comparing the feature importances of the Random Forest.",
                         selection=False,
                     ),
                 },
@@ -86,37 +86,46 @@ class DashboardPageCreator:
                         subtitle="Figure 2: A comparison of the different F1-Scores per class.",
                     ),
                 },
-                {"content": "markdown", "file": "performance_explanation.md"},
+                {"content": "markdown", "file": "iris_performance_explanation.md"},
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_similarity_matrix(
                         title="Pairwise Distance Matrix",
-                        subtitle="Distance matrix, using the graph edit distance (GED), as the distance metric.",
+                        subtitle="Figure 3: Distance matrix, using the graph edit distance (GED), as the distance metric.",
                     ),
                 },
-                {"content": "markdown", "file": "distance_matrix_explanation.md"},
+                {"content": "markdown", "file": "iris_distance_matrix_explanation.md"},
                 {
                     "content": "chart",
-                    "chart_element": self.dashboard_controller.create_cluster_comparison_bar_repeat(
-                        title="Cluster Performance Comparison",
-                        subtitle="Comparing the performance of clusters across the different classes. The Random Forest performance is indicated by the blue line.",
+                    "chart_element": self.dashboard_controller.create_silhouette_plot(
+                        title="Silhouette Plot",
+                        subtitle="Figure 4: Silhouette Plot of all points not classified as noise.",
+                        solo=True,
                     ),
                 },
-                {"content": "markdown", "file": "iris_explanation3.md"},
+                {"content": "markdown", "file": "iris_silhouette_explanation.md"},
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_tsne_scatter(
                         title="T-SNE Scatter Plot",
-                        subtitle="A T-SNE embedding of the Random Forest based on the distance matrix.",
+                        subtitle="Figure 5: A T-SNE embedding of the Random Forest based on the distance matrix.",
                     ),
                 },
-                {"content": "markdown", "file": "explanation4.md"},
+                {"content": "markdown", "file": "iris_explanation4.md"},
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_tsne_scatter(
                         title="T-SNE Scatter Plot with Importance Bar Chart",
-                        subtitle="The same T-SNE embedding, as shown above, interacting with the feature importance bar chart, that was shown earlier.",
+                        subtitle="Figure 6: The same T-SNE embedding, as shown above, interacting with the feature importance bar chart, that was shown earlier.",
                         importance=True,
+                    ),
+                },
+                {"content": "markdown", "file": "iris_cluster_performance_comp.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_cluster_comparison_bar_repeat(
+                        title="Cluster Performance Comparison",
+                        subtitle="Figure 7: Comparing the performance of clusters across the different classes. The Random Forest performance is indicated by the blue line.",
                     ),
                 },
                 {"content": "markdown", "file": "explanation5.md"},
@@ -130,7 +139,7 @@ class DashboardPageCreator:
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_feature_importance_barchart(
                         title="Feature importances",
-                        subtitle="Comparing the feature importances of the Random Forest.",
+                        subtitle="Figure 1: Comparing the feature importances of the Random Forest.",
                         top_k=10,
                         selection=False,
                         flip=True,
@@ -141,50 +150,61 @@ class DashboardPageCreator:
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_feature_importance_barchart(
                         title="Feature importances",
-                        subtitle="Comparing the feature importances of the Random Forest.",
+                        subtitle="Figure 2: Comparing the feature importances of the Random Forest.",
                         selection=False,
                         flip=True,
                     ),
                 },
-                {"content": "markdown", "file": "digits_explanation2.md"},
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_class_performance_comparison_bar_easy(
                         title="Class performance comparison",
-                        subtitle="A comparison of the different F1-Scores per class.",
+                        subtitle="Figure 3: A comparison of the different F1-Scores per class.",
                     ),
                 },
-                {"content": "markdown", "file": "performance_explanation.md"},
+                {"content": "markdown", "file": "digits_performance_explanation.md"},
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_similarity_matrix(
                         title="Pairwise Distance Matrix",
-                        subtitle="Distance matrix, using the graph edit distance, as the distance metric.",
+                        subtitle="Figure 4: Distance matrix, using the graph edit distance, as the distance metric.",
                     ),
                 },
-                {"content": "markdown", "file": "distance_matrix_explanation.md"},
+                {
+                    "content": "markdown",
+                    "file": "digits_distance_matrix_explanation.md",
+                },
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_silhouette_plot(
+                        title="Silhouette Plot",
+                        subtitle="Figure 5: Silhouette Plot of all points not classified as noise.",
+                        solo=True,
+                    ),
+                },
+                {"content": "markdown", "file": "digits_silhouette_explanation.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_tsne_scatter(
+                        title="t-SNE Scatter Plot",
+                        subtitle="Figure 6: A t-SNE embedding of the Random Forest based on the distance matrix.",
+                    ),
+                },
+                {"content": "markdown", "file": "digits_explanation4.md"},
+                {
+                    "content": "chart",
+                    "chart_element": self.dashboard_controller.create_tsne_scatter(
+                        title="t-SNE Scatter Plot with Importance Bar Chart",
+                        subtitle="Figure 7: The same t-SNE embedding, as shown above, interacting with the feature importance bar chart, that was shown earlier.",
+                        importance=True,
+                    ),
+                },
+                {"content": "markdown", "file": "digits_cluster_performance_comp.md"},
                 {
                     "content": "chart",
                     "chart_element": self.dashboard_controller.create_cluster_comparison_bar_repeat(
                         title="Cluster Performance Comparison",
-                        subtitle="Comparing the performance of clusters across the different classes. The Random Forest performance is indicated by the blue line.",
-                    ),
-                },
-                {"content": "markdown", "file": "digits_explanation3.md"},
-                {
-                    "content": "chart",
-                    "chart_element": self.dashboard_controller.create_tsne_scatter(
-                        title="T-SNE Scatter Plot",
-                        subtitle="A T-SNE embedding of the Random Forest based on the distance matrix.",
-                    ),
-                },
-                {"content": "markdown", "file": "explanation4.md"},
-                {
-                    "content": "chart",
-                    "chart_element": self.dashboard_controller.create_tsne_scatter(
-                        title="T-SNE Scatter Plot with Importance Bar Chart",
-                        subtitle="The same T-SNE embedding, as shown above, interacting with the feature importance bar chart, that was shown earlier.",
-                        importance=True,
+                        subtitle="Figure 8: Comparing the performance of clusters across the different classes. The Random Forest performance is indicated by the blue line.",
                     ),
                 },
                 {"content": "markdown", "file": "explanation5.md"},

@@ -4,7 +4,7 @@ This dashboard is aimed at providing an <b>introduction to Random Forests</b> an
 <br><br>
 This <i>streamlit</i> app is structured in 2 pages that you can select, by using the radio buttons on the left. If you are new to <b>Random Forests</b>, or want to refresh your memory, while getting an introduction to the datasets, choose the <b>"Tutorial"</b> page.
 <br><br>
-After that, you can proceed with the <b>"Dashboard"</b> page, where you can explore the datasets and the <b>Random Forests</b> algorithm in more detail.  
+After that, you can proceed with the <b>"Dashboard"</b> page, where you can explore the datasets and the <b>Random Forests</b> algorithm in more detail. It is best to start with the <i>Iris</i> dataset and then proceed to the <i>Digits</i> dataset.
 <br><br>
 The source code for this app is located on <a href="https://github.com/betaigeuze/Masterarbeit">GitHub</a>.  
 <br><br>

@@ -45,7 +45,7 @@ class DashboardController:
             "#4d9221",
             "#276419",
         ]
-        self.scale_color = alt.Scale(range=self.range_)
+        self.scale_color = alt.Scale(range=self.range_, domain=(-1, 1))
         self.color = alt.condition(
             self.brush,
             alt.Color(
@@ -357,10 +357,18 @@ class DashboardController:
                 )  # type: ignore
                 return self.add_title(chart, title, subtitle)  # type: ignore
         else:
-            chart = alt.hconcat(tsne_chart, self.create_silhouette_plot())
+            chart = alt.hconcat(
+                tsne_chart,
+                self.create_silhouette_plot(
+                    title="",
+                    subtitle="",
+                ),
+            )
             return self.add_title(chart, title, subtitle)  # type: ignore
 
-    def create_silhouette_plot(self) -> alt.Chart:
+    def create_silhouette_plot(
+        self, title: str, subtitle: str, solo: bool = False
+    ) -> alt.Chart:
         """
         Silhouette plot displaying the silhouette score of the RF model
         The plot is sorted by cluster and the silhouette score.
@@ -372,41 +380,87 @@ class DashboardController:
         self.tree_df.sort_values(
             by=["cluster", "Silhouette Score"], ascending=False, inplace=True
         )
-        chart = (
-            alt.Chart(self.tree_df)
-            .mark_bar()
-            .encode(
-                x=alt.X(
-                    "tree:N",
-                    sort=None,
-                    axis=alt.Axis(labels=False, ticks=False, title=None),
-                ),
-                y=alt.Y("Silhouette Score:Q"),
-                color=self.color,
-                tooltip=[
-                    alt.Tooltip("Silhouette Score:Q", title="Silhouette Score"),
-                ],
-            )
-            .properties(width=80, height=700)
-            .facet(
-                column=alt.Column(
-                    "cluster:N",
-                    sort="descending",
-                    title="Cluster",
-                    header=alt.Header(
-                        orient="bottom",
-                        labelFont="serif",
-                        labelFontSize=12,
-                        titleFont="serif",
-                        titleFontSize=12,
+        if solo:
+            chart = (
+                alt.Chart(self.tree_df)
+                .mark_bar(stroke="black")
+                .encode(
+                    x=alt.X(
+                        "tree:N",
+                        sort=None,
+                        axis=alt.Axis(labels=False, ticks=False, title=None),
                     ),
-                ),
-                spacing=10,
+                    y=alt.Y("Silhouette Score:Q", scale=alt.Scale(domain=(-1, 1))),
+                    color=alt.Color(
+                        "Silhouette Score:Q",
+                        scale=alt.Scale(domain=(-1, 1), range=self.range_),
+                        legend=alt.Legend(
+                            orient="left",
+                            direction="vertical",
+                            titleAnchor="start",
+                            title="Silhouette Score",
+                            titleFontSize=16,
+                        ),
+                    ),
+                    tooltip=[
+                        alt.Tooltip("Silhouette Score:Q", title="Silhouette Score"),
+                    ],
+                )
+                .properties(width=80, height=700)
+                .facet(
+                    column=alt.Column(
+                        "cluster:N",
+                        sort="descending",
+                        title="Cluster",
+                        header=alt.Header(
+                            orient="bottom",
+                            labelFont="serif",
+                            labelFontSize=12,
+                            titleFont="serif",
+                            titleFontSize=12,
+                        ),
+                    ),
+                    spacing=10,
+                )
+                .transform_filter(alt.datum.cluster != "Noise")
+                .resolve_scale(x="independent")
             )
-            .transform_filter(alt.datum.cluster != "Noise")
-            .resolve_scale(x="independent")
-        )
-        return chart
+        else:
+            chart = (
+                alt.Chart(self.tree_df)
+                .mark_bar(stroke="black")
+                .encode(
+                    x=alt.X(
+                        "tree:N",
+                        sort=None,
+                        axis=alt.Axis(labels=False, ticks=False, title=None),
+                    ),
+                    y=alt.Y("Silhouette Score:Q", scale=alt.Scale(domain=(-1, 1))),
+                    color=self.color,
+                    tooltip=[
+                        alt.Tooltip("Silhouette Score:Q", title="Silhouette Score"),
+                    ],
+                )
+                .properties(width=80, height=700)
+                .facet(
+                    column=alt.Column(
+                        "cluster:N",
+                        sort="descending",
+                        title="Cluster",
+                        header=alt.Header(
+                            orient="bottom",
+                            labelFont="serif",
+                            labelFontSize=12,
+                            titleFont="serif",
+                            titleFontSize=12,
+                        ),
+                    ),
+                    spacing=10,
+                )
+                .transform_filter(alt.datum.cluster != "Noise")
+                .resolve_scale(x="independent")
+            )
+        return self.add_title(chart, title, subtitle)
 
     def create_cluster_comparison_bar_repeat(
         self, title: str, subtitle: str
