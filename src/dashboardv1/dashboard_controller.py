@@ -113,7 +113,7 @@ class DashboardController:
                 label="Select a value for the number of trees in the Random Forest (Changing this parameter will take a significant amount of time to calculate!):",
                 min_value=20,
                 max_value=200,
-                step=1,
+                step=10,
                 key="n_estimators",
                 help="The number of trees in the forest can boost the overall performance of a random forest. However, it can be interesting to set this to a lower\
                 value to see how this affects the clustering and the performance of the tree as a whole.\n\
@@ -125,7 +125,7 @@ class DashboardController:
                 help="The Silhouette Score indicates how similar each point is to the points in its' cluster,\
                     versus how dissimilar it is to the points outside of its' cluster. \n\
                     The value shown here is an average of all points' Silhouette Scores averaged together.\
-                    Note, that the points classified as noise are excluded from this calculation.",
+                    Note, that the points classified as noise are excluded from this calculation. This value will default to -1 if no clusters are found.",
             )
             algorithm_parameters_form.metric(
                 label="Trees in Clusters",
@@ -169,7 +169,8 @@ class DashboardController:
                 max_value=50,
                 step=1,
                 key="perplexity",
-                help="The perplexity will also change the t-SNE results significantly. Usually, larger values are used for large datasets.",
+                help="The perplexity will also change the t-SNE results significantly. Usually, larger values are used for large datasets.\
+                    Perplexity always has to be smaller than the number of trees and will be capped at that value, although not indicated by the slider.",
             )
             algorithm_parameters_form.slider(
                 label="Select a value for the t-SNE parameter 'early exaggeration':",

@@ -6,7 +6,7 @@ One possible reason for <b>why</b> this happens is the aforementioned large amou
 the trees in the forest will be so different from each other that you would need a forest of 1000 or even more trees to achieve what we saw with the <i>Iris</i> example. However, this is merely a hypothesis at this point and would need further investigation to be confirmed.
 
 <p class="text-font">
-Below we'll dive deeper into clustering. The algorithm we we're using is called <i>DBSCAN</i>. It's a <i>density-based</i> clustering algorithm, so it searches our distance matrix for groups of trees that are all similar to each other - which is exactly what we want.
+Below we'll dive deeper into clustering. The algorithm we're using is called <i>DBSCAN</i>. It's a <i>density-based</i> clustering algorithm, so it searches our distance matrix for groups of trees that are all similar to each other - which is exactly what we want.
 Keep in mind however, that not all of our trees can be attributed to a cluster. That's because the DBSCAN algorithm can also identify trees as <i>noise</i> or <i>outliers</i>. This does not mean, that these trees are "bad" in any way, it just means, that they are mostly unique in the forest and that there are not a lot of trees, that are similar to them. In this case, this effect is even more pronounced. As expected, the <i>DBSCAN</i> algorithm has its' troubles to find any clusters at all. The few that we can identify with the current settings only achieve a very low <i>Silhouette Score</i> which further implies that there are no meaningful clusters to be found in this example. <br>
 
 <p class="text-font">

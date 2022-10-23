@@ -177,7 +177,8 @@ class RFmodeller:
             default_value_dict[self.data_choice],
             self.check_for_data_selection_change(),
         )
-
+        if self.model.n_estimators < perplexity:
+            perplexity = self.model.n_estimators - 1
         tsne = TSNE(
             n_components=2,
             perplexity=perplexity,
@@ -243,13 +244,13 @@ class RFmodeller:
         dashboardv1_absolute = Path(__file__).resolve().parent
         pickle_path = dashboardv1_absolute.joinpath(
             "pickle",
-            f"distance_matrix_{self.data_choice}.pickle",
+            f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
         )
-        if self.model.n_estimators != 100:
-            pickle_path = dashboardv1_absolute.joinpath(
-                "runtime_pickle",
-                f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
-            )
+        # if self.model.n_estimators != 100:
+        #     pickle_path = dashboardv1_absolute.joinpath(
+        #         "runtime_pickle",
+        #         f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
+        #     )
         # Check for existing pickle
         if not exists(pickle_path):
             st.spinner()
@@ -387,10 +388,10 @@ class RFmodeller:
                 columns=["Silhouette Score"],
             )
         except ValueError as e:
-            print(e)
-            print(
-                "RFModeller: Error in calculate_silhouette_scores_df. Probably only one cluster was found."
-            )
+            # print(e)
+            # print(
+            #     "RFModeller: Error in calculate_silhouette_scores_df. Probably only one cluster was found."
+            # )
             cluster_silhouette_score = -1.0
             silhouette_df = pd.DataFrame(
                 self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]

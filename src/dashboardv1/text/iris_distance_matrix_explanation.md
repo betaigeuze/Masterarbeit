@@ -4,7 +4,7 @@ The similarity measure we're using here is called the <i>graph edit distance</i>
 But why would we do that, you might ask? Well, what we have here, is a so-called <i>similarity</i> or <i>distance matrix</i>. We can use this similarity matrix and run it through a clustering algorithm. We can then identify groups of trees in the forest that are especially alike. Take your time to inspect the plot on your own.  
 
 <p class="text-font">
-Below we'll dive deeper into clustering. The algorithm we we're using is called <i>DBSCAN</i>. It's a <i>density-based</i> clustering algorithm, so it searches our distance matrix for groups of trees that are all similar to each other - which is exactly what we want.
+Below we'll dive deeper into clustering. The algorithm we're using is called <i>DBSCAN</i>. It's a <i>density-based</i> clustering algorithm, so it searches our distance matrix for groups of trees that are all similar to each other - which is exactly what we want.
 Keep in mind however, that not all of our trees can be attributed to a cluster. That's because the DBSCAN algorithm can also identify trees as <i>noise</i> or <i>outliers</i>. This does not mean, that these trees are "bad" in any way, it just means, that they are mostly unique in the forest and that there are not a lot of trees, that are similar to them.
 The plot we are looking at in figure 4 is called a <i>Silhouette Plot</i>, showing us all of the trees in the forest that were attributed to a cluster. The <b>Silhouette Score</b> - indicated by the color of the bars - is a metric to measure a cluster assignment. It ranges between -1 and 1, where 1 means that a data point was likely assigned to the correct cluster and -1 means that it was probably falsely classified.
 <br>

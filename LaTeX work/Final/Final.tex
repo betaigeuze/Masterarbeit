@@ -42,8 +42,8 @@ This is one of the problems that \textit{TaxonTree} tries to overcome
 \cite{parr2003taxontree}. It uses a tree visualization approach that is scalable for large
 trees by adding the possibility to zoom, browse and search the tree. While this does
 help if a tree grows too large, it does not provide any insight on the general structure of
-the tree as a whole.
-\linebreak
+the tree as a whole. \par
+
 Generalizing either of the approaches towards RFs is also non trivial. Both simply lack the
 scalability in the desired dimension. It also leads into a dangerous territory of focusing too much on
 the structure of individual trees. RFs - as all ensemble methods - arrive at their decisions
@@ -120,9 +120,10 @@ While the main challenge of gaining access to the insights and details of the in
 of a RF might have been solved already they seem to be hidden behind a kind of complexity
 layer. Powerful approaches for RF visualization exist, but there is a need to make them more
 accessible for domain experts. Considering not only the audience, but also the intended
-use of the visualization is paramount for the visualization to be useful. There is a lot
-of value to be derived from the existing work and some of the ideas have influenced this
-work.
+use of the visualization is paramount for the visualization to be useful. Most of the
+approaches are quite complex and require a certain level of expertise in order to use them.
+There is a lot of value to be derived from the existing efforts and some of the ideas have
+influenced this work.
 
 \section{Methodology}
 \subsection {Important Packages}
@@ -204,7 +205,6 @@ In order to transform the \textit{DecisionTreeClassifier} into a graph, \textit{
 was used as an intermediate step.
 
 \subsection{Algorithms}
-
 \subsubsection{Decision Trees and Random Forests}
 A RF, as described earlier, is an ensemble method combining multiple decision trees into a
 single classifier. By combining multiple decorrelated trees, the tree's performance can be
@@ -249,13 +249,14 @@ In this dashboard the metric serves as the central measure of similarity between
 operation individually, but uses the same cost for all operations if nothing else is specified.
 The default configuration of the \textit{graph edit distance} method does not take into account
 the node labels, which is why a custom cost function was used, to ensure that not only the
-morphology of the trees is considered, but also the labels. It was also vital to pass the root
-nodes of the two trees to the method in order to improve calculation performance. \par
+morphology of the trees is considered, but also the labels at individual node comparisons.
+It was also vital to pass the root nodes of the two trees to the method in order to improve
+calculation performance. \par
 
 Calculating the \textit{graph edit distance} between two trees is a very expensive operation,
 which is why the method was configured to utilize the \textit{timeout} parameter with 0.5 seconds.
 The method will then return the best result it could find within the given time. This was tested
-and deemed to resemble the best compromise between performance and accuracy. \par
+and deemed to resemble the best compromise between performance and accuracy.
 
 While other metrics exist to compute the similarity between two trees, the \textit{graph edit
     distance} was chosen, because it is intuitive to understand and easy to implement. Since the
@@ -279,19 +280,26 @@ speedup and allowed to set the \textit{timeout} parameter of the \textit{graph e
 to a higher value and in turn have more accurate results. The iterative calculation could only
 handle timeouts in the millisecond range, which still resulted in calculation times of over 10
 minutes, while the current implementation, running on an \textit{AMD Ryzen 5 5600X} 6-Core
-Processor with 12 threads, takes about 5 minutes. \par
+Processor with 12 threads, takes about 5 minutes for a RF with 100 trees. \par
 
 Obviously, this is still not a fast enough implementation for a user to be run on the fly, which
 is why the pairwise distance matrix is only calculated once and then stored in a \textit{pickle}
-file. For the two example use cases these initial calculations have already been computed for the
-RFs with 100 trees and the \textit{pickle} files are included in the repository, so that the user
-will not have to wait for the calculations on startup. \par
-% IF ANYTHING MORE GETS PRELOADED, TALK ABOUT IT HERE
+file. For all example use cases available to configure with the sliders these initial calculations
+have already been computed. The \textit{pickle} files are included in the repository, so that the user
+will not have to wait for the calculations. \par
+
+A notable fact regarding the computation was that even though the trees in the \textit{Iris} dataset
+were configured with a maximum depth of 10 and the trees of the \textit{Digits} dataset were
+configured with a maximum depth of 5, the computation of the \textit{Iris} dataset was
+faster when calculating for the same RF size. It is assumed that this is a result of the amount
+of features being much higher for the \textit{Digits} dataset, which caused the \textit{graph edit
+    distance} calculation to reach the timeout limit more often. \par
 
 As a preparation step, \textit{NaNs} had to be removed from the resulting matrix, as the
 \textit{graph edit distance} returns \textit{NaN} if it can not find a solution within the given
 timeout. A safety check was implemented to warn the user, if the matrix contains \textit{NaNs}
 too many \textit{NaNs}. This is a rare case, but could happen with low \textit{timeout} values.
+In the current implementation of the example use cases this was never a problem.
 The \textit{NaNs} are replaced by the squared maximum value of the matrix to indicate, that these
 trees are apparently very different. This is an arbitrary choice and could be optimized to a
 more meaningful value in the future. \par
@@ -339,6 +347,7 @@ dimensional space can also be specified and was set to two for this work.
 \textit{t-SNE} is a non-deterministic algorithm, which means that the results will vary slightly
 each time it is run. We avoid this in the dashboard by using the \textit{random state} parameter,
 which is set to a fixed value. \par
+
 For our use case, the \textit{t-SNE} algorithm is used with the \textit{precomputed} parameter,
 just as the \textit{DBSCAN} algorithm before to avoid unnecessary calculations.
 The \textit{t-SNE} results are a double edged sword however, because the algorithm will always
@@ -353,6 +362,7 @@ As the target audience, domain experts with little experience with data science 
 Since a RF is not something used by anyone in their daily life, it was expected, that the user
 would have at least a basic understanding of statistics and machine learning, but has not yet
 been in contact with the concept of a RF. \par
+
 Given this premise, the dashboard has an educational aspiration and is in its' current state
 not intended to be used as a tool for data scientists. As such, all graphs are accompanied by
 explanations and the user is introduced to concepts one step at a time. Some of the graphs and
@@ -360,7 +370,7 @@ and explanations simplify concepts or just briefly touch certain aspects. This i
 and has the purpose of not overwhelming the user with too much information at once. The contents
 discussed in the dashboard are already quite complex, so every introduction of new concepts
 or more elaborate explanations were carefully weighed between the benefit of the explanation
-and the risk of overloaded information. \par
+and the risk of overloaded information.
 
 \subsection{The Dashboard}
 \subsubsection{Backend}
@@ -372,12 +382,14 @@ made easier, as a change in one layer will not affect the other layers. As state
 previous section, the two datasets \textit{Iris} and \textit{Digits} from the
 \textit{sci-kit Learn} library are used for the example use cases. It was therefore not
 necessary to implement any elaborate data loading process. \par
+
 The data layer as it exists now, mostly loads the respective dataset into a
 \textit{pandas Dataframe} and performs some basic preprocessing. \par
+
 The RF training and all other computations are happening in the logic layer. It
 contains the code for training the Random Forest, computing feature importances and the calculation
 of a distance matrix required for the \textit{DBSCAN} clustering and a\textit{ t-SNE} embedding
-of the trees. If the standard use case is selected, the distance matrix is pre-loaded from the
+of the trees. For any given RF size the distance matrix is pre-loaded from the
 \textit{pickle} file. The results are then assembled in the central \textit{tree Dataframe}, containing
 detailed information about each tree in the forest. This assembly is handled by a dedicated class.
 After constructing the \textit{tree Dataframe}, two classes construct the \textit{Streamlit} page.
@@ -399,8 +411,11 @@ case, decision trees and random forests, supported by some explanatory pictogram
 The goal of this page was to make sure, that anyone accessing the dashboard could get an immediate
 idea of what the dashboard is about and have a basic understanding of the topic. Each use case has
 a short description of the dataset and also the explanation of the decision tree is altered slightly
-to fit the respective dataset.
-\par
+to fit the respective dataset. The \textit{Tutorial} page serves as a starting point for
+inexperienced users and to make sure that every user has at least a basic understanding of the
+decision tree and RF algorithms. This allows all of the explanations following on the dashboard page
+to rely on the knowledge conveyed before and be more concise. \par
+
 The second page is the \textit{Dashboard}, where the user is introduced to the use case application
 of the RF. When changing to this page, the \textit{Algorithm Parameters} appears in the sidebar. This
 section starts with a short warning about the fact, that the dashboard will be reloaded upon pressing
@@ -427,43 +442,45 @@ to the \textit{Silhouette Score} metric widget. This puts the score into perspec
 made aware of the fact that the score should not be taken at face value, which is additionally supported
 by the explanatory text boxes surrounding the metric widgets and \textit{Silhouette Score} text elements.
 \par
-Following these metrics, the
-\textit{DBSCAN} parameters \textit{'min samples'} and \textit{'eps'} and below that
-the parameters \textit{learning rate}, \textit{perplexity} and \textit{early exaggeration} for the
-\textit{t-SNE} embedding can be adjusted.
-Each parameter has a help text next to it, to explain its' basic behavior to the user.
+
+Following these metrics, the \textit{DBSCAN} parameters \textit{'min samples'} and \textit{'eps'} and
+below that the parameters \textit{learning rate}, \textit{perplexity} and \textit{early exaggeration} for
+the \textit{t-SNE} embedding can be adjusted. The boundaries for these parameters were chosen to fit the
+use cases at hand while giving the user enough freedom to experiment. Each parameter has a help text next
+to it, to explain its' basic behavior to the user.
 Unfortunately, the size of the sidebar is only adjustable by the user and there is currently no
-official way to set the standard size of the sidebar to a fixed value.
+official way to set the standard size of the sidebar to a fixed value. \par
+
 After introducing the user to the RF with some basic information, the first graph and its' explanation
 are shown below. Starting with a simple bar chart, displaying the feature importances of the RF,
 the user is introduced to the concept of feature importances. This is the most common graph in the
 context of RFs and gives the user a first impression of the inner workings of the RF. This is the only
-plot that differs between the two use cases, since the amount of features of for the \textit{Iris} dataset
+plot that differs between the two use cases, since the amount of features for the \textit{Iris} dataset
 is only 4, while the \textit{Digits} dataset has 64 features. Because of that, the dashboard focuses on the
-top 10 features for the \textit{Digits} dataset first, explains the discrepancy and only then dives into the
-plot, showing all of the features.
+top 10 features for the \textit{Digits} dataset first, explains the discrepancy and then dives into the
+plot, showing all of the features. \par
+
 The next graph covers the F1-score of the RF for each class. A blue line indicates the average
 \textit{F1-score} of the RF to put this measure into context. Showing the discrepancies between classes can
 give users a hint of certain classes, that might be harder to predict than others. An explanation accompanies
 the graph and gives a brief explanation of the \textit{F1 score}.
-From an analytical perspective it is interesting to see that the RF performs especially well on the
-\textit{Iris} dataset, and achieves an \textit{F1 score} of almost 1 for the \textit{setosa} class.
-\par
+From an analytical perspective it is interesting for the user to see that the RF performs especially well on
+the \textit{Iris} dataset, and achieves an \textit{F1 score} of almost 1 for the \textit{setosa} class. \par
+
 The following chart is a heatmap showing the \textit{pairwise distance matrix} of all trees.
-This was constructed by calculating the graph edit distance between all trees with the goal to show
+This was constructed by calculating the \textit{graph edit distance} between all trees with the goal to show
 how similar the trees are to each other. The idea behind this, was to exploratively be able to discover
 groups of similar trees in the forest and further inspect them. The darker spots in the heat map are
 where trees are especially similar to each other. Since this is sorted by the \textit{DBSCAN} clustering,
 the user can already see some of these cluster patterns in the heatmap. What follows is a more
 elaborate explanation of this idea. It is crucial for the user to understand this concept, as the
-subsequent charts are based on this idea. \par
+subsequent charts are based on this idea. Since the results are quite different between the two use
+cases, the text gives explanations based on the specific use case in order to put the plots into context.
+The differences become especially apparent starting from the distance matrix. \par
+
 The text also briefly explains the \textit{DBSCAN} algorithm as well as the concept behind the
-\textit{Silhouette Score} so that the user is able to interpret the following charts.
-The successive chart combines the bar plot shown before, comparing the \textit{F1-score} over the
-different classes, but this time discerning between the different clusters. With this, the user can
-see which clusters are better or worse at predicting certain classes. Again, a blue line indicates
-the average \textit{F1-score} of the RF for the respective class. Additionally, the bars are color
-coded according to the \textit{Silhouette Score} of their respective cluster.
+\textit{Silhouette Score} so that the user is able to interpret the following charts. Following this
+explanation, the user is presented with a \textit{Silhouette Plot} of the current clustering.
 It is important to note here, that the \textit{Silhouette Score} is not originally meant to be used
 with clusters that identify outliers. The data points classified as \textit{noise} by the algorithm,
 are therefore automatically assigned a value of -1. This visually separates the \textit{noise} bars
@@ -472,24 +489,28 @@ viewed as a uniform cluster, like the others.
 As noted before, especially the \textit{setosa} class performances are very good, but across the
 classes and clusters, it is clear that some trees perform better than others.
 \par
-The \textit{t-SNE} embedding is the last major chart for the user to explore. It shows a two-dimensional
+The \textit{t-SNE} embedding is the next chart for the user to explore. It shows a two-dimensional
 representation of the trees as a scatter plot. The trees are colored according to their respective
-\textit{Silhouette Score}. Next to the plot is the \textit{Silhouette Plot} showing how well each
+\textit{Silhouette Score}. Next to the plot is again the \textit{Silhouette Plot} showing how well each
 cluster was identified by the \textit{DBSCAN} algorithm. With this two dimensional embedding the user
 can have a second look at the clustering. If both algorithms align
 on the clusters, chances are that the parameters were chosen correctly. The \textit{t-SNE} algorithm
-is not explained in detail, as this would be too much information at this point.
+is not explained in exact detail, as this would be too much information at this point.
 This is the first plot, where brushing comes into play. The user can select a group of points on the
 left to see them highlighted in the plot on the right. This gives the user the opportunity to more
 deeply explore the trees. \par
-The last chart repeats two of the charts that the user already knows from before, but put into a new
+The following chart repeats two of the charts that the user already knows from before, but put into a new
 and interactive context. With the \textit{t-SNE} plot on the left, the user can again select a group
 of trees, but this time the bar chart on the right will show the feature importances of the selected
 trees. From here, the user is free to explore the trees of the forest in the regards to their
 feature importances and it is possible to see, that certain classes prefer certain features over
-others. This is especially interesting for further analysis and combining it with the knowledge of
-the preceding charts, that already showed that some clusters are better or worse at predicting certain
-classes. \par
+others. \par
+The successive chart combines the bar plot shown before, comparing the \textit{F1-score} over the
+different classes, but this time discerning between the different clusters. With this, the user can
+see which clusters are better or worse at predicting certain classes. Again, a blue line indicates
+the average \textit{F1-score} of the RF for the respective class. Additionally, the bars are color
+coded according to the \textit{Silhouette Score} of their respective cluster. See the \textit{Analysis}
+section for further explanations on the different results of the two example use cases. \par
 The user is then invited to explore the parameters and the other use case through the sidebar to see
 how the different parameters affect the clustering results.
 
@@ -505,12 +526,22 @@ color scheme for the \textit{Silhouette Score}, reaching from pink to green. The
 colorblind safe and was constructed using the \textit{ColorBrewer2} \cite{brewer1994guidelines}
 online tool \cite{harrower2003colorbrewer}.
 
-\section{Analysis}
+\subsubsection{Things that were not included}
+With the goal of giving the user both a general overview of the general RF algorithm while also
+providing valuable insights, some things had to be left out in order to keep the dashboard concise.
+The most obvious omission is the \textit{OOB error}, as talked about in the beginning. While it
+would serve as an interesting additional metric, just like a \textit{confusion matrix}, it would
+be another metric that would have to be explained to the user. Additionally, the \textit{OOB error}
+is very obscure to compute for individual trees of the forest, in the \textit{scikit-learn}
+implementation, because these detailed results are not natively stored.
+
+\section{Results}
 \subsection{Random Forest}
 As mentioned in an earlier section, the \textit{Random Forest}, as implemented in the
 \textit{scikit-learn} library, performs very well on the \textit{Iris} dataset with no hyperparameter
 tuning. This makes the \textit{Iris} dataset a good example to inspect the RF as to how it achieves
 such high \textit{F1-scores} on this dataset. \par
+
 As a contrast, the RF's performance on the \textit{Digits} dataset is considerably worse if no further
 tuning is applied. A part of this is due to the fact, that both the sample and feature space of the
 \textit{Digits} dataset is much larger, while training a RF with much smaller trees of a
@@ -518,6 +549,7 @@ tuning is applied. A part of this is due to the fact, that both the sample and f
 The reasons for this choice were simply the computational effort required to calculate the
 \textit{pairwise distance matrix}, which takes up to 45 minutes on the same system, with an equal
 \textit{timeout} value. \par
+
 This did however not hurt its' comparative value as a use case, since the purpose of the two was not to
 compare their performance, but to show how the dashboard would show two very different kinds of RFs.
 Including the \textit{Digits} dataset allows to show the dashboard's ability to handle a much larger
@@ -571,8 +603,14 @@ intuitive visualization and gives the user an overview of the current clustering
 eye, this is a comprehensive way of showing a clustering result without going too much into detail of how
 to assign each tree to a cluster. \par
 
-In the \textit{Digits} example, the user is presented a very different picture.
-
+In the \textit{Digits} example, the user is presented a very different picture. The heatmap is almost evenly
+colored in light gray, which means that there are almost no trees that are similar to each other. This
+strongly suggests, that it will not be possible to make out clusters in the forest. The current theory for
+why this is the case is that the large feature space of the \textit{Digits} dataset causes the individual
+trees to be more dissimilar from each other. It is simply much more likely for a tree to be different from
+another tree, if the feature space is large enough. This could only be counter balanced by a much larger
+number of total trees in the forest. Considering that this is only a theory, this would have to be tested
+in a future work.
 
 \subsection{DBSCAN}
 By applying the \textit{DBSCAN} algorithm on the pairwise distance matrix, neighborhoods of trees are evaluated
@@ -589,11 +627,14 @@ comparative metric. Additionally supporting the argument of a decent clustering 
 Which shows that the clusters contain between 2 and 7 trees, while 60 of the 100 trees are classified as
 \textit{noise}. Most of the clusters in this example have rather high individual \textit{Silhouette Scores},
 with only some outliers. \par
-An important note here is that the points classified as \textit{noise} does not hold any information about their
-classification performance. It is purely a statement about their similarity towards other trees and as such an
-implicit statement about the RF's diversity.
 
-DIGITS FEHLT NOCH
+An important note here is that the classification of points as \textit{noise} does not hold any information about
+their classification performance. It is purely a statement about their similarity towards other trees and as such
+an implicit statement about the RF's diversity. \par
+
+Again, the \textit{Digits} example confirms what was expected from the distance matrix. The \textit{Silhouette
+    Score} is 0.05 while the amount of trees in clusters is at only 17\%, even after careful tuning of the
+\textit{DBSCAN} parameters. This serves as a clear signal that there are no clusters in the forest.
 
 \subsection{t-SNE}
 Considering that the \textit{DBSCAN} results suggest that the RF contains clusters of trees, the t-SNE algorithm
@@ -605,21 +646,75 @@ algorithms vary wildly. Both coming to comparable results is a good indication t
 in the RF. \par
 Connecting the \textit{t-SNE} plot with the feature importances from earlier, one can inspect how different
 clusters weigh the features differently. It is also interesting to compare the feature importances of the
-clustered trees with those, classified as noise, as there are notable differences.
+clustered trees with those, classified as noise, as there are notable differences. \par
 
-DIGITS FEHLT NOCH
+What we can see in the \textit{Digits} example is that the points are almost evenly distributed across the plot.
+There are no signs of cluster patterns to be seen at all. Even after extensive tweaking of the hyperparameters,
+the resulting plot does not give any indication of clusters. With the two algorithms both coming to the same
+conclusion, it is quite safe to assume, that there are no clusters in the RF.
 
 \subsection{Cluster Performance Comparison}
 For a domain expert, this could be the most valuable part of the dashboard. It allows to compare the different
 clusters in how they perform across the different classes. While some clusters perform better than the forest
-average across all classes, some of them are unusually strong at classifying one specific class.
+average across all classes, some of them are unusually strong at classifying one specific class. \par
 
-DIGITS FEHLT NOCH
+This is only true for the \textit{Iris} example however, as the \textit{Digits} RF trees do not form any
+clusters. As such, the \textit{Cluster Performance Comparison} does not yield any insights and could even be
+labeled misleading. It is still included in the dashboard with a clear disclaimer for the user.
 
-\section{Conclusions}
+\section{Discussion}
+\paragraph{Tutorial}\mbox{}\\
+The tutorial gives a beginner a good introduction to the topic of RFs Decision Trees. It can certainly not
+replace an elaborate course on the topic but it provides the user with the essential concepts necessary to
+understand the visualizations and results of the dashboard. An introduction to the distance matrix and the
+clustering algorithms is not included as it would be a lot of information to take in at once. It was
+therefore decided to instead explain this concepts while viewing the example and focus on the most basic
+elements of the algorithms to not overwhelm the user. \par
 
-\subsection{Future Work}
+\paragraph{Streamlit Implementation}\mbox{}\\
+The use of the \textit{Streamlit} library offered an easy entry point for the creation of the dashboard.
+A lot of backend work could be avoided by using the library's built-in functionality and the work would
+likely not have been possibly in such a short time frame without it. While some workarounds were necessary
+to bypass some of the limitations of the library, it was an overall good choice for the project. \par
 
+\paragraph{Machine Learning Implementations}\mbox{}\\
+By using the \textit{Scikit-Learn} library, most of the machine learning algorithms used in the dashboard
+were easily accessible and usable from the start. Since this work examined the underlying classes quite
+closely it was important to access individual subclasses of certain objects. While small details were not
+possible to access, most of the important information was available and easy to retrieve. The extensive use
+of \textit{Cython} in the library also guaranteed a fast execution of the algorithms. Unfortunately the
+custom distance function is required to work with \textit{NumPy} vectors for the two elements to be compared.
+This meant that the \textit{graph edit distance} could not be passed to the native \textit{Scikit-Learn}
+algorithms and had to be implemented manually and passed to the respective functions by using the
+\textit{precomputed} parameter. \par
+
+\paragraph{Clustering Results}\mbox{}\\
+The results of the clustering algorithms present an interesting idea that could be further explored in the
+future. It is clearly connected to the topic of ensemble diversity and could be applied to other ensemble
+methods as well. By presenting such different results for the two datasets, it is also obvious that more
+research is needed to reliably interpret the clustering results. There would also surely be more elaborate
+methods to arrive at a more reliable clustering, such as comparing results of the different clusterings
+with each other. Since this was not the main focus of the work though, it was reduced to the current state
+in order not to overcomplicate the dashboard.
+
+\paragraph{Future Work}\mbox{}\\
+Further iterations of the dashboard could be implemented in a different framework with more flexibility.
+Additional educational content could also be added to the \textit{Tutorial} part of the dashboard in order to
+further explain the concepts shown in the dashboard section. By using a different library for the machine
+learning implementations other metrics like the \textit{OOB-Error} or a \textit{Confusion Matrix} could be
+added. A more in-depth exploration of the relationship between the feature space and the formation of clusters
+in the RF would certainly be worth pursuing. \par
+On the more technical side, implementing the matrix calculation for a computation on the GPU would be a great
+improvement for run time of the backend code.
+
+\clearpage
+\section{Conclusion}
+In its' current state the dashboard is mostly a proof of concept. The idea of a dashboard that has both
+an educational and explorative approach to RFs, while also conveying valuable insights with complex concepts
+works well. Some of the initial ideas could not be implemented due to limits of the streamlit library, such
+as designing the dashboard with a scrollytelling layout.
+
+\clearpage
 \section{Statement of Independent Work}
 
 \clearpage
