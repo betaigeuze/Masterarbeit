@@ -104,13 +104,13 @@ class DashboardController:
             algorithm_parameters_form.markdown(
                 """
                 <p class="sidebar-font">
-                Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a while.
+                Keep in mind that changing these values, will cause the dashboard to reload. Depending on your settings, this might take a few seconds.
                 """,
                 unsafe_allow_html=True,
             )
             algorithm_parameters_form.markdown("### Random Forest:")
             algorithm_parameters_form.slider(
-                label="Select a value for the number of trees in the Random Forest (Changing this parameter will take a significant amount of time to calculate!):",
+                label="Select a value for the number of trees in the Random Forest:",
                 min_value=20,
                 max_value=200,
                 step=10,
