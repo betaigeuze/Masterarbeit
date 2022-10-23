@@ -18,8 +18,29 @@
 DO SUMMARY AT THE END
 
 \tableofcontents
-\clearpage
 
+\clearpage
+\section{Statement of Independent Work}
+I herewith formally declare that I, Fabio Rougier, have written the submitted thesis independently.
+I did not use any outside support except for the quoted literature and other sources mentioned in the paper.
+I clearly marked and separately listed all of the literature and all of the other sources which I employed when
+producing this academic work, either literally or in content. This thesis has not been handed in or published before
+in the same or similar form.
+\par
+I am aware, that in case of an attempt at deception based on plagiarism, the thesis would be graded under 5 points
+and counted as one failed examination attempt. The thesis may only be repeated once.
+\par
+In the submitted thesis the written copies and the electronic version for archiving are identical in content.
+\vspace{40pt}
+
+\noindent
+Place, Date
+\vspace{60pt}
+
+\noindent
+Signature of author
+
+\clearpage
 \section{Introduction}
 WRITE THIS AT THE END
 Random Forests (RF) \cite{breiman2001random} are a powerful ensemble method with a low barrier of entry. Because of their
@@ -127,7 +148,7 @@ influenced this work.
 
 \section{Methodology}
 \subsection {Important Packages}
-\subsubsection{Python}
+\paragraph{Python}\mbox{}\\
 This work was implemented in \textit{Python 3.10.4} \cite{10.5555/1593511}, as it has
 become one of the standard programming languages for data science and machine learning.
 This allowed the usage of many commonly used libraries, like \textit{NumPy} \cite{harris2020array},
@@ -147,14 +168,14 @@ execution of methods on multiple CPU cores. As the necessary matrix computations
 number of trees in the forest, it was crucial to speed them up significantly, which was achieved
 by using the \textit{Pool} method of the module.
 
-\subsubsection{pandas}
+\paragraph{pandas}\mbox{}\\
 The \textit{pandas} library offers a powerful data structure called \textit{DataFrame}, which in
 essence is just a table. Its' implementation is made so convenient and efficient though, that it
 allows for both intuitive and performant data manipulation. \par
 In this work, \textit{pandas 1.5.0} is used as a backbone throughout the entire lifecycle of the
 visualization.
 
-\subsubsection{scikit-Learn}
+\paragraph{scikit-Learn}\mbox{}\\
 With the \textit{scikit-Learn 1.1.2} library, machine learning is made easily accessible, even to
 beginners, while still providing some more advanced configurations if necessary. \par
 For this work, both the \textit{RandomForestClassifier} and the \textit{DecisionTreeClassifier}
@@ -164,7 +185,7 @@ work are based on the data provided by the \textit{scikit-Learn} library, specif
 \cite{ester1996density} and \textit{t-SNE} \cite{JMLR:v9:vandermaaten08a} algorithms are used as
 provided by the package.
 
-\subsubsection{Streamlit}
+\paragraph{Streamlit}\mbox{}\\
 \textit{Streamlit 1.13.0} provides users with an incredibly easy entry point to transferring Python
 visualizations into the web browser. With a simple \textit{"st.write()"} command, any text,
 visual or even {DataFrame} can be displayed in the browser. While the package certainly has its'
@@ -182,7 +203,7 @@ Some limitations of the package were overcome with the use of \textit{HTML} and 
 the \textit{Streamlit} code, which is not ideal, but common practice in the \textit{Streamlit}
 community.
 
-\subsubsection{Vega-Altair}
+\paragraph{Vega-Altair}\mbox{}\\
 Speaking of visualizations, \textit{Vega-Altair 4.2.0} \cite{VanderPlas2018} is a great library for
 creating interactive charts, with a great deal of flexibility for customization. It is built
 on top of \textit{Vega-Lite} \cite{Satyanarayan2017}, which is a declarative grammar using
@@ -195,7 +216,7 @@ Every chart in this work is created using \textit{Altair}, which in turn allows 
 dashboard offer the user the ability to highlight sections and see the corresponding data changes
 in a different chart right next to it.
 
-\subsubsection{NetworkX}
+\paragraph{NetworkX}\mbox{}\\
 \textit{NetworkX 2.8.7} \cite{SciPyProceedings_11} is one of the most popular libraries for
 manipulating graphs in Python. It contains many useful functions for traversing, building
 and analyzing graphs. \par
@@ -205,7 +226,7 @@ In order to transform the \textit{DecisionTreeClassifier} into a graph, \textit{
 was used as an intermediate step.
 
 \subsection{Algorithms}
-\subsubsection{Decision Trees and Random Forests}
+\paragraph{Decision Trees and Random Forests}\mbox{}\\
 A RF, as described earlier, is an ensemble method combining multiple decision trees into a
 single classifier. By combining multiple decorrelated trees, the tree's performance can be
 much better than a single tree, while avoiding overfitting.
@@ -236,7 +257,7 @@ The main downside is the lack of interpretability of RFs. While it would be poss
 individual trees and every single decision they make, it is hard to interpret their impact on
 the decisions of the global model.
 
-\subsubsection{Graph Edit Distance}
+\paragraph{Graph Edit Distance}\mbox{}\\
 A crucial algorithm used in the backend of the dashboard is the \textit{graph edit distance}
 \cite{sanfeliu1983distance}. It is a basic measure of similarity between two graphs, working in
 a similar way as the \textit{Levenshtein Distance} \cite{levenshtein1966binary}, but for graph
@@ -263,7 +284,7 @@ While other metrics exist to compute the similarity between two trees, the \text
 basic graph structure in this use case will always be a binary tree, more elaborate metrics
 are not necessary.
 
-\subsubsection{Pairwise Distance Matrix Calculation}
+\paragraph{Pairwise Distance Matrix Calculation}\mbox{}\\
 The assembly of the pairwise distance matrix was a crucial part of the backend code to get its'
 performance up to par. Since the matrix is symmetric, it is only necessary to calculate half of
 it. The metric used in calculating each pairwise distance is the aforementioned \textit{graph
@@ -311,7 +332,7 @@ retain the distribution of the distance values as best as possible, the \textit{
 was considered appropriate, considering that the resulting distance values have to be positive
 and the distribution is not necessarily gaussian.
 
-\subsubsection{DBSCAN}
+\paragraph{DBSCAN}\mbox{}\\
 The main algorithm used in this work to cluster the trees is the \textit{Density-based spatial
     clustering of applications with noise} or \textit{DBSCAN} algorithm. It is
 a density-based cluster algorithm, which is capable of finding clusters in high dimensional data.
@@ -334,7 +355,7 @@ consuming part of the algorithm. The two example use cases have both been config
 parameters in order to show a certain behavior. The results of which will be discussed in the
 \textit{Analysis} section. \par
 
-\subsubsection{t-SNE}
+\paragraph{t-SNE}\mbox{}\\
 The \textit{t-distributed stochastic neighbor embedding} or \textit{t-SNE} algorithm is based on
 the \textit{stochastic neighbor embedding} or \textit{SNE} \cite{hinton2002stochastic} algorithm
 and is used to visualize high dimensional data in lower dimensional space. By going through two
@@ -405,6 +426,8 @@ in the respective class and a \textit{*.toml} file, where the theme of the dashb
 On the left side is a sidebar, containing navigation options for the user. Radio buttons allow to
 switch between the different pages, while a dropdown menu offers the option to select between the
 two different use cases. The initial use case presented is the \textit{Iris} dataset.
+
+\paragraph{Tutorial}\mbox{}\\
 The first page shown to the user is the \textit{Tutorial} page, containing a short welcome message,
 explaining what the dashboard is about. What follows is an explanation of the currently selected use
 case, decision trees and random forests, supported by some explanatory pictograms.
@@ -416,6 +439,7 @@ inexperienced users and to make sure that every user has at least a basic unders
 decision tree and RF algorithms. This allows all of the explanations following on the dashboard page
 to rely on the knowledge conveyed before and be more concise. \par
 
+\paragraph{Dashboard}\mbox{}\\
 The second page is the \textit{Dashboard}, where the user is introduced to the use case application
 of the RF. When changing to this page, the \textit{Algorithm Parameters} appears in the sidebar. This
 section starts with a short warning about the fact, that the dashboard will be reloaded upon pressing
@@ -536,7 +560,7 @@ is very obscure to compute for individual trees of the forest, in the \textit{sc
 implementation, because these detailed results are not natively stored.
 
 \section{Results}
-\subsection{Random Forest}
+\subsection{Random Forest Configuration and Dataset Choice}
 As mentioned in an earlier section, the \textit{Random Forest}, as implemented in the
 \textit{scikit-learn} library, performs very well on the \textit{Iris} dataset with no hyperparameter
 tuning. This makes the \textit{Iris} dataset a good example to inspect the RF as to how it achieves
@@ -595,6 +619,7 @@ As explained in the \textit{Algorithms} section, the pairwise distance matrix is
 edit distance. An extensive explanations follows, to make sure that the user knows how to interpret the
 results. \par
 
+\paragraph{Iris}\mbox{}\\
 The results in the \textit{Iris} example use case indicate, that approximately 40\% of the trees in the
 forest share similarities with other trees, while the remaining 60\% have enough unique features to not be
 considered a cluster. Since the heatmap is sorted by the cluster labels, this plot is already influenced by
@@ -603,6 +628,7 @@ intuitive visualization and gives the user an overview of the current clustering
 eye, this is a comprehensive way of showing a clustering result without going too much into detail of how
 to assign each tree to a cluster. \par
 
+\paragraph{Digits}\mbox{}\\
 In the \textit{Digits} example, the user is presented a very different picture. The heatmap is almost evenly
 colored in light gray, which means that there are almost no trees that are similar to each other. This
 strongly suggests, that it will not be possible to make out clusters in the forest. The current theory for
@@ -615,11 +641,17 @@ in a future work.
 \subsection{DBSCAN}
 By applying the \textit{DBSCAN} algorithm on the pairwise distance matrix, neighborhoods of trees are evaluated
 and the suspicion of clusters in the RF is further explored. Evaluation of the \textit{DBSCAN} result is done
-best by looking at the \textit{Silhouette Plot} and taking into account the two metrics displayed in the
+best by looking at the \textit{Silhouette Plot} first and taking into account the two metrics displayed in the
 Sidebar. While the \textit{Silhouette Score} gives a good first impression, it is by no means sufficient to
 evaluate the clustering results. As stated in the \textit{Algorithms} section it does not take into account the
 points classified as \textit{noise} and hence has to be evaluated together with the \textit{Trees in Clusters}
-metric. The initial configuration of the dashboard shows a decent clustering, as the Silhouette Score is 0.47
+metric. An important note here is that the classification of points as \textit{noise} does not hold any information about
+their classification performance. It is purely a statement about their similarity towards other trees and as such
+an implicit statement about the RF's diversity. \par
+
+\paragraph{Iris}\mbox{}\\
+The initial configuration of the dashboard shows a decent clustering for the \textit{Iris} dataset, as the
+\textit{Silhouette Score} is 0.47
 with 40\% of trees assigned to dedicated clusters. A higher \textit{Silhouette Score} can certainly be achieved
 by reducing the amount of clustered trees, but this was found to be the best trade-off between the two. It has
 to be noted that the \textit{Silhouette Score} is not to be mistaken as an absolute value, but merely a
@@ -628,26 +660,31 @@ Which shows that the clusters contain between 2 and 7 trees, while 60 of the 100
 \textit{noise}. Most of the clusters in this example have rather high individual \textit{Silhouette Scores},
 with only some outliers. \par
 
-An important note here is that the classification of points as \textit{noise} does not hold any information about
-their classification performance. It is purely a statement about their similarity towards other trees and as such
-an implicit statement about the RF's diversity. \par
-
+\paragraph{Digits}\mbox{}\\
 Again, the \textit{Digits} example confirms what was expected from the distance matrix. The \textit{Silhouette
     Score} is 0.05 while the amount of trees in clusters is at only 17\%, even after careful tuning of the
 \textit{DBSCAN} parameters. This serves as a clear signal that there are no clusters in the forest.
 
 \subsection{t-SNE}
+Interpretation of the \textit{t-SNE} results is more intuitive than one might think. The algorithm will allocate
+each tree to a location in the 2D plane in such a way, that distances retrieved from the \textit{pairwise
+    distance matrix} are preserved. This means that trees that are close to each other in the distance matrix should
+also appear close to each other in the \textit{t-SNE} plot. If patterns emerge in this picture, the presence of
+clusters can be assumed. \par
+
+\paragraph{Iris}\mbox{}\\
 Considering that the \textit{DBSCAN} results suggest that the RF contains clusters of trees, the t-SNE algorithm
 is supposed to test this theory by applying yet another explorative algorithm upon the pairwise distance matrix.
+Connecting the \textit{t-SNE} plot with the feature importances from earlier, one can inspect how different
+clusters weigh the features differently. It is also interesting to compare the feature importances of the
+clustered trees with those, classified as noise, as there are notable differences.
 With some tweaking of the hyperparameters, it was possible to achieve a result that does seem to support the
 clustering results. Areas of the plot that are densely populated with points, correlate with the cluster
 assignments found by the \textit{DBSCAN} algorithm. Though both use the same pairwise distance matrix, the
 algorithms vary wildly. Both coming to comparable results is a good indication that supports the idea of clusters
 in the RF. \par
-Connecting the \textit{t-SNE} plot with the feature importances from earlier, one can inspect how different
-clusters weigh the features differently. It is also interesting to compare the feature importances of the
-clustered trees with those, classified as noise, as there are notable differences. \par
 
+\paragraph{Digits}\mbox{}\\
 What we can see in the \textit{Digits} example is that the points are almost evenly distributed across the plot.
 There are no signs of cluster patterns to be seen at all. Even after extensive tweaking of the hyperparameters,
 the resulting plot does not give any indication of clusters. With the two algorithms both coming to the same
@@ -655,12 +692,18 @@ conclusion, it is quite safe to assume, that there are no clusters in the RF.
 
 \subsection{Cluster Performance Comparison}
 For a domain expert, this could be the most valuable part of the dashboard. It allows to compare the different
-clusters in how they perform across the different classes. While some clusters perform better than the forest
-average across all classes, some of them are unusually strong at classifying one specific class. \par
+clusters in how they perform across the different classes.
 
-This is only true for the \textit{Iris} example however, as the \textit{Digits} RF trees do not form any
+\paragraph{Iris}\mbox{}\\
+While some clusters perform better than the forest average across all classes, some of them are unusually
+strong at classifying one specific class. Since the overall performance of the forest is so good, the
+differences between the clusters are not especially large. \par
+
+\paragraph{Digits}\mbox{}\\
+The \textit{Digits} RF trees do not form any
 clusters. As such, the \textit{Cluster Performance Comparison} does not yield any insights and could even be
-labeled misleading. It is still included in the dashboard with a clear disclaimer for the user.
+labeled misleading. It is still included in the dashboard with a clear disclaimer to make the user aware of
+this problematic.
 
 \section{Discussion}
 \paragraph{Tutorial}\mbox{}\\
@@ -677,7 +720,7 @@ A lot of backend work could be avoided by using the library's built-in functiona
 likely not have been possibly in such a short time frame without it. While some workarounds were necessary
 to bypass some of the limitations of the library, it was an overall good choice for the project. \par
 
-\paragraph{Machine Learning Implementations}\mbox{}\\
+\paragraph{Scikit-Learn}\mbox{}\\
 By using the \textit{Scikit-Learn} library, most of the machine learning algorithms used in the dashboard
 were easily accessible and usable from the start. Since this work examined the underlying classes quite
 closely it was important to access individual subclasses of certain objects. While small details were not
@@ -688,6 +731,15 @@ This meant that the \textit{graph edit distance} could not be passed to the nati
 algorithms and had to be implemented manually and passed to the respective functions by using the
 \textit{precomputed} parameter. \par
 
+\paragraph{Altair}\mbox{}\\
+Since all of the visualizations in this work were constructed with the \textit{Altair} library, it was
+dedicated its' own paragraph to discuss its' viability for the project. It offers an immense amount of
+customization for nearly every aspect of the visualization. Getting used to the syntax of the library
+took some time, but after extensive use it became rather intuitive. It is fairly well documented and
+is still being actively maintained and it works well with \textit{Streamlit}. There was not a single
+time during the project when a visual could not be achieved with the library and if so, it was most likely
+a user error. \par
+
 \paragraph{Clustering Results}\mbox{}\\
 The results of the clustering algorithms present an interesting idea that could be further explored in the
 future. It is clearly connected to the topic of ensemble diversity and could be applied to other ensemble
@@ -695,7 +747,13 @@ methods as well. By presenting such different results for the two datasets, it i
 research is needed to reliably interpret the clustering results. There would also surely be more elaborate
 methods to arrive at a more reliable clustering, such as comparing results of the different clusterings
 with each other. Since this was not the main focus of the work though, it was reduced to the current state
-in order not to overcomplicate the dashboard.
+in order not to overcomplicate the dashboard. \par
+A crucial part of interpreting the clustering results is to keep in mind, that this is a purely exploratory
+way of looking at the RF. There will always be a certain amount of uncertainty when clustering the trees
+with unsupervised algorithms. Since the \textit{true} cluster labels of the trees are not known, it is
+however the only way to inspect the RF in this way. \par
+In order to make use of these results in a practical setting, it would also be necessary to further inspect
+the trees assigned to a cluster more in-depth. This was not possible in the scope of this work. \par
 
 \paragraph{Future Work}\mbox{}\\
 Further iterations of the dashboard could be implemented in a different framework with more flexibility.
@@ -703,7 +761,8 @@ Additional educational content could also be added to the \textit{Tutorial} part
 further explain the concepts shown in the dashboard section. By using a different library for the machine
 learning implementations other metrics like the \textit{OOB-Error} or a \textit{Confusion Matrix} could be
 added. A more in-depth exploration of the relationship between the feature space and the formation of clusters
-in the RF would certainly be worth pursuing. \par
+in the RF would certainly be worth pursuing. An obvious choice to investigate this would to add more use cases
+with diverse feature spaces. \par
 On the more technical side, implementing the matrix calculation for a computation on the GPU would be a great
 improvement for run time of the backend code.
 
@@ -711,11 +770,10 @@ improvement for run time of the backend code.
 \section{Conclusion}
 In its' current state the dashboard is mostly a proof of concept. The idea of a dashboard that has both
 an educational and explorative approach to RFs, while also conveying valuable insights with complex concepts
-works well. Some of the initial ideas could not be implemented due to limits of the streamlit library, such
-as designing the dashboard with a scrollytelling layout.
-
-\clearpage
-\section{Statement of Independent Work}
+works well. Although some of the initial ideas could not be implemented due to limits of the streamlit library,
+such as designing the dashboard with a scrollytelling layout, most of the initial ideas could be realized. \par
+The concept of discovering clusters of trees in the RF can certainly provide value to domain experts if the
+approach is further developed.
 
 \clearpage
 \bibliographystyle{apacite}
