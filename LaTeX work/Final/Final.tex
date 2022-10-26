@@ -3,21 +3,38 @@
 \usepackage{amsmath}
 \usepackage{apacite}
 \usepackage{enumitem}
-
-
-\title{Master Thesis - Explainable Machine Learning - Visualization of Random Forests}
-\author{Fabio Rougier}
-\date{\today}
+\usepackage{graphicx}
+\usepackage[super]{nth}
 
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{resources/logo.jpg}
+        \vfill
 
-\clearpage
-\section{Summary}
-DO SUMMARY AT THE END
+        \large{Department of Mathematics and Computer Science}
+        \vfill
 
-\tableofcontents
+        \large{Master's thesis}
+        \vfill
+
+        \huge{Explainable Machine Learning - Visualization of Random Forests}
+        \vfill
+
+        \large
+        Fabio Rougier
+        \vfill
+
+        October \nth{28}, 2022
+        \vfill
+
+        Dr. Georges Hattab
+        \\
+        Prof. Dr. Dominik Heider
+
+    \end{center}
+\end{titlepage}
 
 \clearpage
 \section{Statement of Independent Work}
@@ -39,6 +56,19 @@ Place, Date
 
 \noindent
 Signature of author
+
+\clearpage
+\section{Acknowledgements}
+Thank you to my supervisors, Dr. Georges Hattab and Aleksandar Anžel , for providing guidance and feedback throughout
+my work. Thanks also to my soon to be wife Nayun, for putting up with me being sat in my room for hours over the weekend,
+and for providing support when ever I needed it.
+
+\clearpage
+\section{Abstract}
+DO SUMMARY AT THE END
+
+\clearpage
+\tableofcontents
 
 \clearpage
 \section{Introduction}
@@ -560,6 +590,8 @@ is very obscure to compute for individual trees of the forest, in the \textit{sc
 implementation, because these detailed results are not natively stored.
 
 \section{Results}
+The code for the dashboard is available on GitHub and can be found at
+\url{https://github.com/betaigeuze/Masterarbeit}.
 \subsection{Random Forest Configuration and Dataset Choice}
 As mentioned in an earlier section, the \textit{Random Forest}, as implemented in the
 \textit{scikit-learn} library, performs very well on the \textit{Iris} dataset with no hyperparameter
