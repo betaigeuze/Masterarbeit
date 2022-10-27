@@ -21,13 +21,13 @@ The dashboard builds 2 example use cases using the Iris and the Digits dataset f
 ## Code
 |Folder|Description|
 |:---|:---|
-|[src/dashboardv1/]|Contains all of the necessary python code
-|[src/dashboardv1/images/]|Contains the images used in the dashboard
-|[src/dashboardv1/pickle/]|Contains the precomputed pickle files for the pairwise distance matrix
-|[src/dashboardv1/text/]|Contains the markdown files used in the dashboard
-|[tests/]Is currently empty
-|[.streamlit/]|Contains the *.toml file for the custom Streamlit theme
-|[.vscode/]|Contains the launch.json and settings.json for VSCode development
+|[src/dashboardv1/](src/dashboardv1/)|Contains all of the necessary python code
+|[src/dashboardv1/images/](src/dashboardv1/images/)|Contains the images used in the dashboard
+|[src/dashboardv1/pickle/](src/dashboardv1/pickle/)|Contains the precomputed pickle files for the pairwise distance matrix
+|[src/dashboardv1/text/](src/dashboardv1/text/)|Contains the markdown files used in the dashboard
+|[tests/](/tests/)|Is currently empty
+|[.streamlit/](/.streamlit)|Contains the *.toml file for the custom Streamlit theme
+|[.vscode/](/.vscode)|Contains the launch.json and settings.json for VSCode development
 
 
 ## Installation
