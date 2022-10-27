@@ -20,6 +20,7 @@ The dashboard builds 2 example use cases using the Iris and the Digits dataset f
 
 ## Code
 |Folder|Description|
+|:---|:---|
 |[src/dashboardv1/]|Contains all of the necessary python code|
 |[src/dashboardv1/images/]|Contains the images used in the dashboard|
 |[src/dashboardv1/pickle/]|Contains the precomputed pickle files for the pairwise distance matrix|
