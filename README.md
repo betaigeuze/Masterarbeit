@@ -6,7 +6,7 @@ An educational dashboard built as a proof of concept for investigating Random Fo
 This project was built for the master's thesis found under:
 PLACEHOLDER
 
-## Dependcies
+## Dependencies
 This project relies on the following main packages:
 - [Streamlit](https://streamlit.io/)
 - [Pandas](https://pandas.pydata.org/)
