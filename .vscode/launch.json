@@ -8,12 +8,10 @@
             "name": "Streamlit",
             "type": "python",
             "request": "launch",
-            "program": "/home/betaigeuze/.local/share/virtualenvs/Masterarbeit-wDca_6tb/bin/streamlit",
-            "console": "integratedTerminal",
-            "justMyCode": true,
+            "program": "~/.conda/envs/RandFew/bin/streamlit",
             "args": [
                 "run",
-                "/home/betaigeuze/Masterarbeit/src/dashboardv1/st_dashboard.py"
+                "${cwd}/src/dashboardv1/st_dashboard.py"
             ]
         }
     ]

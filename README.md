@@ -1,5 +1,4 @@
-# RaFoView
-## Random Forest View
+# RandFew
 An educational dashboard built as a proof of concept for investigating Random Forest models.
 
 ## Manuscript

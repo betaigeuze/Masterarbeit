@@ -1,12 +1,13 @@
 """Streamlit is used to display the dashboard in the browser.
 Pandas handles all of the dataframes in the background.
 Altair is responsible for the charts."""
+from typing import Union
+
+import altair as alt
+import numpy as np
+import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
-import pandas as pd
-import numpy as np
-import altair as alt
-from typing import Union
 from dataframe_operator import DataframeOperator
 
 
@@ -25,7 +26,7 @@ class DashboardController:
         self.dfo = dfo
         self.dashboard_sidebar = self.create_sidebar()
         self.dashboard_container = st.container()
-        self.dashboard_container.header("RaFoView")
+        self.dashboard_container.header("RandFew")
         self.dataset = dataset
         self.features = features
         self.feature_names_plus_importance = [

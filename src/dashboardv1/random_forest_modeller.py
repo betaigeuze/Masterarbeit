@@ -8,29 +8,30 @@ networkx is used for the graph edit distance
 streamlit is only used in this class for caching and the loading spinner
 pygraphviz is used to convert the sklearn tree to pygraph and then networkx
 """
-from pathlib import Path
-import warnings
+import ast
+import multiprocessing as mp
 import pickle
 import re
-import ast
-from timeit import default_timer as timer
-from datetime import timedelta
+import warnings
 from collections import ChainMap
-import multiprocessing as mp
-from sklearn.metrics import silhouette_samples, silhouette_score
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn import tree
-from sklearn.cluster import DBSCAN
-from sklearn.manifold import TSNE
-from sklearn.preprocessing import MinMaxScaler
+from datetime import timedelta
 from os.path import exists
-import pandas as pd
+from pathlib import Path
+from timeit import default_timer as timer
+
 import networkx as nx
 import numpy as np
 import numpy.typing as npt
-import streamlit as st
+import pandas as pd
 import pygraphviz as pgv
+import streamlit as st
+from sklearn import tree
+from sklearn.cluster import DBSCAN
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.manifold import TSNE
+from sklearn.metrics import silhouette_samples, silhouette_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 
 class RFmodeller:
