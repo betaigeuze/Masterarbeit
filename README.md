@@ -6,7 +6,7 @@ This project was built for the master's thesis found under:
 PLACEHOLDER
 
 ## Dependencies
-This project relies on the following main packages:
+This project relies mainly on the following packages:
 - [Streamlit](https://streamlit.io/)
 - [Pandas](https://pandas.pydata.org/)
 - [Scikit-learn](https://scikit-learn.org/stable/)
@@ -34,14 +34,14 @@ To run the code, clone the repository and install the dependencies by installing
 For more information on how to use pipenv:
 https://pipenv.pypa.io/en/latest/basics/#example-pipenv-workflow  
 
-If problems arise with the pygraphviz installation, install Graphviz and try again.
-This in one of two ways:  
+If problems arise with the pygraphviz installation when installing the requirements, install Graphviz and try again.
+This can be done in one of two ways:  
 
-1. (For conda environments:) Install Graphviz inside your conda environment
+- (For conda environments:) Install Graphviz inside your conda environment
 ```console
 $ conda install -c anaconda Graphviz
 ```
-2. Install Graphviz outside of your environment
+- Install Graphviz outside of your environment
 ```console
 $ apt-get install -y graphviz-dev
 ```
@@ -54,8 +54,8 @@ $ streamlit run src/dashboardv1/st_dashboard.py
 ```
 Streamlit should display a link to the dashboard in the terminal. If it does not, you can also access the dashboard by navigating to http://localhost:8501 in your browser.
 
-If you are using VS Code for development, the following <h5 a><strong><code>launch.json</code></strong></h5> configuration is recommended:
-```JSON
+If you are using VS Code for development, the following <strong><code>launch.json</code></strong> configuration is recommended:
+```yaml
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
