@@ -34,12 +34,48 @@ To run the code, clone the repository and install the dependencies by installing
 For more information on how to use pipenv:
 https://pipenv.pypa.io/en/latest/basics/#example-pipenv-workflow  
 
+If problems arise with the pygraphviz installation, install Graphviz and try again.
+This in one of two ways:  
+
+1. (For conda environments:) Install Graphviz inside your conda environment
+```console
+$ conda install -c anaconda Graphviz
+```
+2. Install Graphviz outside of your environment
+```console
+$ apt-get install -y graphviz-dev
+```
+For more information refer to [this](https://github.com/pygraphviz/pygraphviz/issues/163) github issue.
+
 ## Usage
 After installing all necessary dependencies, you can run the dashboard by running the following command in the terminal:
-```
-streamlit run src/dashboardv1/st_dashboard.py
+```console
+$ streamlit run src/dashboardv1/st_dashboard.py
 ```
 Streamlit should display a link to the dashboard in the terminal. If it does not, you can also access the dashboard by navigating to http://localhost:8501 in your browser.
+
+If you are using VS Code for development, the following <h5 a><strong><code>launch.json</code></strong></h5> configuration is recommended:
+```JSON
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Streamlit",
+            "type": "python",
+            "request": "launch",
+            "program": "path/to/streamlit", // use your environments' specific streamlit path
+            "args": [
+                "run",
+                "${cwd}/src/dashboardv1/st_dashboard.py"
+            ]
+        }
+    ]
+}
+```
+For more information please refer to [this](https://discuss.streamlit.io/t/vs-code-debug/520/7) entry on the streamlit forum.
 
 ## License
 
