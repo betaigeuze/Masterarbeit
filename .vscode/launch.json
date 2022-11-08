@@ -8,7 +8,7 @@
             "name": "Streamlit",
             "type": "python",
             "request": "launch",
-            "program": "~/.conda/envs/RandFew/bin/streamlit",
+            "program": "/home/betaigeuze/.local/share/virtualenvs/Masterarbeit-wDca_6tb/bin/streamlit",
             "args": [
                 "run",
                 "${cwd}/src/dashboardv1/st_dashboard.py"

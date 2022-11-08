@@ -401,16 +401,26 @@ class RFmodeller:
 
     def update_load_history(self):
         if "load_history" in st.session_state:
-            st.session_state.load_history.append(self.data_choice)
+            if "app_mode" in st.session_state:
+                st.session_state.load_history.append(
+                    [self.data_choice, st.session_state.app_mode]
+                )
+            else:
+                st.session_state.load_history.append([self.data_choice, "Tutorial"])
         else:
             st.session_state["load_history"] = ["Iris"]
 
     def check_for_data_selection_change(self) -> bool:
-        counter = st.session_state.counter
-        if self.data_choice != st.session_state.load_history[counter - 1]:
-            return True
-        else:
-            return False
+        return (
+            self.data_choice
+            != st.session_state.load_history[st.session_state.counter - 1][0]
+        )
+
+    def check_for_page_change(self) -> bool:
+        return (
+            st.session_state.app_mode
+            != st.session_state.load_history[st.session_state.counter - 1][1]
+        )
 
 
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:

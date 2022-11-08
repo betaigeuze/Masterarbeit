@@ -81,6 +81,7 @@ class DashboardController:
         self.app_mode = sidebar.radio(
             "Select a page to display", ["Tutorial", "Dashboard"]
         )
+        st.session_state["app_mode"] = self.app_mode
 
         # Example selection
         self.data_form = sidebar.form("Data Selection", clear_on_submit=False)
