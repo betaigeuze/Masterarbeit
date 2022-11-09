@@ -176,7 +176,7 @@ class RFmodeller:
         ) = self.slider_session_state_update(
             sliders,
             default_value_dict[self.data_choice],
-            self.check_for_data_selection_change(),
+            self.data_selection_changed(),
         )
         if self.model.n_estimators < perplexity:
             perplexity = self.model.n_estimators - 1
@@ -210,7 +210,7 @@ class RFmodeller:
         (eps, min_samples,) = self.slider_session_state_update(
             sliders,  # type: ignore
             default_value_dict[self.data_choice],
-            self.check_for_data_selection_change(),
+            self.data_selection_changed(),
         )
 
         clustering = DBSCAN(
@@ -408,18 +408,18 @@ class RFmodeller:
             else:
                 st.session_state.load_history.append([self.data_choice, "Tutorial"])
         else:
-            st.session_state["load_history"] = ["Iris"]
+            st.session_state["load_history"] = ["Iris", "Tutorial"]
 
-    def check_for_data_selection_change(self) -> bool:
+    def data_selection_changed(self) -> bool:
         return (
             self.data_choice
             != st.session_state.load_history[st.session_state.counter - 1][0]
         )
 
-    def check_for_page_change(self) -> bool:
+    def page_changed(self) -> bool:
         return (
             st.session_state.app_mode
-            != st.session_state.load_history[st.session_state.counter - 1][1]
+            != st.session_state.load_history[st.session_state.counter][1]
         )
 
 

@@ -930,9 +930,10 @@ class DashboardController:
             self.dashboard_container.altair_chart(alt.vconcat(*charts), use_container_width=False)  # type: ignore
 
     def scroll_up_on_data_change(self):
-        if self.rfm.check_for_data_selection_change():
+        if self.rfm.data_selection_changed() or self.rfm.page_changed():
             components.html(
                 f"""
+                    <p>{st.session_state.counter}</p>
                     <script>
                         window.parent.document.querySelector('section.main').scrollTo(0, 0);
                     </script>
