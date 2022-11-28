@@ -1,5 +1,5 @@
 <p class="text-font">
-Welcome to the RaFoView Dashboard!
+Welcome to the RandFew Dashboard!
 This dashboard is aimed at providing an <b>introduction to Random Forests</b> and give you a deeper understanding of the algorithm.
 <br><br>
 This <i>streamlit</i> app is structured in 2 pages that you can select, by using the radio buttons on the left. If you are new to <b>Random Forests</b>, or want to refresh your memory, while getting an introduction to the datasets, choose the <b>"Tutorial"</b> page.
