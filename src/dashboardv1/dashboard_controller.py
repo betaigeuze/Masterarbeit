@@ -123,7 +123,7 @@ class DashboardController:
             )
             algorithm_parameters_form.metric(
                 label="Silhouette Score",
-                value=np.round(self.rfm.silhouette_score, decimals=2),
+                value=np.round(self.rfm.cluster_silhouette_score, decimals=2),
                 help="The Silhouette Score indicates how similar each point is to the points in its' cluster,\
                     versus how dissimilar it is to the points outside of its' cluster. \n\
                     The value shown here is an average of all points' Silhouette Scores averaged together.\

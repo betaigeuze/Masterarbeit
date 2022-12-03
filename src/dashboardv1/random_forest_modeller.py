@@ -69,10 +69,8 @@ class RFmodeller:
             self.cluster_df,
         ) = self.calculate_tree_clusters()
         (self.tsne_embedding, self.tsne_df) = self.calculate_tsne_embedding()
-        (
-            self.silhouette_scores_df,
-            self.silhouette_score,
-        ) = self.calculate_silhouette_scores_df()
+        self.sample_silhouette_scores = self.calculate_sample_silhouette_scores()
+        self.cluster_silhouette_score = self.calculate_cluster_silhouette_score()
         self.percentage_trees_in_clusters = (
             self.calculate_percentage_trees_in_clusters()
         )
@@ -235,11 +233,9 @@ class RFmodeller:
         Calculate the pairwise distance matrix for the directed graphs
         If possible, a pickle file is loaded, otherwise the distance matrix is
         calculated and saved to a pickle file.
-        The pickle files for the iris and digits datasets are included in the repo
-        for random forest size 100. For every other random forest size, the distance
-        matrix is calculated on clicking "run" in the dashboard.
-        However, after calculating any distance matrix, it is saved to a pickle file
-        as well and can be loaded from there.
+        The pickle files for all possible iris and digits datasets are included in the repo.
+        If they can be found, the'll be computed.
+        After calculating any distance matrix, it is saved to a pickle file.
         We use graph edit distance as the distance metric.
         """
         dashboardv1_absolute = Path(__file__).resolve().parent
@@ -247,11 +243,7 @@ class RFmodeller:
             "pickle",
             f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
         )
-        # if self.model.n_estimators != 100:
-        #     pickle_path = dashboardv1_absolute.joinpath(
-        #         "runtime_pickle",
-        #         f"distance_matrix_{self.data_choice}{self.model.n_estimators}.pickle",
-        #     )
+
         # Check for existing pickle
         if not exists(pickle_path):
             st.spinner()
@@ -333,6 +325,11 @@ class RFmodeller:
         )
 
     def check_node_label_equality(self, n1: dict, n2: dict) -> bool:
+        """
+        This function is used to check if two nodes are equal.
+        It is used by the graph edit distance function in order to allow the
+        detection of more than just morphological differences.
+        """
         n1_label = re.split(r"\\", n1["label"])
         n2_label = re.split(r"\\", n2["label"])
         if len(n1_label) == len(n2_label):
@@ -353,7 +350,10 @@ class RFmodeller:
         else:
             return False
 
-    def calculate_percentage_trees_in_clusters(self):
+    def calculate_percentage_trees_in_clusters(self) -> int:
+        """
+        Returns how many percent of trees have been assigned to a cluster.
+        """
         if -1 in self.cluster_df["cluster"].values:
             return (
                 1
@@ -362,7 +362,23 @@ class RFmodeller:
         else:
             return 100
 
-    def calculate_silhouette_scores_df(self):
+    def calculate_sample_silhouette_scores(self) -> pd.DataFrame:
+        try:
+            sample_silhouettes = pd.DataFrame(
+                silhouette_samples(
+                    X=self.distance_matrix,
+                    labels=self.cluster_df["cluster"].values,
+                    metric="precomputed",
+                ),
+                columns=["Silhouette Score"],
+            )
+        except ValueError:
+            sample_silhouettes = pd.DataFrame(
+                self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]
+            )
+        return sample_silhouettes
+
+    def calculate_cluster_silhouette_score(self):
         no_noise_tree_list = self.cluster_df.loc[self.cluster_df["cluster"] > -1][
             "tree"
         ].to_list()
@@ -380,24 +396,9 @@ class RFmodeller:
                 metric="precomputed",
                 sample_size=None,
             )
-            silhouette_df = pd.DataFrame(
-                silhouette_samples(
-                    X=self.distance_matrix,
-                    labels=self.cluster_df["cluster"].values,
-                    metric="precomputed",
-                ),
-                columns=["Silhouette Score"],
-            )
-        except ValueError as e:
-            # print(e)
-            # print(
-            #     "RFModeller: Error in calculate_silhouette_scores_df. Probably only one cluster was found."
-            # )
+        except ValueError:
             cluster_silhouette_score = -1.0
-            silhouette_df = pd.DataFrame(
-                self.distance_matrix.shape[0] * [-1.0], columns=["Silhouette Score"]
-            )
-        return silhouette_df, cluster_silhouette_score
+        return cluster_silhouette_score
 
     def update_load_history(self):
         if "load_history" in st.session_state:
@@ -411,16 +412,30 @@ class RFmodeller:
             st.session_state["load_history"] = ["Iris", "Tutorial"]
 
     def data_selection_changed(self) -> bool:
-        return (
-            self.data_choice
-            != st.session_state.load_history[st.session_state.counter - 1][0]
-        )
+        if "load_history" in st.session_state:
+            return (
+                self.data_choice
+                != st.session_state.load_history[st.session_state.counter - 1][0]
+            )
+        else:
+            st.session_state["load_history"] = ["Iris", "Tutorial"]
+            return (
+                self.data_choice
+                != st.session_state.load_history[st.session_state.counter - 1][0]
+            )
 
     def page_changed(self) -> bool:
-        return (
-            st.session_state.app_mode
-            != st.session_state.load_history[st.session_state.counter][1]
-        )
+        if "load_history" in st.session_state:
+            return (
+                st.session_state.app_mode
+                != st.session_state.load_history[st.session_state.counter][1]
+            )
+        else:
+            st.session_state["load_history"] = ["Iris", "Tutorial"]
+            return (
+                st.session_state.app_mode
+                != st.session_state.load_history[st.session_state.counter][1]
+            )
 
 
 def remove_possible_nans(distance_matrix: np.ndarray) -> np.ndarray:

@@ -87,7 +87,7 @@ class DataframeOperator:
         )
         tree_df["cluster"] = tree_df["cluster"].astype("str")
         tree_df = pd.concat([tree_df, rfm.tsne_df], axis=1)
-        tree_df = pd.concat([tree_df, rfm.silhouette_scores_df], axis=1)
+        tree_df = pd.concat([tree_df, rfm.sample_silhouette_scores], axis=1)
         # All noise values are set to -1
         tree_df.loc[tree_df.cluster == "Noise", "Silhouette Score"] = -1
         return tree_df
