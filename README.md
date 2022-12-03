@@ -1,5 +1,6 @@
 # RandFew
 An educational dashboard built as a proof of concept for investigating Random Forest models.
+You can see the hosted version [here](https://betaigeuze-randfew-srcdashboardv1st-dashboard-bj6t7o.streamlit.app/).
 
 ## Manuscript
 This project was built for the master's thesis found under:
