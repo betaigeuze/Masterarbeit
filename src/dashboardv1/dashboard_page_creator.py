@@ -214,7 +214,7 @@ class DashboardPageCreator:
 
     def create_page(self, layout: list[dict]):
         """
-        Creates a page with according to the passed layout.
+        Creates a page according to the passed layout.
         """
 
         def setup_font_sizes():
